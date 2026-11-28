@@ -1,0 +1,145 @@
+--- a/qemu/target/i386/cpu.h
++++ b/qemu/target/i386/cpu.h
+@@ -2069,6 +2069,20 @@
+ void update_fp_status(CPUX86State *env);
+ void update_mxcsr_status(CPUX86State *env);
+ 
++/* Softfloat keeps sticky SSE flags separately from the control word. */
++static inline uint32_t cpu_get_mxcsr(CPUX86State *env)
++{
++    int flags = env->sse_status.float_exception_flags;
++    uint32_t status = flags & 0x3d;
++    if ((flags & float_flag_input_denormal) && !(env->mxcsr & 0x40)) {
++        status |= 0x02;
++    }
++    if (flags & float_flag_output_denormal) {
++        status |= 0x30;
++    }
++    return env->mxcsr | status;
++}
++
+ static inline void cpu_set_mxcsr(CPUX86State *env, uint32_t mxcsr)
+ {
+     env->mxcsr = mxcsr;
+--- a/qemu/target/i386/fpu_helper.c
++++ b/qemu/target/i386/fpu_helper.c
+@@ -1183,7 +1183,7 @@
+ 
+ static void do_xsave_mxcsr(CPUX86State *env, target_ulong ptr, uintptr_t ra)
+ {
+-    cpu_stl_data_ra(env, ptr + XO(legacy.mxcsr), env->mxcsr, ra);
++    cpu_stl_data_ra(env, ptr + XO(legacy.mxcsr), cpu_get_mxcsr(env), ra);
+     cpu_stl_data_ra(env, ptr + XO(legacy.mxcsr_mask), 0x0000ffff, ra);
+ }
+ 
+@@ -1599,12 +1599,20 @@
+         break;
+     }
+     set_float_rounding_mode(rnd_type, &env->sse_status);
++    set_float_exception_flags((mxcsr & 0x3d) |
++                             ((mxcsr & 0x02) ? float_flag_input_denormal : 0),
++                             &env->sse_status);
+ 
+     /* set denormals are zero */
+     set_flush_inputs_to_zero((mxcsr & SSE_DAZ) ? 1 : 0, &env->sse_status);
+ 
+     /* set flush to zero */
+-    set_flush_to_zero((mxcsr & SSE_FZ) ? 1 : 0, &env->fp_status);
++    set_flush_to_zero((mxcsr & SSE_FZ) ? 1 : 0, &env->sse_status);
++}
++
++uint32_t helper_stmxcsr(CPUX86State *env)
++{
++    return cpu_get_mxcsr(env);
+ }
+ 
+ void helper_ldmxcsr(CPUX86State *env, uint32_t val)
+--- a/qemu/target/i386/helper.h
++++ b/qemu/target/i386/helper.h
+@@ -210,6 +210,7 @@
+ /* MMX/SSE */
+ 
+ DEF_HELPER_2(ldmxcsr, void, env, i32)
++DEF_HELPER_1(stmxcsr, i32, env)
+ DEF_HELPER_1(enter_mmx, void, env)
+ DEF_HELPER_1(emms, void, env)
+ DEF_HELPER_3(movq, void, env, ptr, ptr)
+--- a/qemu/target/i386/translate.c
++++ b/qemu/target/i386/translate.c
+@@ -8877,7 +8877,8 @@
+                 break;
+             }
+             gen_lea_modrm(env, s, modrm);
+-            tcg_gen_ld32u_tl(tcg_ctx, s->T0, tcg_ctx->cpu_env, offsetof(CPUX86State, mxcsr));
++            gen_helper_stmxcsr(tcg_ctx, s->tmp2_i32, tcg_ctx->cpu_env);
++            tcg_gen_extu_i32_tl(tcg_ctx, s->T0, s->tmp2_i32);
+             gen_op_st_v(s, MO_32, s->T0, s->A0);
+             break;
+ 
+--- a/qemu/target/i386/unicorn.c
++++ b/qemu/target/i386/unicorn.c
+@@ -589,7 +589,7 @@
+             break;
+         case UC_X86_REG_MXCSR:
+             CHECK_REG_TYPE(uint32_t);
+-            *(uint32_t *)value = env->mxcsr;
++            *(uint32_t *)value = cpu_get_mxcsr(env);
+             break;
+         case UC_X86_REG_FS_BASE:
+             CHECK_REG_TYPE(uint32_t);
+@@ -973,7 +973,7 @@
+             break;
+         case UC_X86_REG_MXCSR:
+             CHECK_REG_TYPE(uint32_t);
+-            *(uint32_t *)value = env->mxcsr;
++            *(uint32_t *)value = cpu_get_mxcsr(env);
+             break;
+         case UC_X86_REG_XMM8:
+         case UC_X86_REG_XMM9:
+--- a/qemu/target/i386/ops_sse.h
++++ b/qemu/target/i386/ops_sse.h
+@@ -604,11 +604,39 @@
+         d->ZMM_D(0) = F(64, d->ZMM_D(0), s->ZMM_D(0));                  \
+     }
+ 
+-#define FPU_ADD(size, a, b) float ## size ## _add(a, b, &env->sse_status)
+-#define FPU_SUB(size, a, b) float ## size ## _sub(a, b, &env->sse_status)
+-#define FPU_MUL(size, a, b) float ## size ## _mul(a, b, &env->sse_status)
+-#define FPU_DIV(size, a, b) float ## size ## _div(a, b, &env->sse_status)
+-#define FPU_SQRT(size, a, b) float ## size ## _sqrt(b, &env->sse_status)
++/* Denormal operands are reported by SSE arithmetic even when DAZ is off.
++ * Softfloat's input-denormal flag otherwise only records flushed inputs. */
++static inline void x86_sse_denormal32(CPUX86State *env, float32 a, float32 b)
++{
++    if (!(env->mxcsr & 0x40) && !float32_is_any_nan(a) &&
++        !float32_is_any_nan(b) &&
++        (float32_is_denormal(a) || float32_is_denormal(b))) {
++        env->sse_status.float_exception_flags |= float_flag_input_denormal;
++    }
++}
++
++static inline void x86_sse_denormal64(CPUX86State *env, float64 a, float64 b)
++{
++    if (!(env->mxcsr & 0x40) && !float64_is_any_nan(a) &&
++        !float64_is_any_nan(b) &&
++        (float64_is_denormal(a) || float64_is_denormal(b))) {
++        env->sse_status.float_exception_flags |= float_flag_input_denormal;
++    }
++}
++
++#define FPU_DENORMAL(size, a, b) x86_sse_denormal ## size(env, a, b)
++#define FPU_ADD(size, a, b) \
++    (FPU_DENORMAL(size, a, b), float ## size ## _add(a, b, &env->sse_status))
++#define FPU_SUB(size, a, b) \
++    (FPU_DENORMAL(size, a, b), float ## size ## _sub(a, b, &env->sse_status))
++#define FPU_MUL(size, a, b) \
++    (FPU_DENORMAL(size, a, b), float ## size ## _mul(a, b, &env->sse_status))
++#define FPU_DIV(size, a, b) \
++    ((float ## size ## _is_zero(b) ? (void)0 : FPU_DENORMAL(size, a, b)), \
++     float ## size ## _div(a, b, &env->sse_status))
++#define FPU_SQRT(size, a, b) \
++    ((float ## size ## _is_neg(b) ? (void)0 : FPU_DENORMAL(size, b, b)), \
++     float ## size ## _sqrt(b, &env->sse_status))
+ 
+ /* Note that the choice of comparison op here is important to get the
+  * special cases right: for min and max Intel specifies that (-0,0),

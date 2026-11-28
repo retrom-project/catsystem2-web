@@ -1,0 +1,181 @@
+# 架构与嵌入接口
+
+## 目标与迁移状态
+
+目标架构由 `GameFiles`/VFS、JavaScript KCS VM、`NativeRuntime` 分派和各领域的
+JavaScript 实现组成；图像与界面由 `StageRenderer` 承接，音视频使用浏览器服务。
+运行时不加载或执行原 EXE 代码。原 EXE 的 x86 执行仅用于不进入 `dist/` 的离线取证
+和测试差分 oracle；运行时可读取 EXE 版本资源以选择 ABI。
+
+目标实现必须遵守以下边界：
+
+- 运行时代码不含原 EXE 内部地址，不调用 `engine.call`、`patch` 或执行 EXE 代码区间；
+  `callFromHost` 也不得用于执行 EXE 代码。地址和原执行能力只用于 oracle、离线工具与测试。
+- 版本差异是 ABI 数据，包括 native ID 到语义的映射、参数签名及声音 bank 数；
+  业务代码不按 profile 名分支。未登记版本必须报错，不猜用相近版本。
+- E-mote/PPI 的产品执行使用 JS；原 DLL 仅作显式差分 oracle。禁止游戏专用特判、
+  白名单和专用全局变量。
+- checkpoint 和内部接口仍在开发中，直接修改现有契约，不增加 V2、兼容读取或迁移；
+  目标 checkpoint 不含 EXE 的 CPU、堆和 PE RAM 状态。
+- 原处理器使用 x87；每个数学 native 的差分测试必须记录容差，或在 JavaScript 中
+  复现所需精度，不能假定浮点结果逐位一致。
+
+普通页面直接导入 `src/engine.mjs`。Core、World、KCS、FES、MOT、图形、输入与媒体
+共同使用普通 JavaScript owner；不隐式打开原进程。当前唯一实际 ESM 图同时用于源码
+门禁和 standalone 文件计划，发行不复制整个 `src`/`web` 或 oracle 后端。
+
+原进程、Win32/Cpp 对象视图、PE/x86/Unicorn 和物理 checkpoint 消费位于 `oracle/`。
+研究工具或测试必须显式提供该 adapter；普通应用不提供它。它不替代普通 VM 内存、
+NativeBufferMemory、JS 数据句柄、配置、真实模块版本资源或媒体别名的所有权。
+纯 JS x87 精度辅助函数仍属于普通运行时，与原指令执行分开。
+
+`npm run check` 对普通图实行零执行依赖上限，同时保留普通数据操作数的原始数值
+重叠诊断，以及一处序列化物理状态输入 guard 的真实计数。没有可抬高的旧基线或源码
+豁免标签；实际未知指针/能力、原模块引入和私有测试输入会使检查失败。
+
+## 当前普通实现
+
+普通 `CatSystem2.initialize` 使用现有 JS owner 完成 startup/gamedef、保存的 setup、
+音量派生、视图、语言和应用服务初始化，创建真实 root/Input/Sound/Script 并执行首帧；
+这条路径不自动打开 `transitionalExe`。SOUNDCONFIG 经 config 资源挂载读取，其同名用户
+偏好另由 NativeFileStorage 读取。只有挂载资源存在、XML 解析及声音树加载成功后，才读取
+同名保存偏好；缺失或损坏的资源不会触碰该用户文件，保存偏好读取异常也不会抢先覆盖
+资源失败。新启动分别在 MT owner 构造和 author 检查后从 World 时钟采样，按本地时间
+七字段（不含星期）播种同一 integer/real MT。显式 seed 只覆盖构造位置：74 的构造在
+资源检查后，76 的构造在之前；76 后续 author 的 clock reset 会覆盖 explicit seed。
+fresh checkpoint restore 使用保存的当前 Config/Sound/MT/CRT 状态，不重读启动资源或
+凭据元数据，不重播播种、author 32 次整数抽样或首帧。
+冷初始化同时恢复保存的完整输入状态，包括未消费事件与接触点；它不会用尚未运行的
+placeholder device 覆盖 checkpoint。已运行 Core 的普通 `restore` 仍保留当前浏览器
+device owner 的活输入，保持按键和接触连续性；两种入口都不增加热身帧。
+
+EXE 在这条路径仅供 ABI 版本和命名资源数据读取。普通启动用 JS Blowfish 读取
+KEY_CODE/KEY、V_CODE/DATA 与 V_CODE2/DATA；V_CODE 缺失跳过比较，存在则按注册 ABI
+比较原始 C 字节串（74 的固定 wrapper 先覆盖为公开 open_cs2；76 使用解密结果）。
+非 8 倍数资源保留原零输出行为，资源错误不作为校验成功。author 先计算公开后缀 CRC、
+重 seed、从唯一整数 MT 读取 32 次并 clock reset，再由现有 NativeFileStorage 的
+saved-record/GameFiles lookup 查询 cs2_debug_key.dat 长度。只有实际 64 字节的文件会被
+读取：用本次前 16 词构成完整二进制 64 字节 LE32 key 解密，再与本次后 16 词逐词比较。
+缺失、长度不符或普通读取失败返回 false；配置中的 authorMode 由结果更新，不能作为绕过
+输入。有效凭据只跳过 V_CODE 比较；KEY/V_CODE/V_CODE2 的真实资源错误仍传播，其原
+私有 Settings 槽在当前 prepared/decrypted JS VFS 中没有 consumer，因此不新增影子字段。
+细节与原不安全输入的诊断见 [启动资源契约](native-startup-resources.md)。加密 KIF 的
+`__key__.dat` 仍由输入边界独立拒绝。浏览器菜单/accelerator 与已恢复 D8 服务使用普通 Window/Host/配置 owner；
+有限已恢复域与最终整章、影片和性能验收保持分开。
+显式研究 oracle 路径要求实际原对象/进程 owner。普通 Window/Host 的广播、输入、
+配置、文件/版本资源与调试 sink 沿当前普通对象域分派，不按初始化或 loading 状态兜底
+打开原进程。原物理地址与导出调用仍只属于显式适配器。
+W1 的 mixed CRT guard 和未知 ABI/native 拒绝规则保持不变。这里不以缺少 canvas 推断
+GPU ready，也不引入第二设备生命周期状态。
+
+文字 writer、字体缓存及其生命周期由 `World.text` 中的单一 JavaScript runtime 拥有。
+普通文字任务和 LOG 使用 `world.text.runtime()`，不会为取得文字服务构造 EXE 后端。
+World checkpoint 的 `text` 字段保存并恢复这份状态；任务只保存 writer 身份和自己的图形状态。
+仍需原 Windows/GDI 服务的显式 D8 消费者通过 `text-consumer-view` 借用同一 runtime，
+只在自己的 checkpoint 保存 Windows 句柄，不重复保存、恢复或关闭 writer。
+默认 FES kind34 任务通过 `FESCoordinator` 拥有 typed 对象集合、MOT、资源 FIFO 和
+生命周期。定义、命令、输入及 frame driver 使用实际 World 图像、文字、控件、粒子、
+声音和 M2 服务；取得这些服务不构造 EXE 后端。资源条目每轮按当前名字和索引重新查找
+对象，并按其当前类型分派；重复初始化的资源、子任务和延后清理历史分别保存。
+LOG 生成的 STRING 经同一 pending FIFO 在后续分配轮次创建真实任务，普通 LOG 删除
+保留这些集合成员。当前 checkpoint 保存程序与语义状态，FES 恢复不重读定义或回放资源
+初始化；KCS/MOT 及 M2 自身的已有资源恢复契约继续适用。
+解释器的异步 JS 暂停与原命令返回 `-3` 分开处理。只有后者先消费私有记录 FIFO，
+再同帧继续解码；资源 FIFO 在本轮脚本结束后遍历。`baseimg` 图片记录保留命令当时的
+bitmap，PLANE 记录在消费时绘制并复制物理矩形，均不会提前发布待处理资源修改。
+checkpoint 保存待消费的语义记录与解码状态，新 World 继续使用已恢复的 JS 对象和图像。
+DIFIMAGE 的 `refex` 与 Draw 分别持有 JS render-source 引用，外部 image-owner 释放后
+仍可绘制和恢复。普通对象删除先释放自身引用；资源 FIFO 清理再按实际 retained record
+移除对应 Draw 条目，拥有者 teardown 同样回收这些引用。
+Effekseer 的独立 typed GPU 后端接受显式几何、相机及共享设备状态，复用 StageRenderer 的
+当前 target/depth 和纹理。其普通 shader 像素与材质恢复有固定 profile 的独立验证，
+详见 [GPU 后端边界](effekseer-gpu.md)；其实际 task/World、共享 CRT、资源与关闭契约有独立覆盖。
+默认工厂的 EFKPLANE 使用实际 typed task/World/GPU 与生命周期；其已验有限域
+不代表独立 ScenePlayer 的任意外部 header 或未恢复语义均已覆盖。
+旧 FES 原处理器 facade 与 draw/text/LOG/screen/owner/HG 输入投影只保留在未发布的
+`oracle/` 取证组合中，生产引擎不再注册这些工厂。Draw 直接使用 World 的 JS retained
+服务。仍需 PE bitmap 的显式 D8 SDK 消息使用同一个 bitmap consumer view；普通 bitmap
+消息、Area 输入的实际像素、别名释放和新 World 恢复有独立回归。D8 的 view/device、
+Windows 文字、MemoryFile、共享 bitmap 和媒体投影继续按实际调用图计数。
+
+已实现的 typed STRING 驱动在两份冻结 ABI 中保留明确的定义边界：POS 定义写 XYZ，
+VRAM 定义写 XY 并清 Z，这两条路径不读取原临时向量未初始化的 W，保留目标既有 W
+（构造默认 1）；BASE 定义明确写 W=0。该规则仅适用于已核证的 STRING 定义路径，
+显式四分量操作和 MOT 回写仍遵循各自规则。POS2/SIZE2 读取 encoded stdinfo rectangle，
+不以透明像素包围盒代替资源元数据。
+
+FES sound 的 452-byte 字段缓冲和 36-byte 表记录由 JavaScript 独有，通过已核证的命名字段
+访问。表的 initialized mask 区分已写字段与无定义残尾；未初始化读取会显式报错。
+这些缓冲不含 PE 指针或映像，不是隐藏的原进程状态；它们与 D8 声音协议包分别归属，
+不会因统一 FES 调度再复制一份权威状态或 checkpoint。
+
+显式差分 oracle 的原处理器、解析器、图像/字体代码与 DLL/PPI 共享 PE32 地址空间。
+`NativeEngineProcess` 管理指纹、已审查切点和平台边界。KCS 的数据、栈、共享区和扩展块
+映射到这一进程，避免每次 native 调用复制出相互失联的内存。浏览器拥有的变量、字符串、
+配置和场景资源通过各自的单份桥接同步；不能再建一个会与任务状态分叉的副本。
+
+`GameFiles` 接收只读 `size + read(offset, count)` 文件对象，可由 File、HTTP Range 或宿主
+文件系统提供。原生资源搜索保留类别、归档限定、LST 行顺序和补丁覆盖；普通目录查找保持
+自己的边界。持久写入由独立 IndexedDB namespace 承接，挂载内容保持只读。
+
+`StageRenderer`、纹理页和共享 GPU 承接普通绘制。E-mote/PPI 的 JS 宿主使用真实
+WebGL2、文件、时钟等服务；原 DLL adapter 不进入发行。媒体实际解码和播放由浏览器负责。
+这些平台接口各自有范围和测试，不表示实现了整个 Windows 桌面环境。
+
+## 嵌入
+
+```js
+import { GameFiles } from './src/files.mjs';
+import { CatSystem2 } from './src/engine.mjs';
+
+// 在用户点击处理函数中解锁音频。
+const audioContext = new AudioContext();
+await audioContext.resume();
+const game = await GameFiles.fromHTTP('/game.json');
+const player = new CatSystem2({ game, canvas, video, audioContext, onState });
+await player.initialize();
+
+await player.step();
+await player.render();
+const state = await player.snapshot();
+await player.restore(state);
+await player.dispose();
+```
+
+宿主负责串行化输入、step、render、snapshot、restore 和 dispose，避免异步资源操作交错。
+逻辑帧率来自游戏配置。当前实现仍需性能验收，不能把每次 step 理解成固定的墙钟耗时。
+真实键盘、鼠标、触摸和手柄经输入绑定进入原任务；释放时还应移除宿主事件和调度器。
+
+HTTP manifest 的 `files` 为 `{path, size, url}` 数组，可另提供 `identity` 和 `media`。
+Range 必须准确返回 206、Content-Range 和字节数。内容指纹按排序路径、字节数及
+4 MiB 分块摘要计算；宿主提供的 identity 必须绑定其实际提供的不可变文件集合。
+
+## 保存与恢复
+
+游戏自己的 KCS/FES 存档链写出 CSS 容器，包括准备好的变量、字符串、图像和历史记录。
+场景局部 checkpoint 另外保留选择的变量/字符串，用于原生历史与回退流程；它不是整份 World。
+
+普通宿主的 `snapshot()` 保存任务图、KCS VM 内存与调用状态、JS 句柄和本地数据缓冲，
+以及配置、图像、纹理页、媒体和输入状态。CPU 位图与尚未更新的 GPU 纹理页分别保存。
+显式 oracle 适配器可附加 PE RAM、CPU 和原进程堆状态。恢复需要匹配内容指纹、ABI 和
+checkpoint 所用的适配器，在新的 World 中重建服务与对象后再发布状态。
+Steam 账号状态、系统剪贴板等外部服务不会由游戏 checkpoint 回滚。
+
+便携导出使用 `src/checkpoint.mjs` 的二进制容器及压缩，保留类型化数组、Map/Set、引用和循环。
+当前结构化状态预算为 256 MiB；IndexedDB 事务成功之后才更新内存索引。
+这是开发中的契约：同一 PFB 的中间格式直接修改，不承诺读取早期开发快照。
+所有任务/媒体/转场的完整恢复仍须按 [完成标准](completion.md) 验收。
+
+## 后续 runtime 接入
+
+引擎仓库拥有源码、测试和 standalone 产物。当前不修改 runtime Provider、Target、adapter
+或生产 lock。独立实现验收之后，再完成入口探测、内容加载、输入生命周期、checkpoint、
+缓存、发行及 Retrom 产品中的真实验收。
+
+普通 API 不会为物理对象指针请求隐式创建原进程。Root 类型查询保留的 caller 指针、
+Script 174 的 C++ 解释器指针和 Script 175 的 CST reader/history 指针都要求已经明确存在
+original owner；它们不等同 Script 163/D0 的真实 VM 数据借用地址。Script 23B 继续通过
+唯一 NativeBufferMemory 读取拥有或借用的字节；外部未拥有地址只能由明确原 owner 读取。
+没有 SceneData 的 175仍写实际空指针，未加载解释器的 174仍保留原未写回行为。
+这些边界是尚未实现的普通物理布局域，不代表对应 C++布局已正常化；不会伪造 0、句柄、
+第二 heap或通过普通 loading/restoring状态打开原后端。显式原 oracle 保留原物理分支。

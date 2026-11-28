@@ -1,0 +1,1599 @@
+{
+  "profile": "bokutomo-engine-2.6.1.67",
+  "originalSHA256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+  "textSHA256": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6",
+  "sourceReceipts": [
+    {
+      "path": "ORIGINAL-ENCODED-FILE67-NORMAL.json",
+      "sha256": "d83f2cf94e6718ebd61f7d31d41e062ffa06a94c53857263ec9bdeb266218ce0"
+    }
+  ],
+  "scope": {
+    "targets": 24,
+    "dependencies": 24,
+    "frames": 45,
+    "note": "Actual constructor loads anmtable.csv from images.int before any target call; all four Main430 direct/basename/case results are qualified in these frames."
+  },
+  "resources": {
+    "nine.hg3": "SEctMwwAAAAAAwAAgwAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADMAAAAAAAAAAgAAAAwAAAAEAAAADwAAAAsAAAB4nGNTY8wCAAD6AJh4nGPkcDhQD4b2ABlWBQaDAAAAAQAAAHN0ZGluZm8AOAAAACgAAAACAAAAAgAAACAAAAAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAAMwAAAAAAAAACAAAADAAAAAQAAAAPAAAACwAAAHicY7O2dAAAAX8Au3icY+RwOFAPhvYAGVYFBoMAAAACAAAAc3RkaW5mbwA4AAAAKAAAAAIAAAACAAAAIAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAABpbWcwMDAwAAAAAAAzAAAAAAAAAAIAAAAMAAAABAAAAA8AAAALAAAAeJwTl5HJAgABVgC6eJxj5HA4UA+G9gAZVgUGgwAAAAMAAABzdGRpbmZvADgAAAAoAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADMAAAAAAAAAAgAAAAwAAAAEAAAADwAAAAsAAAB4nJM2ZXEAAAFXAJV4nGPkcDhQD4b2ABlWBQaDAAAABAAAAHN0ZGluZm8AOAAAACgAAAACAAAAAgAAACAAAAAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAAMwAAAAAAAAACAAAADAAAAAQAAAAPAAAACwAAAHic0+bUzgIAAYsAynicY+RwOFAPhvYAGVYFBoMAAAAFAAAAc3RkaW5mbwA4AAAAKAAAAAIAAAACAAAAIAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAABpbWcwMDAwAAAAAAAzAAAAAAAAAAIAAAAMAAAABAAAAA8AAAALAAAAeJzTVxJ2AAABjACleJxj5HA4UA+G9gAZVgUGgwAAAAYAAABzdGRpbmZvADgAAAAoAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADMAAAAAAAAAAgAAAAwAAAAEAAAADwAAAAsAAAB4nNM3N8sCAAI7AQd4nGPkcDhQD4b2ABlWBQaDAAAABwAAAHN0ZGluZm8AOAAAACgAAAACAAAAAgAAACAAAAAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAAMwAAAAAAAAACAAAADAAAAAQAAAAPAAAACwAAAHics5fWdQYAAe4Ay3icY+RwOFAPhvYAGVYFBgAAAAAIAAAAc3RkaW5mbwA4AAAAKAAAAAIAAAACAAAAIAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAABpbWcwMDAwAAAAAAAzAAAAAAAAAAIAAAAMAAAABAAAAA8AAAALAAAAeJyzt+NLBQACOwDxeJxj5HA4UA+G9gAZVgUG",
+    "one.hg2": "SEctMgwAAAAgAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAAMAAAABAAAAA8AAAALAAAAIAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAB4nGNTY8wCAAD6AJh4nGPkcDhQD4b2ABlWBQY=",
+    "x_1.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA70=",
+    "x_02.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAMAAAAgAAAAAQAAAAEAAAAJAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAwAAABYAAAAQAAAAFQAAAA0AAAB4nLttLyoqKvofRIieE31oDwAn2ATaeJxj5GBgrjE8MJ2hnukPIwATQQOP",
+    "x_003.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAEAAAAYAAAA/////wIAAAAGAAAACQAAAAAAAAABAAAAAgAAAGltZzAwMDAAAAAAAEAAAAAAAAAAAQAAABQAAAAMAAAAFAAAAAwAAAB4nHv3/399aGhsaOjb//8BNIAICHicY+RoYNzP9kfqQ/YBfQAYtQSw",
+    "single.hg3": "SEctMwwAAAAAAwAAlQAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA72TAAAAAAAAAHN0ZGluZm8AOAAAACgAAAACAAAAAwAAACAAAAABAAAAAQAAAAkAAAAIAAAAAAAAAAIAAAABAAAAaW1nMDAwMAAAAAAAQwAAAAAAAAADAAAAFgAAABAAAAAVAAAADQAAAHicu20vKioq+h9EiJ4TfWgPACfYBNp4nGPkYGCuMTwwnaGe6Q8jABNBA48AAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAQAAABgAAAD/////AgAAAAYAAAAJAAAAAAAAAAEAAAACAAAAaW1nMDAwMAAAAAAAQAAAAAAAAAABAAAAFAAAAAwAAAAUAAAADAAAAHice/f/f31oaGxo6Nv//wE0gAgIeJxj5Ghg3M/2R+pD9gF9ABi1BLA=",
+    "rgb.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAEAAAAYAAAA/////wIAAAAGAAAACQAAAAAAAAABAAAAAgAAAGltZzAwMDAAAAAAAEAAAAAAAAAAAQAAABQAAAAMAAAAFAAAAAwAAAB4nHv3/399aGhsaOjb//8BNIAICHicY+RoYNzP9kfqQ/YBfQAYtQSw",
+    "abc_1.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA70=",
+    "abc_02.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAMAAAAgAAAAAQAAAAEAAAAJAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAwAAABYAAAAQAAAAFQAAAA0AAAB4nLttLyoqKvofRIieE31oDwAn2ATaeJxj5GBgrjE8MJ2hnukPIwATQQOP",
+    "\u6261c_1.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA70=",
+    "\u6261c_02.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAMAAAAgAAAAAQAAAAEAAAAJAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAwAAABYAAAAQAAAAFQAAAA0AAAB4nLttLyoqKvofRIieE31oDwAn2ATaeJxj5GBgrjE8MJ2hnukPIwATQQOP",
+    "probe.hg2": "SEctMgwAAAAlAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAdAAAAIAAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAQAAAAAAAAACAAAA/////3icO/b///9VUPA+NDQUxp4UGhr66P///wBvyxXCeJxj5GBg+9DEuEfgAD/jHwYAGjsEGw==",
+    "direct.anm": "QU5NAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "fallback.anm": "QU5NAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "pixels.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w==",
+    "\u65e5\u672c.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAEAAAAYAAAA/////wIAAAAGAAAACQAAAAAAAAABAAAAAgAAAGltZzAwMDAAAAAAAEAAAAAAAAAAAQAAABQAAAAMAAAAFAAAAAwAAAB4nHv3/399aGhsaOjb//8BNIAICHicY+RoYNzP9kfqQ/YBfQAYtQSw",
+    "anmtable.csv": "c291cmNlCWZhbGxiYWNrDQpzb3VyY2UJbWlzc2luZw0KVVBQRVIJZmFsbGJhY2sNCg=="
+  },
+  "cases": [
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "nine.hg3",
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 4, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "nine.hg3",
+      "save": "data3",
+      "kind": "encoded",
+      "source": "nine.hg3",
+      "dependency": true,
+      "control": 1,
+      "result": "owned:data3",
+      "outputs": [],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["data3", 320],
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["data3", 0, 256],
+      "save": "decoded3",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:decoded3",
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [0, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        },
+        {
+          "name": "decoded3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["data3", 7, 256],
+      "save": "selected3",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:selected3",
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [7, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        },
+        {
+          "name": "decoded3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        },
+        {
+          "name": "selected3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 648,
+      "args": ["data3", 8, 8],
+      "save": "nine3",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:nine3",
+      "outputs": [],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        },
+        {
+          "name": "decoded3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        },
+        {
+          "name": "selected3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255
+          ]
+        },
+        {
+          "name": "nine3",
+          "kind": "bitmap",
+          "width": 8,
+          "height": 8,
+          "pitch": 32,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 8, 8],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            83, 41, 17, 255, 83, 41, 17, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95,
+            255, 125, 107, 95, 255, 90, 52, 30, 255, 90, 52, 30, 255, 83, 41, 17, 255, 83, 41, 17,
+            255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 90, 52,
+            30, 255, 90, 52, 30, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82,
+            255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255,
+            111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129,
+            121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82,
+            255, 118, 96, 82, 255, 97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118,
+            108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255,
+            97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108,
+            255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["data3", 9, 256],
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        },
+        {
+          "name": "decoded3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        },
+        {
+          "name": "selected3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255
+          ]
+        },
+        {
+          "name": "nine3",
+          "kind": "bitmap",
+          "width": 8,
+          "height": 8,
+          "pitch": 32,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 8, 8],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            83, 41, 17, 255, 83, 41, 17, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95,
+            255, 125, 107, 95, 255, 90, 52, 30, 255, 90, 52, 30, 255, 83, 41, 17, 255, 83, 41, 17,
+            255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 90, 52,
+            30, 255, 90, 52, 30, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82,
+            255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255,
+            111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129,
+            121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82,
+            255, 118, 96, 82, 255, 97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118,
+            108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255,
+            97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108,
+            255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["decoded3"],
+      "close": "decoded3",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        },
+        {
+          "name": "selected3",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108, 255
+          ]
+        },
+        {
+          "name": "nine3",
+          "kind": "bitmap",
+          "width": 8,
+          "height": 8,
+          "pitch": 32,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 8, 8],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            83, 41, 17, 255, 83, 41, 17, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95,
+            255, 125, 107, 95, 255, 90, 52, 30, 255, 90, 52, 30, 255, 83, 41, 17, 255, 83, 41, 17,
+            255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 90, 52,
+            30, 255, 90, 52, 30, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82,
+            255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255,
+            111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129,
+            121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82,
+            255, 118, 96, 82, 255, 97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118,
+            108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255,
+            97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108,
+            255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["selected3"],
+      "close": "selected3",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        },
+        {
+          "name": "nine3",
+          "kind": "bitmap",
+          "width": 8,
+          "height": 8,
+          "pitch": 32,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 8, 8],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            83, 41, 17, 255, 83, 41, 17, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95,
+            255, 125, 107, 95, 255, 90, 52, 30, 255, 90, 52, 30, 255, 83, 41, 17, 255, 83, 41, 17,
+            255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 125, 107, 95, 255, 90, 52,
+            30, 255, 90, 52, 30, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82,
+            255, 111, 85, 69, 255, 111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255,
+            111, 85, 69, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129,
+            121, 255, 118, 96, 82, 255, 118, 96, 82, 255, 111, 85, 69, 255, 111, 85, 69, 255, 139,
+            129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 139, 129, 121, 255, 118, 96, 82,
+            255, 118, 96, 82, 255, 97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118,
+            108, 255, 132, 118, 108, 255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255,
+            97, 63, 43, 255, 97, 63, 43, 255, 132, 118, 108, 255, 132, 118, 108, 255, 132, 118, 108,
+            255, 132, 118, 108, 255, 104, 74, 56, 255, 104, 74, 56, 255
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["nine3"],
+      "close": "nine3",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "data3",
+          "kind": "encoded",
+          "byteLength": 1191,
+          "capacity": 1191,
+          "references": 1,
+          "flags": 0,
+          "sha256": "876b7365f34c2d0e56787e06f5a98fc24f366ca13ee5d20229920d7412da2654"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["data3"],
+      "close": "data3",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "one.hg2",
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "one.hg2",
+      "save": "data2",
+      "kind": "encoded",
+      "source": "one.hg2",
+      "dependency": true,
+      "control": 1,
+      "result": "owned:data2",
+      "outputs": [],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["data2", 320],
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["data2", 0, 256],
+      "save": "decoded2",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:decoded2",
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [0, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        },
+        {
+          "name": "decoded2",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["data2", 1, 256],
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        },
+        {
+          "name": "decoded2",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 648,
+      "args": ["data2", 8, 8],
+      "save": "nine2",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:nine2",
+      "outputs": [],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        },
+        {
+          "name": "decoded2",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        },
+        {
+          "name": "nine2",
+          "kind": "bitmap",
+          "width": 8,
+          "height": 8,
+          "pitch": 32,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 8, 8],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["data2", 9, 256],
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        },
+        {
+          "name": "decoded2",
+          "kind": "bitmap",
+          "width": 2,
+          "height": 2,
+          "pitch": 8,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 2,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 2, 2],
+          "bitmapReferences": 1,
+          "physicalPixels": [83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 255]
+        },
+        {
+          "name": "nine2",
+          "kind": "bitmap",
+          "width": 8,
+          "height": 8,
+          "pitch": 32,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 8, 8],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["decoded2"],
+      "close": "decoded2",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        },
+        {
+          "name": "nine2",
+          "kind": "bitmap",
+          "width": 8,
+          "height": 8,
+          "pitch": 32,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 8, 8],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 83, 41, 17, 255, 83, 41, 17, 255, 83, 41, 17, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["nine2"],
+      "close": "nine2",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "data2",
+          "kind": "encoded",
+          "byteLength": 107,
+          "capacity": 107,
+          "references": 1,
+          "flags": 0,
+          "sha256": "b71577c7905526f7ab765b2f64b7a6a9e3cced268de9f5842f0d7defa69c70a0"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["data2"],
+      "close": "data2",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "rgb.hg3",
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            255, 255, 255, 255, 2, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 6, 0, 0, 0, 9, 0, 0, 0, 3, 0, 0,
+            0, 1, 0, 0, 0, 2, 0, 0, 0
+          ]
+        }
+      ],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "rgb.hg3",
+      "save": "rgbData",
+      "kind": "encoded",
+      "source": "rgb.hg3",
+      "dependency": true,
+      "control": 1,
+      "result": "owned:rgbData",
+      "outputs": [],
+      "state": [
+        {
+          "name": "rgbData",
+          "kind": "encoded",
+          "byteLength": 156,
+          "capacity": 156,
+          "references": 1,
+          "flags": 0,
+          "sha256": "cb0d059dab2cfbcf1bd045063770d489439edac92fe3b523f4983323679eaf24"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["rgbData", 320],
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            255, 255, 255, 255, 2, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 6, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0, 2, 0, 0, 0
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "rgbData",
+          "kind": "encoded",
+          "byteLength": 156,
+          "capacity": 156,
+          "references": 1,
+          "flags": 0,
+          "sha256": "cb0d059dab2cfbcf1bd045063770d489439edac92fe3b523f4983323679eaf24"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["rgbData", 0, 256],
+      "save": "rgbDecoded",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:rgbDecoded",
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [0, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "rgbData",
+          "kind": "encoded",
+          "byteLength": 156,
+          "capacity": 156,
+          "references": 1,
+          "flags": 0,
+          "sha256": "cb0d059dab2cfbcf1bd045063770d489439edac92fe3b523f4983323679eaf24"
+        },
+        {
+          "name": "rgbDecoded",
+          "kind": "bitmap",
+          "width": 4,
+          "height": 1,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 6,
+            "canvasHeight": 9,
+            "offsetX": 4294967295,
+            "offsetY": 2,
+            "alphaHint": 1,
+            "baseX": 1,
+            "baseY": 2,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 1],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            165, 128, 91, 255, 57, 20, 239, 255, 205, 168, 131, 255, 97, 60, 23, 255
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["rgbDecoded"],
+      "close": "rgbDecoded",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "rgbData",
+          "kind": "encoded",
+          "byteLength": 156,
+          "capacity": 156,
+          "references": 1,
+          "flags": 0,
+          "sha256": "cb0d059dab2cfbcf1bd045063770d489439edac92fe3b523f4983323679eaf24"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["rgbData"],
+      "close": "rgbData",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 430,
+      "args": [64],
+      "text": "direct.hg3",
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 430,
+      "args": [64],
+      "text": "DIR/SOURCE.HG3",
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 430,
+      "args": [64],
+      "text": "single.hg3",
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 430,
+      "args": [64],
+      "text": "upper.hg3",
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "probe.hg2",
+      "save": "composed0",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:composed0",
+      "outputs": [],
+      "state": [
+        {
+          "name": "composed0",
+          "kind": "bitmap",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 2,
+            "baseY": 4294967295,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            253, 216, 179, 34, 145, 108, 71, 182, 37, 0, 219, 74, 185, 148, 111, 222, 173, 136, 99,
+            210, 65, 28, 247, 102, 213, 176, 139, 250, 105, 68, 31, 142, 93, 56, 19, 130, 241, 204,
+            167, 22, 133, 96, 59, 170, 25, 244, 207, 62
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["composed0"],
+      "close": "composed0",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "rgb.hg3",
+      "save": "composed1",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:composed1",
+      "outputs": [],
+      "state": [
+        {
+          "name": "composed1",
+          "kind": "bitmap",
+          "width": 4,
+          "height": 1,
+          "pitch": 12,
+          "bpp": 3,
+          "metadata": {
+            "canvasWidth": 6,
+            "canvasHeight": 9,
+            "offsetX": 4294967295,
+            "offsetY": 2,
+            "alphaHint": 1,
+            "baseX": 1,
+            "baseY": 2,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 1],
+          "bitmapReferences": 1,
+          "physicalPixels": [165, 128, 91, 57, 20, 239, 205, 168, 131, 97, 60, 23]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["composed1"],
+      "close": "composed1",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "x,1,2.hg3",
+      "save": "composed2",
+      "kind": "bitmap",
+      "control": 1,
+      "result": "owned:composed2",
+      "outputs": [],
+      "state": [
+        {
+          "name": "composed2",
+          "kind": "bitmap",
+          "width": 3,
+          "height": 4,
+          "pitch": 12,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 9,
+            "canvasHeight": 8,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 2,
+            "baseY": 1,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 3, 4],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            25, 244, 207, 255, 173, 136, 99, 255, 65, 28, 247, 255, 93, 56, 19, 255, 226, 189, 152,
+            255, 118, 81, 44, 255, 171, 134, 97, 0, 171, 134, 97, 128, 63, 26, 245, 128, 131, 94,
+            57, 0, 131, 94, 57, 128, 23, 242, 205, 128
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["composed2"],
+      "close": "composed2",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "missing.hg3",
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165
+          ]
+        }
+      ],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "\u65e5\u672c.hg3",
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            255, 255, 255, 255, 2, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 6, 0, 0, 0, 9, 0, 0, 0, 3, 0, 0,
+            0, 1, 0, 0, 0, 2, 0, 0, 0
+          ]
+        }
+      ],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 111,
+      "args": [64],
+      "text": "pixels.hg3",
+      "save": "attributeBitmap",
+      "kind": "bitmap",
+      "dependency": true,
+      "control": 1,
+      "result": "owned:attributeBitmap",
+      "outputs": [],
+      "state": [
+        {
+          "name": "attributeBitmap",
+          "kind": "bitmap",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 468,
+      "args": ["attributeBitmap", 90],
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "attributeBitmap",
+          "kind": "bitmap",
+          "width": 3,
+          "height": 4,
+          "pitch": 12,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 4,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 3,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 3, 4],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            89, 41, 13, 0, 117, 85, 81, 0, 145, 129, 149, 0, 96, 52, 30, 128, 124, 96, 98, 0, 152,
+            140, 166, 0, 103, 63, 47, 255, 131, 107, 115, 0, 159, 151, 183, 0, 110, 74, 64, 0, 138,
+            118, 132, 0, 166, 162, 200, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 536,
+      "args": ["attributeBitmap", 7, 512, 516, 520, 524, 528],
+      "dependency": true,
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 512,
+          "bytes": [23, 0, 0, 0, 10, 0, 0, 0, 30, 0, 0, 0, 216, 255, 255, 255, 35, 1, 128, 255]
+        }
+      ],
+      "state": [
+        {
+          "name": "attributeBitmap",
+          "kind": "bitmap",
+          "width": 3,
+          "height": 4,
+          "pitch": 12,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 4,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 3,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 3, 4],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            89, 41, 13, 0, 117, 85, 81, 0, 145, 129, 149, 0, 96, 52, 30, 128, 124, 96, 98, 0, 152,
+            140, 166, 0, 103, 63, 47, 255, 131, 107, 115, 0, 159, 151, 183, 0, 110, 74, 64, 0, 138,
+            118, 132, 0, 166, 162, 200, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 558,
+      "args": ["attributeBitmap", 1],
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "attributeBitmap",
+          "kind": "bitmap",
+          "width": 3,
+          "height": 4,
+          "pitch": 12,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 4,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 3, 4],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 117, 85, 81, 0, 89, 41, 13, 0, 152, 140, 166, 0, 124, 96, 98, 0, 96,
+            52, 30, 128, 159, 151, 183, 0, 131, 107, 115, 0, 103, 63, 47, 255, 166, 162, 200, 0,
+            138, 118, 132, 0, 110, 74, 64, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 536,
+      "args": ["attributeBitmap", 7, 512, 516, 520, 524, 528],
+      "dependency": true,
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 512,
+          "bytes": [
+            236, 255, 255, 255, 10, 0, 0, 0, 30, 0, 0, 0, 216, 255, 255, 255, 35, 1, 128, 255
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "attributeBitmap",
+          "kind": "bitmap",
+          "width": 3,
+          "height": 4,
+          "pitch": 12,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 4,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 3, 4],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 117, 85, 81, 0, 89, 41, 13, 0, 152, 140, 166, 0, 124, 96, 98, 0, 96,
+            52, 30, 128, 159, 151, 183, 0, 131, 107, 115, 0, 103, 63, 47, 255, 166, 162, 200, 0,
+            138, 118, 132, 0, 110, 74, 64, 0
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["attributeBitmap"],
+      "close": "attributeBitmap",
+      "dependency": true,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    }
+  ]
+}

@@ -1,0 +1,489 @@
+{
+  "source": "Authored FES objects and float32 inputs. Original mounted FES constructors, settbl/setid/getpos2/lock command handlers through the existing runtime; no new patches.",
+  "profiles": [
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "selector": [
+        {
+          "command": null,
+          "state": {
+            "idIndex": 0,
+            "usesIDTable": false,
+            "idTableChanged": true,
+            "imageChanged": false,
+            "idTable": [
+              0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+              24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [-1]],
+          "state": {
+            "idIndex": 4294967295,
+            "usesIDTable": false,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+              24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["settbl", [3, 101]],
+          "state": {
+            "idIndex": 4294967295,
+            "usesIDTable": true,
+            "idTableChanged": true,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [3]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [32]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["settbl", [33, 99]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["settbl", [3, 102]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": true,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 102, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [3]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 102, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        }
+      ],
+      "geometry": [
+        {
+          "label": "image-local",
+          "kind": "image",
+          "values": [3.75, -7.75, 5, 9, 2, 4],
+          "parents": [],
+          "result": [6, -2, 0]
+        },
+        {
+          "label": "image-parent-image",
+          "kind": "image",
+          "values": [3.75, -7.75, 5, 9, 2, 4],
+          "parents": [
+            {
+              "type": 2,
+              "values": [20.25, 30.75, 2, 3, 1, 4]
+            }
+          ],
+          "result": [28, 27, 0]
+        },
+        {
+          "label": "image-ignores-plane-parent",
+          "kind": "image",
+          "values": [3.75, -7.75, 5, 9, 2, 4],
+          "parents": [
+            {
+              "type": 3,
+              "values": [100, 200, 300]
+            }
+          ],
+          "result": [6, -2, 0]
+        },
+        {
+          "label": "image-f32-and-cvtt",
+          "kind": "image",
+          "values": [16777216, 2147483648, 1, 0, 16777216, 0],
+          "parents": [],
+          "result": [0, -2147483648, 0]
+        },
+        {
+          "label": "plane-parent-plane",
+          "kind": "plane",
+          "values": [3, 4, 5],
+          "parents": [
+            {
+              "type": 3,
+              "values": [6, 7, 8]
+            }
+          ],
+          "result": [9, 11, 13]
+        },
+        {
+          "label": "plane-ignores-image-parent",
+          "kind": "plane",
+          "values": [3, 4, 5],
+          "parents": [
+            {
+              "type": 1,
+              "values": [100, 200, 0, 0, 0, 0]
+            }
+          ],
+          "result": [3, 4, 5]
+        },
+        {
+          "label": "image-recursive-f32-order",
+          "kind": "image",
+          "values": [-16777216, 0, 0, 0, 0, 0],
+          "parents": [
+            {
+              "type": 2,
+              "values": [1, 0, 0, 0, 0, 0]
+            },
+            {
+              "type": 2,
+              "values": [16777216, 0, 0, 0, 0, 0]
+            }
+          ],
+          "result": [0, 0, 0]
+        },
+        {
+          "label": "plane-recursive-f32-order",
+          "kind": "plane",
+          "values": [-16777216, 0, 0],
+          "parents": [
+            {
+              "type": 3,
+              "values": [1, 0, 0]
+            },
+            {
+              "type": 4,
+              "values": [16777216, 0, 0]
+            }
+          ],
+          "result": [0, 0, 0]
+        }
+      ],
+      "lock": [
+        {
+          "label": "lock-on",
+          "command": ["lock", [1]],
+          "result": [49, 67, 0],
+          "lock": 1,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "authored-moves",
+          "command": null,
+          "result": [49, 67, 0],
+          "lock": 1,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "parent-moves",
+          "command": null,
+          "result": [24, 47, 0],
+          "lock": 1,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "lock-reassigned",
+          "command": ["lock", [2]],
+          "result": [24, 47, 0],
+          "lock": 2,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "lock-off",
+          "command": ["lock", [0]],
+          "result": [200, 314, 0],
+          "lock": 0,
+          "snapshot": [28.25, 37.75]
+        }
+      ]
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "selector": [
+        {
+          "command": null,
+          "state": {
+            "idIndex": 0,
+            "usesIDTable": false,
+            "idTableChanged": true,
+            "imageChanged": false,
+            "idTable": [
+              0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+              24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [-1]],
+          "state": {
+            "idIndex": 4294967295,
+            "usesIDTable": false,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+              24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["settbl", [3, 101]],
+          "state": {
+            "idIndex": 4294967295,
+            "usesIDTable": true,
+            "idTableChanged": true,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [3]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [32]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["settbl", [33, 99]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 101, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["settbl", [3, 102]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": true,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 102, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        },
+        {
+          "command": ["setid", [3]],
+          "state": {
+            "idIndex": 3,
+            "usesIDTable": true,
+            "idTableChanged": false,
+            "imageChanged": true,
+            "idTable": [
+              0, 1, 2, 102, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+              23, 24, 25, 26, 27, 28, 29, 30, 31
+            ]
+          }
+        }
+      ],
+      "geometry": [
+        {
+          "label": "image-local",
+          "kind": "image",
+          "values": [3.75, -7.75, 5, 9, 2, 4],
+          "parents": [],
+          "result": [6, -2, 0]
+        },
+        {
+          "label": "image-parent-image",
+          "kind": "image",
+          "values": [3.75, -7.75, 5, 9, 2, 4],
+          "parents": [
+            {
+              "type": 2,
+              "values": [20.25, 30.75, 2, 3, 1, 4]
+            }
+          ],
+          "result": [28, 27, 0]
+        },
+        {
+          "label": "image-ignores-plane-parent",
+          "kind": "image",
+          "values": [3.75, -7.75, 5, 9, 2, 4],
+          "parents": [
+            {
+              "type": 3,
+              "values": [100, 200, 300]
+            }
+          ],
+          "result": [6, -2, 0]
+        },
+        {
+          "label": "image-f32-and-cvtt",
+          "kind": "image",
+          "values": [16777216, 2147483648, 1, 0, 16777216, 0],
+          "parents": [],
+          "result": [0, -2147483648, 0]
+        },
+        {
+          "label": "plane-parent-plane",
+          "kind": "plane",
+          "values": [3, 4, 5],
+          "parents": [
+            {
+              "type": 3,
+              "values": [6, 7, 8]
+            }
+          ],
+          "result": [9, 11, 13]
+        },
+        {
+          "label": "plane-ignores-image-parent",
+          "kind": "plane",
+          "values": [3, 4, 5],
+          "parents": [
+            {
+              "type": 1,
+              "values": [100, 200, 0, 0, 0, 0]
+            }
+          ],
+          "result": [3, 4, 5]
+        },
+        {
+          "label": "image-recursive-f32-order",
+          "kind": "image",
+          "values": [-16777216, 0, 0, 0, 0, 0],
+          "parents": [
+            {
+              "type": 2,
+              "values": [1, 0, 0, 0, 0, 0]
+            },
+            {
+              "type": 2,
+              "values": [16777216, 0, 0, 0, 0, 0]
+            }
+          ],
+          "result": [0, 0, 0]
+        },
+        {
+          "label": "plane-recursive-f32-order",
+          "kind": "plane",
+          "values": [-16777216, 0, 0],
+          "parents": [
+            {
+              "type": 3,
+              "values": [1, 0, 0]
+            },
+            {
+              "type": 4,
+              "values": [16777216, 0, 0]
+            }
+          ],
+          "result": [0, 0, 0]
+        }
+      ],
+      "lock": [
+        {
+          "label": "lock-on",
+          "command": ["lock", [1]],
+          "result": [49, 67, 0],
+          "lock": 1,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "authored-moves",
+          "command": null,
+          "result": [49, 67, 0],
+          "lock": 1,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "parent-moves",
+          "command": null,
+          "result": [24, 47, 0],
+          "lock": 1,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "lock-reassigned",
+          "command": ["lock", [2]],
+          "result": [24, 47, 0],
+          "lock": 2,
+          "snapshot": [28.25, 37.75]
+        },
+        {
+          "label": "lock-off",
+          "command": ["lock", [0]],
+          "result": [200, 314, 0],
+          "lock": 0,
+          "snapshot": [28.25, 37.75]
+        }
+      ]
+    }
+  ]
+}

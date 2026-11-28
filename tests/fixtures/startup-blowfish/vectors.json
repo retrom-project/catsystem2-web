@@ -1,0 +1,447 @@
+{
+  "scope": "Published official known answers plus newly authored bytes encrypted once by the original designer independent C reference. No game execution or actual keys.",
+  "byteOrder": "key bytes unchanged BE grouping; each block is two LE32 words; published BE blocks are reversed within each4-byte word only",
+  "sources": {
+    "publishedURL": "https://www.schneier.com/wp-content/uploads/2015/12/vectors-2.txt",
+    "publishedSHA256": "d61b2748f239e1366cb3ad32e572788900eae157897b52a52bfd00a99a9da9f1",
+    "referenceURL": "https://www.schneier.com/wp-content/uploads/2015/12/bfsh-sch.zip",
+    "referenceZIP_SHA256": "b88954dafbd5920813eeb16f351a3f71792f59230ebd77fe1c6bd37da3229680",
+    "constantsURL": "https://www.schneier.com/wp-content/uploads/2015/12/constants-2.txt",
+    "constantWordsBE_SHA256": "b5643208907b11b20e499a42187dc921f9579d28dadfccbe69a5ce232a55952f",
+    "portableReferenceSHA256": "13c1f19d82b216c8883bf436e7cd848c9514c2e6e9b72c7d7ef49299156bd987",
+    "independentReferenceInputsSHA256": "a8c97e87c1ac33f3325276d43ced540e61f0ada46d85ac7c73fd5d3f1ff37100",
+    "independentReferenceOutputSHA256": "97dc2cc739d092c6363365ee83e6437f2f0eb673268d85bec896eb9d55e095ba",
+    "referenceCompileAttempts": 1,
+    "referenceRuns": 1,
+    "gameCalls": 0,
+    "testTimeCompilerOrPrivateDataRequired": false
+  },
+  "published": [
+    {
+      "name": "published-00",
+      "keyHex": "0000000000000000",
+      "plainLEHex": "0000000000000000",
+      "cipherLEHex": "4597f94e78dd9861",
+      "publishedBE": {
+        "plain": "0000000000000000",
+        "cipher": "4ef997456198dd78"
+      }
+    },
+    {
+      "name": "published-01",
+      "keyHex": "ffffffffffffffff",
+      "plainLEHex": "ffffffffffffffff",
+      "cipherLEHex": "d56f86518acb5eb8",
+      "publishedBE": {
+        "plain": "ffffffffffffffff",
+        "cipher": "51866fd5b85ecb8a"
+      }
+    },
+    {
+      "name": "published-02",
+      "keyHex": "3000000000000000",
+      "plainLEHex": "0000001001000000",
+      "cipherLEHex": "9a6f857df2633061",
+      "publishedBE": {
+        "plain": "1000000000000001",
+        "cipher": "7d856f9a613063f2"
+      }
+    },
+    {
+      "name": "published-03",
+      "keyHex": "1111111111111111",
+      "plainLEHex": "1111111111111111",
+      "cipherLEHex": "87dd66249d3c968b",
+      "publishedBE": {
+        "plain": "1111111111111111",
+        "cipher": "2466dd878b963c9d"
+      }
+    },
+    {
+      "name": "published-04",
+      "keyHex": "0123456789abcdef",
+      "plainLEHex": "1111111111111111",
+      "cipherLEHex": "80c3f96196b08122",
+      "publishedBE": {
+        "plain": "1111111111111111",
+        "cipher": "61f9c3802281b096"
+      }
+    },
+    {
+      "name": "published-05",
+      "keyHex": "1111111111111111",
+      "plainLEHex": "67452301efcdab89",
+      "cipherLEHex": "30c60c7dc71edaaf",
+      "publishedBE": {
+        "plain": "0123456789abcdef",
+        "cipher": "7d0cc630afda1ec7"
+      }
+    },
+    {
+      "name": "published-06",
+      "keyHex": "0000000000000000",
+      "plainLEHex": "0000000000000000",
+      "cipherLEHex": "4597f94e78dd9861",
+      "publishedBE": {
+        "plain": "0000000000000000",
+        "cipher": "4ef997456198dd78"
+      }
+    },
+    {
+      "name": "published-07",
+      "keyHex": "fedcba9876543210",
+      "plainLEHex": "67452301efcdab89",
+      "cipherLEHex": "0fabce0a8da2a0c6",
+      "publishedBE": {
+        "plain": "0123456789abcdef",
+        "cipher": "0aceab0fc6a0a28d"
+      }
+    },
+    {
+      "name": "published-08",
+      "keyHex": "7ca110454a1a6e57",
+      "plainLEHex": "d0d6a10142677739",
+      "cipherLEHex": "4582c6592b2805eb",
+      "publishedBE": {
+        "plain": "01a1d6d039776742",
+        "cipher": "59c68245eb05282b"
+      }
+    },
+    {
+      "name": "published-09",
+      "keyHex": "0131d9619dc1376e",
+      "plainLEHex": "a84cd55cda57ef3d",
+      "cipherLEHex": "0bccb8b1a0090f25",
+      "publishedBE": {
+        "plain": "5cd54ca83def57da",
+        "cipher": "b1b8cc0b250f09a0"
+      }
+    },
+    {
+      "name": "published-10",
+      "keyHex": "07a1133e4a0b2686",
+      "plainLEHex": "38d448027271f606",
+      "cipherLEHex": "77e53017a41dea8b",
+      "publishedBE": {
+        "plain": "0248d43806f67172",
+        "cipher": "1730e5778bea1da4"
+      }
+    },
+    {
+      "name": "published-11",
+      "keyHex": "3849674c2602319e",
+      "plainLEHex": "584b45510a44df2d",
+      "cipherLEHex": "56785ea2eb5126cf",
+      "publishedBE": {
+        "plain": "51454b582ddf440a",
+        "cipher": "a25e7856cf2651eb"
+      }
+    },
+    {
+      "name": "published-12",
+      "keyHex": "04b915ba43feb5b6",
+      "plainLEHex": "3044fd42a27f5759",
+      "cipherLEHex": "b18238351a8fce09",
+      "publishedBE": {
+        "plain": "42fd443059577fa2",
+        "cipher": "353882b109ce8f1a"
+      }
+    },
+    {
+      "name": "published-13",
+      "keyHex": "0113b970fd34f2ce",
+      "plainLEHex": "085e9b053a14cf51",
+      "cipherLEHex": "88d0f4481899374c",
+      "publishedBE": {
+        "plain": "059b5e0851cf143a",
+        "cipher": "48f4d0884c379918"
+      }
+    },
+    {
+      "name": "published-14",
+      "keyHex": "0170f175468fb5e6",
+      "plainLEHex": "e0d85607d2614777",
+      "cipherLEHex": "b793214398fc5189",
+      "publishedBE": {
+        "plain": "0756d8e0774761d2",
+        "cipher": "432193b78951fc98"
+      }
+    },
+    {
+      "name": "published-15",
+      "keyHex": "43297fad38e373fe",
+      "plainLEHex": "b81425766a48bf29",
+      "cipherLEHex": "5441f013e51a9dd6",
+      "publishedBE": {
+        "plain": "762514b829bf486a",
+        "cipher": "13f04154d69d1ae5"
+      }
+    },
+    {
+      "name": "published-16",
+      "keyHex": "07a7137045da2a16",
+      "plainLEHex": "9011dd3b02283749",
+      "cipherLEHex": "93daed2e799cd3ff",
+      "publishedBE": {
+        "plain": "3bdd119049372802",
+        "cipher": "2eedda93ffd39c79"
+      }
+    },
+    {
+      "name": "published-17",
+      "keyHex": "04689104c2fd3b2f",
+      "plainLEHex": "685f95269a60af35",
+      "cipherLEHex": "39e087d8e3a62d3c",
+      "publishedBE": {
+        "plain": "26955f6835af609a",
+        "cipher": "d887e0393c2da6e3"
+      }
+    },
+    {
+      "name": "published-18",
+      "keyHex": "37d06bb516cb7546",
+      "plainLEHex": "405e4d163252274f",
+      "cipherLEHex": "4fd0995f6939165b",
+      "publishedBE": {
+        "plain": "164d5e404f275232",
+        "cipher": "5f99d04f5b163969"
+      }
+    },
+    {
+      "name": "published-19",
+      "keyHex": "1f08260d1ac2465e",
+      "plainLEHex": "186e056bca5c9f75",
+      "cipherLEHex": "3b7a054a7b97d324",
+      "publishedBE": {
+        "plain": "6b056e18759f5cca",
+        "cipher": "4a057a3b24d3977b"
+      }
+    },
+    {
+      "name": "published-20",
+      "keyHex": "584023641aba6176",
+      "plainLEHex": "efd64b0062601709",
+      "cipherLEHex": "c13120458edafae4",
+      "publishedBE": {
+        "plain": "004bd6ef09176062",
+        "cipher": "452031c1e4fada8e"
+      }
+    },
+    {
+      "name": "published-21",
+      "keyHex": "025816164629b007",
+      "plainLEHex": "00390d48f262e76e",
+      "cipherLEHex": "39ae5575bd879bf5",
+      "publishedBE": {
+        "plain": "480d39006ee762f2",
+        "cipher": "7555ae39f59b87bd"
+      }
+    },
+    {
+      "name": "published-22",
+      "keyHex": "49793ebc79b3258f",
+      "plainLEHex": "c8407543fa3c8f69",
+      "cipherLEHex": "9c5fc55319c09fb4",
+      "publishedBE": {
+        "plain": "437540c8698f3cfa",
+        "cipher": "53c55f9cb49fc019"
+      }
+    },
+    {
+      "name": "published-23",
+      "keyHex": "4fb05e1515ab73a7",
+      "plainLEHex": "a0432d0792520777",
+      "cipherLEHex": "fa7b8e7aa3897e93",
+      "publishedBE": {
+        "plain": "072d43a077075292",
+        "cipher": "7a8e7bfa937e89a3"
+      }
+    },
+    {
+      "name": "published-24",
+      "keyHex": "49e95d6d4ca229bf",
+      "plainLEHex": "7755fe022af11781",
+      "cipherLEHex": "7a5d9ccfb5ad8649",
+      "publishedBE": {
+        "plain": "02fe55778117f12a",
+        "cipher": "cf9c5d7a4986adb5"
+      }
+    },
+    {
+      "name": "published-25",
+      "keyHex": "018310dc409b26d6",
+      "plainLEHex": "505c9d1dc228f718",
+      "cipherLEHex": "90b2abd178c78b65",
+      "publishedBE": {
+        "plain": "1d9d5c5018f728c2",
+        "cipher": "d1abb290658bc778"
+      }
+    },
+    {
+      "name": "published-26",
+      "keyHex": "1c587f1c13924fef",
+      "plainLEHex": "283255305a296f6d",
+      "cipherLEHex": "7437cb5501f23ed1",
+      "publishedBE": {
+        "plain": "305532286d6f295a",
+        "cipher": "55cb3774d13ef201"
+      }
+    },
+    {
+      "name": "published-27",
+      "keyHex": "0101010101010101",
+      "plainLEHex": "67452301efcdab89",
+      "cipherLEHex": "48ec34fab268b247",
+      "publishedBE": {
+        "plain": "0123456789abcdef",
+        "cipher": "fa34ec4847b268b2"
+      }
+    },
+    {
+      "name": "published-28",
+      "keyHex": "1f1f1f1f0e0e0e0e",
+      "plainLEHex": "67452301efcdab89",
+      "cipherLEHex": "517990a7ae3cea08",
+      "publishedBE": {
+        "plain": "0123456789abcdef",
+        "cipher": "a790795108ea3cae"
+      }
+    },
+    {
+      "name": "published-29",
+      "keyHex": "e0fee0fef1fef1fe",
+      "plainLEHex": "67452301efcdab89",
+      "cipherLEHex": "2d079ec31d63ac9f",
+      "publishedBE": {
+        "plain": "0123456789abcdef",
+        "cipher": "c39e072d9fac631d"
+      }
+    },
+    {
+      "name": "published-30",
+      "keyHex": "0000000000000000",
+      "plainLEHex": "ffffffffffffffff",
+      "cipherLEHex": "e0334901e4f6afcd",
+      "publishedBE": {
+        "plain": "ffffffffffffffff",
+        "cipher": "014933e0cdaff6e4"
+      }
+    },
+    {
+      "name": "published-31",
+      "keyHex": "ffffffffffffffff",
+      "plainLEHex": "0000000000000000",
+      "cipherLEHex": "779a1ef2bc491cb7",
+      "publishedBE": {
+        "plain": "0000000000000000",
+        "cipher": "f21e9a77b71c49bc"
+      }
+    },
+    {
+      "name": "published-32",
+      "keyHex": "0123456789abcdef",
+      "plainLEHex": "0000000000000000",
+      "cipherLEHex": "884659249a365457",
+      "publishedBE": {
+        "plain": "0000000000000000",
+        "cipher": "245946885754369a"
+      }
+    },
+    {
+      "name": "published-33",
+      "keyHex": "fedcba9876543210",
+      "plainLEHex": "ffffffffffffffff",
+      "cipherLEHex": "9c5a5c6b5a0a9e5d",
+      "publishedBE": {
+        "plain": "ffffffffffffffff",
+        "cipher": "6b5c5a9c5d9e0a5a"
+      }
+    }
+  ],
+  "authored": [
+    {
+      "name": "key-1",
+      "keyHex": "91",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "98e8f55c9eb98772f10913fb5c1de31283e635dad7662d6883e635dad7662d68"
+    },
+    {
+      "name": "key-55",
+      "keyHex": "91da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef7",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "d156f25fb4cece4a0629276f36c3080cb08e79cfa5772451b08e79cfa5772451"
+    },
+    {
+      "name": "key-56",
+      "keyHex": "91da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef740",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "9167d48b907343a4d41073a2109c9028e861785441f83cb6e861785441f83cb6"
+    },
+    {
+      "name": "key-57",
+      "keyHex": "91da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef74089",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "12e0f49fa2c45bdb731e7381f4ae98a6b00f77ec5a332a90b00f77ec5a332a90"
+    },
+    {
+      "name": "key-71",
+      "keyHex": "91da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef74089d21b64adf63f88d11a63acf53e87",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "1391660904c17b83739fbf12158f314c9e6b5209fce0fcb99e6b5209fce0fcb9"
+    },
+    {
+      "name": "key-72",
+      "keyHex": "91da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef74089d21b64adf63f88d11a63acf53e87d0",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "e85845c3b524472686707ea789a4ecfa514ebd718890f315514ebd718890f315"
+    },
+    {
+      "name": "key-73",
+      "keyHex": "91da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef74089d21b64adf63f88d11a63acf53e87d019",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "e85845c3b524472686707ea789a4ecfa514ebd718890f315514ebd718890f315"
+    },
+    {
+      "name": "key-511",
+      "keyHex": "91da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef74089d21b64adf63f88d11a63acf53e87d01962abf43d86cf1861aaf33c85ce1760a9f23b84cd165fa8f13a83cc155ea7f03982cb145da6ef3881ca135ca5ee3780c9125ba4ed367fc8115aa3ec357ec71059a2eb347dc60f58a1ea337cc50e57a0e9327bc40d569fe8317ac30c559ee73079c20b549de62f78c10a539ce52e77c009529be42d76bf08519ae32c75be075099e22b74bd064f98e12a73bc054e97e02972bb044d96df2871ba034c95de2770b9024b94dd266fb8014a93dc256eb7004992db246db6ff4891da236cb5fe4790d9226bb4fd468fd8216ab3fc458ed72069b2fb448dd61f68b1fa438cd51e67b0f9428bd41d66aff8418ad31c65aef74089d21b64adf63f88d11a63acf53e87d01962abf43d86cf1861aaf33c85ce1760a9f23b84cd165fa8f13a83cc155ea7f03982cb145da6ef3881ca135ca5ee3780c9125ba4ed367fc8115aa3ec357ec71059a2eb347dc60f58a1ea337cc50e57a0e9327bc40d569fe8317ac30c559ee73079c20b549de62f78c10a539ce52e77c009529be42d76bf08519ae32c75be075099e22b74bd064f98e12a73bc054e97e02972bb044d96df2871ba034c95de2770b9024b94dd266fb8014a93dc256eb7004992db246db6ff",
+      "plainLEHex": "0000000000000000ffffffffffffffff00417f80ff0a550000417f80ff0a5500",
+      "cipherLEHex": "e85845c3b524472686707ea789a4ecfa514ebd718890f315514ebd718890f315"
+    },
+    {
+      "name": "default-public-key",
+      "keyHex": "6f70656e5f637332",
+      "plainLEHex": "564331007461696c424c4f434b313233",
+      "cipherLEHex": "7d389af3d8ff3684252c0f90a1d9bbf2"
+    },
+    {
+      "name": "padding-is-data",
+      "keyHex": "01020304",
+      "plainLEHex": "4142434404040404",
+      "cipherLEHex": "d7af36b1927c162a"
+    },
+    {
+      "name": "no-nul-terminator",
+      "keyHex": "01020304",
+      "plainLEHex": "4142434445464748",
+      "cipherLEHex": "0e15a45af4a7733e"
+    },
+    {
+      "name": "zero-byte-key",
+      "keyHex": "00",
+      "plainLEHex": "0011223344556677",
+      "cipherLEHex": "1a786cfd36711cc7"
+    },
+    {
+      "name": "nul-key-full",
+      "keyHex": "41004243",
+      "plainLEHex": "0011223344556677",
+      "cipherLEHex": "bfd1888f0f0f35c3"
+    },
+    {
+      "name": "nul-key-prefix",
+      "keyHex": "41",
+      "plainLEHex": "0011223344556677",
+      "cipherLEHex": "d52d17a1433f31dc"
+    }
+  ]
+}

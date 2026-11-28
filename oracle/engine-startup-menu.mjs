@@ -1,0 +1,114 @@
+// SPDX-License-Identifier: MPL-2.0
+// WinMain owns the original MainWndMenu at +36 in the startup block.
+import { nativeABI, NATIVE_ABIS } from '../src/native/abi/index.mjs';
+import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from './config-memory.mjs';
+import {
+  NATIVE_STARTUP_BLOCKS,
+  runNativeGameWinMainSpan,
+  runNativeStackSpan,
+} from './engine-startup-block.mjs';
+
+const layouts = {
+  'sdk-4.01-engine-2.6.1.74': [0x5bf330, 0x5bf3c0, 0xaff2c8, 0x47ee90, 0x5bf400],
+  'nekopara-vol3-engine-2.6.1.76': [0x70df70, 0x70e000, 0x9e3230, 0x5ac260, 0x70e050],
+};
+
+// WinMain consults the active Settings after translating the resource.
+const optionalCommands = Object.freeze(
+  Object.fromEntries(
+    Object.entries(NATIVE_ABIS).flatMap(([profile, abi]) => {
+      const descriptor = abi.layouts;
+      return descriptor &&
+        Object.hasOwn(descriptor, 'optionalMenuCommands') &&
+        descriptor.optionalMenuCommands != null
+        ? [[profile, descriptor.optionalMenuCommands]]
+        : [];
+    }),
+  ),
+);
+
+function startupMenuLayout(engine) {
+  const profile = engine.profile,
+    abi = nativeABI(profile),
+    menu = layouts[profile],
+    block = NATIVE_STARTUP_BLOCKS[profile],
+    configuration = NATIVE_CONFIGURATION_MEMORY_LAYOUTS[profile],
+    commands = optionalCommands[profile];
+  if (
+    !Object.hasOwn(layouts, profile) ||
+    !Object.hasOwn(NATIVE_STARTUP_BLOCKS, profile) ||
+    !Object.hasOwn(NATIVE_CONFIGURATION_MEMORY_LAYOUTS, profile) ||
+    !Object.hasOwn(optionalCommands, profile) ||
+    !Number.isSafeInteger(block) ||
+    block <= 0 ||
+    !Number.isSafeInteger(configuration?.authorMode) ||
+    configuration.authorMode < 0 ||
+    !Array.isArray(commands)
+  )
+    throw new Error('Original startup menu requires reviewed own descriptors');
+  return { abi, menu, block, authorMode: configuration.authorMode, commands };
+}
+
+// The game builds all three language groups from its original Settings.
+function runGameLanguageMenu(engine, remove) {
+  const wsprintf = engine.process.load(0x8c64dc);
+  return runNativeGameWinMainSpan(engine, 0x52c72f, 0x52ccfe, (_stack, cpu, uc) => {
+    cpu.reg_write_i32(uc.X86_REG_ESI, remove);
+    cpu.reg_write_i32(uc.X86_REG_EDI, wsprintf);
+  });
+}
+
+export async function initializeNativeStartupMenu(engine) {
+  const { abi, menu, block, authorMode, commands } = startupMenuLayout(engine),
+    p = engine.process,
+    slot = block + 36,
+    [construct, load, vtable, localize, bind] = menu;
+  if (p.load(slot)) throw new Error('Original startup menu already has an owner');
+  const owner = p.allocate(16, true);
+  try {
+    if ((await engine.call(construct, [], owner)) !== owner)
+      throw new Error('Original startup menu constructor returned a different owner');
+    p.store(owner, vtable);
+    const resource = p.load(engine.refs.owner + authorMode) ? 105 : 104;
+    if (!(await engine.call(load, [engine.module.base, resource], owner)))
+      throw new Error(`Original startup menu resource ${resource} could not be loaded`);
+    p.store(slot, owner);
+    const handle = p.load(owner + 8);
+    await engine.call(localize, [], handle);
+    if ((await engine.call(bind, [block], owner)) !== block)
+      throw new Error('Original menu did not retain its startup block');
+    const remove = engine.kernel.resolve({ dll: 'USER32.dll', name: 'DeleteMenu' });
+    for (const [offset, id] of commands)
+      if (!p.load(engine.refs.settings + offset)) await engine.call(remove, [handle, id, 0]);
+    if (abi.language.dynamicMenus) await runGameLanguageMenu(engine, remove);
+  } finally {
+    if (p.load(slot) !== owner) p.free(owner);
+  }
+}
+
+export async function releaseNativeStartupMenu(engine) {
+  const { menu, block } = startupMenuLayout(engine),
+    p = engine.process,
+    slot = block + 36,
+    owner = p.load(slot);
+  if (!owner) return;
+  const vtable = menu[2];
+  if (p.allocations.get(owner) !== 16 || p.load(owner) !== vtable)
+    throw new Error('Original startup menu lost its C++ owner');
+  const handle = p.load(owner + 8);
+  await engine.call(p.load(vtable), [1], owner);
+  if (p.allocations.has(owner) || engine.kernel.windowMenus.menus.has(handle))
+    throw new Error('Original startup menu did not release its allocation and handle');
+  p.store(slot, 0);
+}
+
+export async function refreshNativeLanguageMenu(engine) {
+  const { abi, block } = startupMenuLayout(engine);
+  if (!abi.language.dynamicMenus) return;
+  if (!engine.process.load(block + 36)) return;
+  // The original checkmark pass reads the live Settings and writes only the
+  // three language groups. The surrounding task locks and broadcast are separate.
+  await runNativeStackSpan(engine, 0x530ec0, 0x53100d, 0x44, (_stack, cpu, uc) => {
+    cpu.reg_write_i32(uc.X86_REG_EDI, block);
+  });
+}

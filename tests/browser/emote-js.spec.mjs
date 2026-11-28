@@ -1,0 +1,448 @@
+// SPDX-License-Identifier: MPL-2.0
+import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import { inflateSync } from 'node:zlib';
+import { emoteM2Cases } from '../fixtures/emote-m2-sequences.mjs';
+import { kcsProgram } from '../helpers.mjs';
+import { emotePSBFixture } from '../fixtures/emote-psb-fixture.mjs';
+import { emoteGeometryCases, emoteGeometryModel } from '../fixtures/emote-geometry-cases.mjs';
+
+// Node covers layer/vertex arithmetic. This case requires an actual WebGL2
+// context to verify StageRenderer texture ownership and fixed-function pixels.
+test('JS E-mote StageRenderer pixels match the original Wine device oracle', async ({ page }) => {
+  const golden = JSON.parse(
+      await readFile(new URL('../fixtures/native-emote-golden.json', import.meta.url)),
+    ),
+    expected = inflateSync(Buffer.from(golden.frames[0].rgbaDeflate, 'base64'));
+  await page.goto('/');
+  const result = await page.evaluate(
+    async ({ model, expected }) => {
+      const [{ EmoteDocument }, { EmoteAnimation }, { EmoteGeometry }, { StageRenderer }] =
+        await Promise.all([
+          import('/src/emote/document.mjs'),
+          import('/src/emote/animation.mjs'),
+          import('/src/emote/geometry.mjs'),
+          import('/src/render/stage.mjs'),
+        ]);
+      const document = await EmoteDocument.open(Uint8Array.from(model)),
+        animation = new EmoteAnimation(document),
+        geometry = new EmoteGeometry(document, animation),
+        stage = new StageRenderer({ canvas: new OffscreenCanvas(256, 256) }),
+        gpu = stage.gpu;
+      try {
+        animation.update(0);
+        geometry.update();
+        gpu.beginFrame(0xff204060);
+        stage.drawEmote(geometry, {
+          matrix: [0.25, 0, 0, 0, 0, -0.25, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        });
+        const first = gpu.pixels(),
+          storage = gpu.vertexData,
+          meshBuffer = geometry.commands[0].bytes,
+          texture = document.texture('tex', 'dot');
+        gpu.endFrame();
+        animation.update(120);
+        geometry.update();
+        gpu.beginFrame(0xff204060);
+        stage.drawEmote(geometry, {
+          matrix: [0.25, 0, 0, 0, 0, -0.25, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        });
+        const second = gpu.pixels();
+        gpu.endFrame();
+        let maximum = 0,
+          different = 0;
+        for (let i = 0; i < first.length; i++) {
+          maximum = Math.max(maximum, Math.abs(first[i] - expected[i]));
+          if (first[i] !== second[i]) different++;
+        }
+        return {
+          maximum,
+          different,
+          uploadReused: gpu.vertexData === storage,
+          meshReused: geometry.commands[0].bytes === meshBuffer,
+          textureReused: document.texture('tex', 'dot') === texture,
+          error: gpu.gl.getError(),
+          sample: [...first.slice((64 * 256 + 64) * 4, (64 * 256 + 64) * 4 + 4)],
+        };
+      } finally {
+        stage.dispose();
+      }
+    },
+    { model: [...emotePSBFixture()], expected: [...expected] },
+  );
+  // Existing D3D9 Wine golden permits one byte of sampler/blend rounding.
+  expect(result.maximum).toBeLessThanOrEqual(1);
+  expect(result.different).toBe(0);
+  expect(result.uploadReused && result.meshReused && result.textureReused).toBe(true);
+  expect(result.error).toBe(0);
+  expect(result.sample).toEqual([32, 64, 96, 255]);
+});
+
+// Frozen original draw payloads exercise GPU-only alpha/stencil and chained
+// texture stages. No private DLL or model is needed for this pixel regression.
+test('JS E-mote materials and masks match frozen original draw pixels', async ({ page }) => {
+  const helper = await readFile(new URL('../fixtures/emote-js-steps.mjs', import.meta.url), 'utf8');
+  await page.route('**/test/emote-js-steps.mjs', (route) =>
+    route.fulfill({ body: helper, contentType: 'text/javascript' }),
+  );
+  const golden = JSON.parse(
+      await readFile(new URL('../fixtures/emote-geometry-golden.json', import.meta.url)),
+    ),
+    inputs = emoteGeometryCases().map((input) => ({
+      name: input.name,
+      steps: input.steps,
+      model: [...emoteGeometryModel(input)],
+    }));
+  await page.goto('/');
+  const result = await page.evaluate(
+    async ({ inputs, golden }) => {
+      const [
+        { EmoteDocument },
+        { EmoteAnimation },
+        { EmoteGeometry },
+        { StageRenderer },
+        { ParticlesGL },
+        { apply },
+      ] = await Promise.all([
+        import('/src/emote/document.mjs'),
+        import('/src/emote/animation.mjs'),
+        import('/src/emote/geometry.mjs'),
+        import('/src/render/stage.mjs'),
+        import('/src/render/particles-gl.mjs'),
+        import('/test/emote-js-steps.mjs'),
+      ]);
+      const stage = new StageRenderer({ canvas: new OffscreenCanvas(64, 64) }),
+        reference = new ParticlesGL(64, 64),
+        failures = [];
+      let comparisons = 0;
+      try {
+        for (const [n, input] of inputs.entries()) {
+          const document = await EmoteDocument.open(Uint8Array.from(input.model)),
+            animation = new EmoteAnimation(document),
+            geometry = new EmoteGeometry(document, animation),
+            texture = document.texture('tex', 'dot');
+          for (const [i, step] of input.steps.entries()) {
+            apply(animation, step);
+            geometry.update();
+            stage.gpu.beginFrame(0xff204060);
+            stage.drawEmote(geometry);
+            reference.beginFrame(0xff204060);
+            reference.clear({ flags: 6, stencil: 0 });
+            for (const draw of golden.cases[n].frames[i].draws) {
+              const bytes = Uint8Array.from(draw.bytes.match(/../g), (value) =>
+                  parseInt(value, 16),
+                ),
+                view = new DataView(bytes.buffer),
+                vertices = Array.from({ length: bytes.length / draw.stride }, (_, at) => {
+                  const offset = at * draw.stride,
+                    f = Math.fround;
+                  return {
+                    x: f(f(view.getFloat32(offset, true) + 1) * 32),
+                    y: f(f(1 - view.getFloat32(offset + 4, true)) * 32),
+                    z: view.getFloat32(offset + 8, true),
+                    w: 1,
+                    color: view.getUint32(offset + 12, true),
+                    u: view.getFloat32(offset + 16, true),
+                    v: view.getFloat32(offset + 20, true),
+                  };
+                }),
+                triangles = Array.from({ length: vertices.length - 2 }, (_, index) => ({
+                  vertices:
+                    index & 1
+                      ? [vertices[index + 1], vertices[index], vertices[index + 2]]
+                      : vertices.slice(index, index + 3),
+                }));
+              reference.drawGeometry(triangles, texture, {
+                state: {
+                  states: new Map(draw.state.states),
+                  samplers: new Map(draw.state.samplers),
+                  stages: new Map(draw.state.stages.map(([stage, data]) => [stage, new Map(data)])),
+                },
+              });
+            }
+            const actual = stage.gpu.pixels(),
+              expected = reference.pixels();
+            let maximum = 0;
+            for (let at = 0; at < actual.length; at++)
+              maximum = Math.max(maximum, Math.abs(actual[at] - expected[at]));
+            if (maximum) failures.push({ name: input.name, frame: i, maximum });
+            comparisons += actual.length;
+            stage.gpu.endFrame();
+            reference.endFrame();
+          }
+          for (const texture of document.textures.values()) {
+            stage.gpu.releaseTextureFrame(texture);
+            reference.releaseTextureFrame(texture);
+          }
+        }
+        return { failures, comparisons, error: [stage.gpu.gl.getError(), reference.gl.getError()] };
+      } finally {
+        reference.close();
+        stage.dispose();
+      }
+    },
+    { inputs, golden },
+  );
+  expect(result.failures).toEqual([]);
+  expect(result.comparisons).toBeGreaterThan(35 * 64 * 64 * 4);
+  expect(result.error).toEqual([0, 0]);
+});
+
+test('interleaved E-mote mask groups keep separate coverage', async ({ page }) => {
+  await page.goto('/');
+  const { pixels, submissions } = await page.evaluate(async () => {
+    const { StageRenderer } = await import('/src/render/stage.mjs');
+    const width = 8,
+      height = 5,
+      stage = new StageRenderer({ canvas: new OffscreenCanvas(width, height) }),
+      texture = { width: 1, height: 1, rgba: Uint8Array.of(255, 255, 255, 255) };
+    const packet = (rect, color, stencil, maskWrite = false) => {
+      const [left, top, right, bottom] = rect,
+        vertex = (x, y) => ({ x: x - 0.5, y: y - 0.5, z: 0.5, w: 1, u: 0, v: 0, color }),
+        corners = [
+          vertex(left, top),
+          vertex(right, top),
+          vertex(left, bottom),
+          vertex(right, bottom),
+        ],
+        geometry = [
+          { vertices: [corners[0], corners[1], corners[2]] },
+          { vertices: [corners[2], corners[1], corners[3]] },
+        ];
+      return { geometry, texture, blend: 6, stencil, maskWrite };
+    };
+    const screen = [0, 0, width, height],
+      firstMask = packet([1, 1, 4, 4], 0xffffffff, 3, true),
+      secondMask = packet([3, 2, 7, 4], 0xffffffff, 5, true),
+      commands = [
+        firstMask,
+        packet(screen, 0xffff0000, 3),
+        secondMask,
+        packet(screen, 0xff00ff00, 5),
+        firstMask,
+        packet(screen, 0xffffff00, 3),
+        packet(screen, 0xff0000ff, 3),
+        packet(screen, 0xffff00ff, 7),
+      ];
+    const submissions = [],
+      drawGeometry = stage.gpu.drawGeometry;
+    stage.gpu.drawGeometry = function (triangles, ...args) {
+      submissions.push(triangles.length);
+      return drawGeometry.call(this, triangles, ...args);
+    };
+    try {
+      stage.gpu.beginFrame(0xff203040);
+      stage.drawEmote({ commands, project: () => commands });
+      return { pixels: Array.from(stage.gpu.pixels()), submissions };
+    } finally {
+      stage.dispose();
+    }
+  });
+  const expected = [];
+  for (let y = 0; y < 5; y++)
+    for (let x = 0; x < 8; x++) {
+      if (x >= 1 && x < 4 && y >= 1 && y < 4) expected.push(0, 0, 255, 255);
+      else if (x >= 3 && x < 7 && y >= 2 && y < 4) expected.push(0, 255, 0, 255);
+      else expected.push(32, 48, 64, 255);
+    }
+  expect(pixels).toEqual(expected);
+  expect(submissions).toEqual([2, 2, 2, 2, 2, 4, 2]);
+});
+
+// A real WebGL2 device is required for transparent model-target composition,
+// retained output after Skip, shared depth state and fresh-world GPU restore.
+for (const name of [
+  'curves',
+  'inertia-change',
+  'action-finish-transitions',
+  'fade-four',
+  'fade-override',
+  'crossfade',
+  'crossfade-midblink',
+  'crossfade-interrupted',
+  'effects-fade',
+  'fade-request',
+  'color-mode-1',
+  'color-mode-2',
+  'color-mode-3',
+])
+  test('JS M2 task pixels and fresh-world restore: ' + name, async ({ page }) => {
+    const golden = JSON.parse(
+        await readFile(new URL('../fixtures/emote-m2-golden.json', import.meta.url)),
+      ),
+      inputs = emoteM2Cases()
+        .filter((entry) => entry.name === name)
+        .map((input) => ({
+          ...input,
+          files: Object.entries({ ...input.files, 'main.kcs': kcsProgram([[59]]) }).map(
+            ([name, bytes]) => [name, [...bytes]],
+          ),
+          rows: golden.cases
+            .find((entry) => entry.name === input.name)
+            .rows.map((row) => ({
+              ...row,
+              pixels: [...inflateSync(Buffer.from(row.rgbaDeflate, 'base64'))],
+            })),
+        })),
+      requests = [];
+    page.on('request', (request) => requests.push(request.url()));
+    await page.goto('/');
+    const result = await page.evaluate(async (inputs) => {
+      const [
+        { NativeWorld },
+        { NativeConfiguration },
+        { MotionLibrary },
+        { ParticleRandom },
+        { StageRenderer },
+        { NativeSoundPacket },
+        { floatBits },
+      ] = await Promise.all([
+        import('/src/native/world.mjs'),
+        import('/src/native/config.mjs'),
+        import('/src/motion/library.mjs'),
+        import('/src/ppi/random.mjs'),
+        import('/src/render/stage.mjs'),
+        import('/src/native/sound.mjs'),
+        import('/src/kcs/vm.mjs'),
+      ]);
+      let different = 0,
+        max = 0,
+        restoredDifferent = 0,
+        frames = 0;
+      const failures = [];
+      for (const input of inputs) {
+        const files = new Map(input.files.map(([name, bytes]) => [name, new Uint8Array(bytes)])),
+          game = {
+            width: 64,
+            height: 64,
+            index: new Map([...files.keys()].map((name) => [name, {}])),
+            names: (ext) => [...files.keys()].filter((n) => n.endsWith('.' + ext)),
+            read: async (n) => files.get(n) ?? null,
+            has: (n) => files.has(n),
+            async require(n) {
+              const bytes = await this.read(n);
+              if (!bytes) throw new Error('Missing ' + n);
+              return bytes;
+            },
+            resolveCategory(n, c) {
+              return c === 'm2psb' ? n + '.psb' : n;
+            },
+            async readCategory(n, c) {
+              return this.read(this.resolveCategory(n, c));
+            },
+            async requireCategory(n, c) {
+              return this.require(this.resolveCategory(n, c));
+            },
+          },
+          profile = 'nekopara-vol3-engine-2.6.1.76',
+          make = () => {
+            const random = new ParticleRandom(),
+              configuration = new NativeConfiguration({ profile });
+            for (const key of [
+              'width',
+              'height',
+              'currentWidth',
+              'currentHeight',
+              'virtualWidth',
+              'virtualHeight',
+            ])
+              configuration.setField('screen.' + key, 64);
+            const w = new NativeWorld({
+              game,
+              profile,
+              random,
+              configuration,
+              images: {},
+              host: {},
+              motionLibrary: new MotionLibrary(game, { random, profile }),
+              storage: { read: async () => null, write: async () => true },
+            });
+            w.stageRenderer = new StageRenderer({ canvas: new OffscreenCanvas(64, 64) });
+            return w;
+          },
+          world = make();
+        let fresh;
+        try {
+          await world.initialize('main.kcs');
+          const id = await world.objects.create({ kind: 54, parent: world.root }),
+            task = world.graphics.get(id),
+            native = (id, args) =>
+              world.runtime.native('main', id, args, world.main.machine, world.main),
+            load = async (p) => {
+              world.main.machine.writeString(p, 128);
+              await native(906, [id, 128, 1]);
+            },
+            draw = async (w) => {
+              const gpu = w.stageRenderer.gpu;
+              gpu.beginFrame(0xff000000);
+              await w.graphics.get(id).drawGPU(gpu);
+              gpu.endFrame();
+              return gpu.pixels();
+            };
+          await load(input.programs[0]);
+          await task.message([world.main.id, 47, 0, 1]);
+          for (const [i, row] of input.rows.entries()) {
+            if (i === input.initialFrames) await load(input.programs[1]);
+            for (const op of input.operations.filter((op) => op.index === i)) {
+              const packet = new NativeSoundPacket([
+                0,
+                ...(op.floats?.map(floatBits) ?? op.words ?? []),
+              ]);
+              if (op.text !== undefined) packet.writeString(op.text, 4);
+              await task.message([world.main.id, op.message, op.w ?? 0, op.l ?? 4], {
+                payload: packet,
+              });
+            }
+            await world.tick();
+            const pixels = await draw(world);
+            let changed = 0;
+            for (let p = 0; p < pixels.length; p++) {
+              const delta = Math.abs(pixels[p] - row.pixels[p]);
+              max = Math.max(max, delta);
+              if (delta) changed++;
+            }
+            different += changed;
+            frames++;
+            if (changed)
+              failures.push([
+                input.name,
+                row.frame,
+                changed,
+                [...pixels]
+                  .flatMap((v, p) => (v !== row.pixels[p] ? [[p, v, row.pixels[p]]] : []))
+                  .slice(0, 8),
+              ]);
+            if (i === 9 || (input.replacement && i === input.initialFrames + 3)) {
+              fresh = make();
+              await fresh.restore(structuredClone(world.snapshot()));
+              const restored = await draw(fresh);
+              for (let p = 0; p < pixels.length; p++)
+                if (pixels[p] !== restored[p]) restoredDifferent++;
+              await fresh.close({ flushFiles: false });
+              fresh = null;
+            }
+          }
+          const textures = [...task.model.document.textures.values()];
+          await task.message([world.main.id, 525, 0, 0]);
+          if (
+            world.m2.documents.size ||
+            textures.some((t) => world.stageRenderer.gpu.textures.has(t)) ||
+            world.stageRenderer.surfaces.records.size
+          )
+            throw new Error('Unloaded M2 retained a model/texture/target');
+          if (world.nativeEngine) throw new Error('JS M2 unexpectedly constructed an x86 backend');
+          if (world.stageRenderer.gpu.gl.getError()) throw new Error('M2 WebGL error');
+        } finally {
+          await fresh?.close({ flushFiles: false });
+          await world.close({ flushFiles: false });
+        }
+      }
+      return { different, max, restoredDifferent, frames, failures };
+    }, inputs);
+    expect(result.failures).toEqual([]);
+    expect(result.different).toBe(0);
+    expect(result.max).toBe(0);
+    expect(result.restoredDifferent).toBe(0);
+    expect(result.frames).toBe(inputs.reduce((sum, input) => sum + input.rows.length, 0));
+    expect(requests.filter((url) => /\.(dll|ppi)(?:$|[?])|unicorn_x86/.test(url))).toEqual([]);
+  });

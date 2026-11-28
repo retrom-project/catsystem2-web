@@ -1,0 +1,23 @@
+{
+  "license": "CC0-1.0",
+  "kind": "observed independent original-identity NoTexture shader/API FP32 values on authored constant vertex colors",
+  "profile": "Wine8.0 Debian8.0~repack-4 llvmpipe",
+  "vertexSamples": [
+    {
+      "byte": 126,
+      "alphaBits": 1056767230
+    },
+    {
+      "byte": 127,
+      "alphaBits": 1056898816
+    },
+    {
+      "byte": 128,
+      "alphaBits": 1056997505
+    }
+  ],
+  "calculatedReference127Bits": 1056898815,
+  "referenceCalculation": "float32(low8(ALPHAREF)/255); supported by Wine8 primary source; internal installed uniform not directly read",
+  "sourceContext": "https://github.com/wine-mirror/wine/blob/wine-8.0/dlls/wined3d/wined3d_private.h",
+  "scope": "GPU input normalization evidence; not original manager/geometry simulation"
+}

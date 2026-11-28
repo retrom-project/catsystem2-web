@@ -1,0 +1,113 @@
+{
+  "scope": "Both exact modern PEs: original window/Top/Script factory and actual parsed KCS Main GCALL. Manager remains unchanged after original creator Script deleting destructor, is used by another actual Script and is freed by explicit Main295. Explicit Win32/D3D9 providers; no physicalGPU/full application/product claim. Earlier builds have no new lifetime proof in this fixture.",
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-OWNER-LIFETIME-74.json",
+        "sha256": "f54e496c7ceb389270a4d41f8de3d98536e066a4b2345adeb534bd90f454227c",
+        "bytes": 101979,
+        "executableSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+        "producer": {
+          "path": ".local/phase11/modern-auxiliary-tables/probe-modern-motion-main-owner-lifetime.mjs",
+          "sha256": "cfeaa4465569d71dee2891be03ad5454a15803cc739cb99cd24be78392d84460"
+        },
+        "helper": {
+          "path": ".local/phase11/modern-auxiliary-tables/original-modern-motion-main.mjs",
+          "sha256": "1caa5a38b24f2c9a55cbded32e61c3ea5b5854f8f58782cd1df3e83b6eb121df"
+        }
+      },
+      "calls": [
+        {
+          "id": 294,
+          "control": 1,
+          "result": "owned-manager"
+        },
+        {
+          "id": 311,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 311,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 295,
+          "control": 2,
+          "result": null
+        }
+      ],
+      "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "workingCaptureOnly": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "nextHandle": 1,
+      "speedWord": 1065353216,
+      "flags": 0,
+      "workingScope": "Constructor does not write working bank; no portable initial value is inferred from raw heap bytes. This lifetime fixture does not admit Main302 before initialization.",
+      "creatorDestroyed": true,
+      "managerFreedWithCreator": false,
+      "otherScriptQuery": 0,
+      "windowBinding": {
+        "source": 1,
+        "manager": 1,
+        "hwnd": 1
+      }
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-OWNER-LIFETIME-76.json",
+        "sha256": "18e34d68a1a03f6678b8b7d52f616fd1a65410607b8aeba78764eee4b61406e2",
+        "bytes": 102799,
+        "executableSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+        "producer": {
+          "path": ".local/phase11/modern-auxiliary-tables/probe-modern-motion-main-owner-lifetime.mjs",
+          "sha256": "cfeaa4465569d71dee2891be03ad5454a15803cc739cb99cd24be78392d84460"
+        },
+        "helper": {
+          "path": ".local/phase11/modern-auxiliary-tables/original-modern-motion-main.mjs",
+          "sha256": "1caa5a38b24f2c9a55cbded32e61c3ea5b5854f8f58782cd1df3e83b6eb121df"
+        }
+      },
+      "calls": [
+        {
+          "id": 294,
+          "control": 1,
+          "result": "owned-manager"
+        },
+        {
+          "id": 311,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 311,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 295,
+          "control": 2,
+          "result": null
+        }
+      ],
+      "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "workingCaptureOnly": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "nextHandle": 1,
+      "speedWord": 1065353216,
+      "flags": 0,
+      "workingScope": "Constructor does not write working bank; no portable initial value is inferred from raw heap bytes. This lifetime fixture does not admit Main302 before initialization.",
+      "creatorDestroyed": true,
+      "managerFreedWithCreator": false,
+      "otherScriptQuery": 0,
+      "windowBinding": {
+        "source": 1,
+        "manager": 1,
+        "hwnd": 1
+      }
+    }
+  ]
+}

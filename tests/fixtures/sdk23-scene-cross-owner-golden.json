@@ -1,0 +1,334 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-scene-history-css-20261127/ORIGINAL-G3.json",
+    "sha256": "e2b5f454a556519af0bf6393670020996e0ac71b4b531e479f6891ebe14062f0"
+  },
+  "qualification": "Real truehost and loaded Main233/234/239/249 use actual Script raw162 receiver and return controls. Browser pair is a NativeHandles borrowed identity, never a C++ address/byte-layout emulation.",
+  "budget": {
+    "callerTargetMain": 19,
+    "childFeature": 7,
+    "bootstrapGCALL": 3,
+    "carrier65": 4,
+    "callerWait71": 1,
+    "allGCALL": 34,
+    "newScriptFrameDirect": 5,
+    "host": "Qualified unchanged true ApplicationRoot/CRT/FileServer setup and full cleanup journal; child feature calls and phase carriers are all counted."
+  },
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "archives": [
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAMAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAE4AAABzY2VuZS1nMy5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALgEAAC4CAABzY2VuZS1zb3VyY2UyMy5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXAMAAOsAAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAqQYAAN0GAAAAAAAAAAAAAAAQAAAAEAAA3QYAAAAAAABSDQAAeJxt1D9MFEEUx/FBLvESt7gECgoKknc3Idk14V9BlOLUNVJQmGBhQSE5NlIYIXtHYmGxxRUUJFJQUFBQcImFhYWFhYUFBYUFBYWJFiRSKDFCQYwmFmbeOu73gGbzydvfvjez2dma9B7OSU1mG8lTK6bHmJoks0srVkrqtJGMWSmrx40xVgJ1U/P1PH+9uWQlVq+kjcTKtHps3OVn1I3F+WUrmbqVpMZKW93pdDpWzJXCJbgMB3AF7ocH4EF4CK7Cw3AEj8AT8CQ8BdfhGJ6GZ+D78AP4ITwHP4IX4EX4CbwMt+Bn8HM4g9vwKrwGr8Mb8Ca8BW/DO/BL+BX8Gn4Dv4Xfwe/hXXgP/gDvwwfwR/gzfAgfwV/h7/ApfAb/gv/AphffP1yGA7gC98MD8CA8BFfhYTiCR+AJeBKeUqfJ/II/vzeqzZY/v+noqMnPbyifjDFijGPsaSUyLhe4a19u9/cJ5baLBBqp6029/vvV5F1e+EhNHt91hR+uUNJnYk3c8nP842q5mltX9c1FKv8joRwXTTLNZbqeL0W5jVb5kc+01VGx5FVtGGvk2rn5oZz4mVbWEAwQ7DkfXO/eEF5n95wIc34Xj29cmBNhDoKbl+95C3vOj5n7WLv2vH3ZKw/ljm+Sjw/lpy8wfHHijpZPNXfPl2/+Ba3YclxLQ1MAAgAAAAAAAAA0AAAALAEAAGABAAAAAAAAAAAAAAAQAAAAEAAAYAEAAAAAAABYAgAAeJxNjr8OwVAUxk+jQcLoDT73LELS2WKQ8BAWqRssJb1NrB06eKwOBoM3IMFk9Qhyv1ZYTn75fuefQeO5gEG8We4VEogYZDYVRUjeHRKrmJBXo9gpplWPiCjm5L7LUkVOjiKfF2QX20RRku3QZYoTOd0ma8WZLNxzCUQGuIoIA8ODA9x8ELIjZ1z91xQv7162KYs/GVI+fvJI2WEtubYX1NLU11qsOeXLT3YZvLlq9n1i/AH0LypS"
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAEAAABvd25lZC5jc3QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAIwAAABDYXRTY2VuZXwAAACbAAAAeJxFi70KwjAYRc+HHZzcBBch4hypDrp06datS14ghgzB0oD17x36svoGpSTghQuXw7kjsAA2QAUUpBS5AiwzWwFrYAvsgSNwzr9mdr9DfN6d1/ZwG5Bf+TlZZFd3wXlEtb3/K9ek6AuizDsi5SsG5/Vj3srY0DEB8NIaGQ=="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "real child Script factory/load and distinct native Scene owners",
+      "frame": 300,
+      "outputs": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "cmVhZDokc3RyMTEApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="
+    },
+    {
+      "phase": 1,
+      "label": "actual raw162 consumers expand/copy and capture a live child history",
+      "frame": 301,
+      "outputs": [1, 6, 0, 1, 1, 0, 0, 0, 0, 0],
+      "bytes": "cmVhZDpzY2VuZS1zdHJpbmcAAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpWNoYXB0ZXIApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaUEAAAApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="
+    },
+    {
+      "phase": 2,
+      "label": "Scene replacement followed by raw162 import into current owner",
+      "frame": 302,
+      "outputs": [1, 6, 0, 1, 1, 1, 1, 6, 0, 0],
+      "bytes": "cmVhZDpzY2VuZS1zdHJpbmcAAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpWNoYXB0ZXIApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaUEAAAApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlY2hhcHRlcgClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQQAAAClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="
+    },
+    {
+      "phase": 3,
+      "label": "child close request and independent CSS disposal",
+      "frame": 303,
+      "outputs": [1, 6, 0, 1, 1, 1, 1, 6, 0, 0],
+      "bytes": "cmVhZDpzY2VuZS1zdHJpbmcAAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpWNoYXB0ZXIApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaUEAAAApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlY2hhcHRlcgClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQQAAAClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="
+    },
+    {
+      "phase": 4,
+      "label": "child normal retirement leaves the copied Scene history alive",
+      "frame": 304,
+      "outputs": [1, 6, 0, 1, 1, 1, 1, 6, 0, 6],
+      "bytes": "cmVhZDpzY2VuZS1zdHJpbmcAAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpWNoYXB0ZXIApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaUEAAAApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlY2hhcHRlcgClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQQAAAClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="
+    }
+  ],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "args": [12, 3, 256],
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "args": [512],
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "args": [4, 256, 0],
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 219,
+      "args": [],
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 68,
+      "args": [],
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 66,
+      "args": [12, 4, 256],
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 5
+    },
+    {
+      "id": 143,
+      "args": [5, 320, 0],
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 238,
+      "args": [17767],
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537141728
+    },
+    {
+      "id": 65,
+      "args": [],
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 219,
+      "args": [],
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 220,
+      "args": [320],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 223,
+      "args": [256, 6],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 224,
+      "args": [256, 4],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 276,
+      "args": [11, 448],
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 231,
+      "args": [0, 7, 384],
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 71,
+      "args": [240],
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 233,
+      "args": [5, 0, 7, 512],
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 234,
+      "args": [5],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 227,
+      "args": [384],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 6
+    },
+    {
+      "id": 228,
+      "args": [0, 576, 640],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 239,
+      "args": [537141728, 11, 5, 0],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 239,
+      "args": [537141728, 12, 5, 1],
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 65,
+      "args": [],
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 219,
+      "args": [],
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 249,
+      "args": [537141728, 11, 4, 0],
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 249,
+      "args": [537141728, 12, 4, 1],
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 227,
+      "args": [384],
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 6
+    },
+    {
+      "id": 228,
+      "args": [0, 704, 768],
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 65,
+      "args": [],
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 67,
+      "args": [5],
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 246,
+      "args": [537141728],
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "args": [],
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 227,
+      "args": [384],
+      "phase": 4,
+      "control": 1,
+      "outputWritten": true,
+      "value": 6
+    },
+    {
+      "id": 71,
+      "args": [240],
+      "phase": 4,
+      "control": 4,
+      "outputWritten": false
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "sourceReceipt": {
+    "path": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/graphics-resource-tail-20261127/ORIGINAL-CLOCK23-TRUE-SOURCE.json",
+    "sha256": "dcbb764e47fa763ea0e73da9f6d0a3373fee60fd31f975cd00e0767cab32c90d"
+  },
+  "sourcePins": [
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/graphics-resource-tail-20261127/truehost-source/712e7df5228970c3081cda9d251c37e920ff807f30a597e70a41c4969559f8c6.mjs",
+      "sha256": "712e7df5228970c3081cda9d251c37e920ff807f30a597e70a41c4969559f8c6"
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/graphics-resource-tail-20261127/truehost-source/9b9c887240c0a7bc23010fe11d2fc9a404cbd278acb741d29b70c1203450c77c.mjs",
+      "sha256": "9b9c887240c0a7bc23010fe11d2fc9a404cbd278acb741d29b70c1203450c77c"
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/graphics-resource-tail-20261127/truehost-source/ce5ef41456f65b9c90f0fca21303db633c2609a2f4d2336b8d399d20f5806b3f.mjs",
+      "sha256": "ce5ef41456f65b9c90f0fca21303db633c2609a2f4d2336b8d399d20f5806b3f"
+    }
+  ],
+  "programSHA256": "81fcb213e38e1064b9acd38eac19b53fd5039c543c6bffad55de30955dea20ad",
+  "scope": "True qualified original CRT/FileServer/Window/View/Top/Script; actual Script Frame -> active accumulator -> real GCALL442/443 and normal VM stores. Browser wait/pacer math is separate sealed evidence, not a Windows Sleep run.",
+  "rows": [
+    {
+      "label": "initialized read and reset",
+      "frame": 1,
+      "raw": 0,
+      "counter": 0,
+      "active": 1,
+      "queries": [0, 0],
+      "controls": [
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 442,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 65,
+          "control": 4,
+          "outputWritten": false
+        }
+      ]
+    },
+    {
+      "label": "Frame jump with one raw step",
+      "frame": 6,
+      "raw": 1,
+      "counter": 1,
+      "active": 1,
+      "queries": [1],
+      "controls": [
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 65,
+          "control": 4,
+          "outputWritten": false
+        }
+      ]
+    },
+    {
+      "label": "mode0 still adds raw step",
+      "frame": 7,
+      "raw": 1,
+      "counter": 2,
+      "active": 1,
+      "queries": [],
+      "controls": []
+    },
+    {
+      "label": "inactive skips accumulation and VM",
+      "frame": 8,
+      "raw": 1,
+      "counter": 2,
+      "active": 0,
+      "queries": [],
+      "controls": []
+    },
+    {
+      "label": "resumed VM consumes query",
+      "frame": 9,
+      "raw": 1,
+      "counter": 3,
+      "active": 1,
+      "queries": [3],
+      "controls": [
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 65,
+          "control": 4,
+          "outputWritten": false
+        }
+      ]
+    },
+    {
+      "label": "quarter correction before normal completion",
+      "frame": 10,
+      "raw": 1,
+      "counter": 4,
+      "active": 0,
+      "queries": [5],
+      "controls": [
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        }
+      ]
+    },
+    {
+      "label": "reload retains field before in-VM reset",
+      "frame": 11,
+      "raw": 1,
+      "counter": 0,
+      "active": 1,
+      "queries": [6, 0],
+      "controls": [
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 442,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 65,
+          "control": 4,
+          "outputWritten": false
+        }
+      ]
+    },
+    {
+      "label": "independent Script starts at constructor zero",
+      "frame": 12,
+      "raw": 1,
+      "counter": 0,
+      "active": 1,
+      "queries": [1, 0],
+      "controls": [
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 442,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 443,
+          "control": 1,
+          "outputWritten": true
+        },
+        {
+          "id": 65,
+          "control": 4,
+          "outputWritten": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "license": "CC0-1.0",
+  "scope": "Two authored RGB discovery inputs; defined format22 sampling projection only. Not independent holdout, GPU or World evidence.",
+  "provenance": {
+    "originalCalls": 2,
+    "additionalCalls": 0,
+    "nativeResultSHA256": "e459f4ada67ea68531363fd15d9e92a62e90127c806555946254a37763225868",
+    "frozenInputsSHA256": "0406a64dfdddee2902fbc9f878f026ffedbafb2c8dfb440e19f26670b05f6a38",
+    "projection": "Packed BGRX \u2192 defined sampled RGBA, A255. Raw X is not alpha or a pixel identity and is excluded."
+  },
+  "cases": [
+    {
+      "name": "rgb-pot-2x2",
+      "file": "rgb-pot-2x2.png",
+      "sourceSHA256": "93d3804b991da5c1cfa6d102249349a789e44d06d926596f8bf5a0a85dcbf0ee",
+      "sourceWidth": 2,
+      "sourceHeight": 2,
+      "width": 2,
+      "height": 2,
+      "format": 22,
+      "pool": 1,
+      "usage": 0,
+      "levels": 1,
+      "pitch": 8,
+      "rgba": [255, 0, 0, 255, 0, 255, 17, 255, 19, 37, 255, 255, 127, 128, 129, 255]
+    },
+    {
+      "name": "rgb-npot-3x2",
+      "file": "rgb-npot-3x2.png",
+      "sourceSHA256": "81953f040a8cbd144724dcfcf31cef50a8dc808eafa8d58359cc60ccd91c520f",
+      "sourceWidth": 3,
+      "sourceHeight": 2,
+      "width": 4,
+      "height": 2,
+      "format": 22,
+      "pool": 1,
+      "usage": 0,
+      "levels": 1,
+      "pitch": 16,
+      "rgba": [
+        46, 72, 196, 255, 41, 64, 183, 255, 121, 79, 119, 255, 177, 95, 87, 255, 45, 99, 169, 255,
+        50, 152, 171, 255, 98, 167, 168, 255, 123, 122, 164, 255
+      ]
+    }
+  ]
+}

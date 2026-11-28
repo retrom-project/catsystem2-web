@@ -1,0 +1,82 @@
+{
+  "engineSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+  "wineImage": "sha256:81080f23de3472eb80c335daad91f187fdd1d78e678a0a630fee90677d3359a8",
+  "frames": ["Init", 0, 1, 2, 15, 60, 61],
+  "particles": 4,
+  "recordBytes": 148,
+  "plistSHA256": "265514757de77b16de391a471a55a050e158e1f2cee475b0a0f212ea90011ed6",
+  "plugins": [
+    {
+      "name": "blur.ppi",
+      "pluginSHA256": "ee4c3f91688794c30dae4947fa5b1fc7a5c0a240e5640bc6d595fc738595bd91",
+      "recordSHA256": "feebb2f984a3a9c5b5f6e6cad2afba880668717ed296e3f8ea90747341c5d68d",
+      "bytes": 4144
+    },
+    {
+      "name": "cmnptcl.ppi",
+      "pluginSHA256": "afe0138dfde4b7c558b87e00e2518c34e55cb0866cb27ef0ba9623bdd73d1c05",
+      "recordSHA256": "9f71d2a4c538bc6dd6cf32e097ee54422248f657718253980242d679ca01009e",
+      "bytes": 4144
+    },
+    {
+      "name": "dash.ppi",
+      "pluginSHA256": "2c680ed461b97d615d162588a221a812734414b68c2773e597affef9d1b049ca",
+      "recordSHA256": "ac21081f9dfdfc52b9abecf521792f1d6bec414f9fd6b25f801f5fbc54fb4731",
+      "bytes": 4144
+    },
+    {
+      "name": "em_angry.ppi",
+      "pluginSHA256": "384f720f7f2a061a5080c1d98d5015edc3f24bcc046d7272d1d29a1133446ae7",
+      "recordSHA256": "4f5e604c549feb14099662ddda35dd68885a895aa329c37143ab28cc38281ffe",
+      "bytes": 4144
+    },
+    {
+      "name": "em_double.ppi",
+      "pluginSHA256": "5d207cb0eeb89891369c0f72aab080cf808ef2b71127aba360b693baaa059e22",
+      "recordSHA256": "b5bb09d736a7d57b8800ed44837f0843819070bf91e76819386bdf5820eec16a",
+      "bytes": 4144
+    },
+    {
+      "name": "em_note.ppi",
+      "pluginSHA256": "58bd95795fd711379de18e13084112069ea048a88e095052001bca279fdb8a4e",
+      "recordSHA256": "8fc7a08dfce341e1e168eafa74dbcab773493f59b645ec329b693b226eed83b7",
+      "bytes": 4144
+    },
+    {
+      "name": "em_question.ppi",
+      "pluginSHA256": "de9de8d2b26be6e1896dd4d078eac461778cd15fe019497f5bf1cb240cbe741e",
+      "recordSHA256": "3c37a274710a72a30bc56bb64657385d991333de7c88caa99f1054956963e8d0",
+      "bytes": 4144
+    },
+    {
+      "name": "em_question_a.ppi",
+      "pluginSHA256": "3a412a08bf5e94e50cff7302af620574da7e6503d4d8a039087ad744a7b09594",
+      "recordSHA256": "3c37a274710a72a30bc56bb64657385d991333de7c88caa99f1054956963e8d0",
+      "bytes": 4144
+    },
+    {
+      "name": "em_sweat.ppi",
+      "pluginSHA256": "cb791b30afea7024ca4ef833a23977d2913edfa7a7cd630bb05c5a64b13e44b8",
+      "recordSHA256": "7eced0594f47b81cf59c24ae00cd07bdecadea9e20f61ac0177210032a0dacd4",
+      "bytes": 4144
+    },
+    {
+      "name": "filmnoise.ppi",
+      "pluginSHA256": "7aff22d2b0389c32cfa6c4edd06e3ab43d4ce5f30a53c27f933f73dba9bb2da8",
+      "recordSHA256": "56479a87823d5b4ca58b82c341ce58a686ef28b03df1c9e4aace74db9b56d12f",
+      "bytes": 4144
+    },
+    {
+      "name": "rain.ppi",
+      "pluginSHA256": "6ab38b54395c896d3e07dbee014bb5d3aa95d0e2d3f26c9b70aaf976e1d1c256",
+      "recordSHA256": "d684ff73d1d61082086f48ca4f86d31eb0a706961b87161d0f60928e92de3283",
+      "bytes": 4144
+    },
+    {
+      "name": "steam.ppi",
+      "pluginSHA256": "940362f102707ae6098ea8517d1f7940e6499dbf62e9369050100b5158e989bd",
+      "recordSHA256": "395467ad492eaef6058f142192d26a341ebcec2c15ef368a07c2d6eaaf689167",
+      "bytes": 4144
+    }
+  ]
+}

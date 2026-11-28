@@ -1,0 +1,173 @@
+[
+  {
+    "path": "public-1.23/Laser01.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Laser01.efk",
+    "sha256": "f8378fa401a9679cc876ff2e490de58ad4698bc96caa467a7eb39f075b6d0c6c",
+    "bytes": 1668,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Laser02.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Laser02.efk",
+    "sha256": "d7ed3a9466c031dd012a584adbc1a99721278a3866df89243b250fe27c7e2cec",
+    "bytes": 4556,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Simple_Ribbon_Parent.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Simple_Ribbon_Parent.efk",
+    "sha256": "c97008cfdc90a9e3508ff3c781f05cd118428adb6ff76d9e4f5f0460eea7b1c8",
+    "bytes": 686,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Simple_Ring_Shape1.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Simple_Ring_Shape1.efk",
+    "sha256": "68a373612fdcdec3459cc79a2b326128def6d883099a64ef864de5ae0fce2784",
+    "bytes": 3000,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Simple_Track1.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Simple_Track1.efk",
+    "sha256": "991eae98bcb576c8d492452a3b2207b5da61acf773c9c168ac3dceb2731fc43d",
+    "bytes": 1552,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Simple_Sprite_FixedYAxis.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Simple_Sprite_FixedYAxis.efk",
+    "sha256": "8f61d4a5f79d3bdcb218f1d7465a1f262e0bd1b45a97ddab1c50f921fe6dff4c",
+    "bytes": 426,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Simple_Distortion.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Simple_Distortion.efk",
+    "sha256": "32d93bc437da36e7605a2efd97c22a15e4c876fa5b526fdda58b40c9f3116219",
+    "bytes": 2138,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/block_simple.efk",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/block_simple.efk",
+    "sha256": "e9b8a6ba8850944370ab90734e0f025a19c0c1abc88607d3fbb9bd3f0e1e3896",
+    "bytes": 306,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/block.efkmodel",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Model/block.efkmodel",
+    "sha256": "b3bda52b97c4ec41b8b0cd9f206bf88ce2553db9b9b8d17ce83c8b988a2eb657",
+    "bytes": 1504,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Laser.wav",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Sound/Laser.wav",
+    "sha256": "38b8970ad4da7e52c97c344141616b0fc5caa5bc7f65a30d81b734620937ad16",
+    "bytes": 12787,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Burst01.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/Burst01.png",
+    "sha256": "938d9bcbd33e309766bb9a14ce902e361fa37973762b7562e9f9c277cb7972ff",
+    "bytes": 35183,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Cloud01.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/Cloud01.png",
+    "sha256": "3408dd5147d84c55ee776c9cc09697db8de79e0c038954efbe2ca70d97e59c76",
+    "bytes": 20657,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/LaserMain01.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/LaserMain01.png",
+    "sha256": "24aa7b424c85e9f718424906f8978a8d5ae6956baa2f73676b426b0720f7c49c",
+    "bytes": 5479,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/LaserMain02.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/LaserMain02.png",
+    "sha256": "e24c27453e96396cbda9fb6fb39b38ef8b55f4d60949732d2431e7b6bfe3c4f2",
+    "bytes": 2192,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Particle01.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/Particle01.png",
+    "sha256": "b1346d2bfafa6e783661453680b282edc6bc0e0b85711414b9914aac03a3a881",
+    "bytes": 7082,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Particle02.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/Particle02.png",
+    "sha256": "3734dfdba425f96ce5aca1f6682b572a85f73c799a6a615cd5978e16fc3c6e07",
+    "bytes": 7230,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Particle04_clear_hard.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/Particle04_clear_hard.png",
+    "sha256": "d384c3e4942363664ab85675378de7bf2cf978fc676a73b7e45e8c3f3375d794",
+    "bytes": 13546,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Particle04_clear_soft.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/Particle04_clear_soft.png",
+    "sha256": "1abd57329f048e4f1d9deb447d5f769202dfab7219c848998df0b7b1f7ac6a5a",
+    "bytes": 14433,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  },
+  {
+    "path": "public-1.23/Thunder01.png",
+    "url": "https://raw.githubusercontent.com/effekseer/Effekseer/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Dev/Cpp/Test/Resource/Texture/Thunder01.png",
+    "sha256": "020afb852c0b4e39d07a560be6437563de4e437848ebab3957ecccbcf84498ac",
+    "bytes": 19998,
+    "license": "CC0-1.0",
+    "licenseSourceCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+    "licenseSource": "https://github.com/effekseer/Effekseer/blob/5239bb1e416cbf55b4d3c8170594cbdc7815f263/Document/readme_sample.txt"
+  }
+]

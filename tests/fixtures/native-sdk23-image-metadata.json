@@ -1,0 +1,21 @@
+{
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "sourceKcsSha256": "2bb6fb8f80fa6cd4d8dd9508e41c64e43d371756e862650c240eef98c8617ee8",
+  "producerSha256": "f304fa089f0fd28d0c79601a2948cd779fe2e6de785caa2f5f54e2a475fc216c",
+  "helperSha256": "12902a75bf081f09a4ff84fed19bf3310296dc9859db5506d89f05bb1e3de19b",
+  "scope": "Positive actual Main112-owned native bitmap and loader-bound Script GCALL; original executable text unchanged and low-page data access guarded. No native undefined-input probe.",
+  "bitmapVtable": 6457924,
+  "width": 4,
+  "height": 3,
+  "base": [4294967294, 5],
+  "setBaseResult": 1,
+  "baseResult": 1,
+  "enabledHintResult": 1,
+  "sampleAlpha": 128,
+  "disabledHintResult": 0,
+  "rgba": [
+    64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16,
+    128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64,
+    32, 16, 128
+  ]
+}

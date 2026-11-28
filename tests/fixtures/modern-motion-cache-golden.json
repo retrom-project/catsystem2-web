@@ -1,0 +1,489 @@
+{
+  "scope": "Own MOT source static constructor plus actual Main294/304/307/296/295. Mutable OS provider, two managers, old live actors and cross-manager raw-source cache invalidation. Full8192 Main local/PC/SP/FP with only opaque manager pointers normalized. Physical GPU/full Engine startup/product not claimed.",
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-SOURCE-CACHE-INITIALIZED-74.json",
+        "sha256": "6e54ac02d14fa9ed90d95ee7f86305857514a60d940d733ea7072f27bb3041ac"
+      },
+      "xml": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><INT><int00><int>mot</int><ext>kcs</ext><dir>loose</dir><name>mot</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT></document>",
+      "programs": [
+        "S0NTAAIAAAAAAAAANAAAAA0AAABBAAAAAAAAAAAAAAAAEAAAABAAAEEAAAAAAAAAGgAAAHicExWew8DQoMzIwMCgaw0ADkYB0Q==",
+        "S0NTAAIAAAAAAAAANAAAAA0AAABBAAAAAAAAAAAAAAAAEAAAABAAAEEAAAAAAAAAGgAAAHicExWew8DQoMzEwMCgaw0ADkwB0g=="
+      ],
+      "cases": [
+        {
+          "label": "first-manager-first-source",
+          "manager": 539134368,
+          "result": 1,
+          "revision": 0,
+          "readCount": 2,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            }
+          ]
+        },
+        {
+          "label": "second-manager-shared-cached-source",
+          "manager": 539135072,
+          "result": 1,
+          "revision": 1,
+          "readCount": 2,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            }
+          ]
+        },
+        {
+          "label": "clear-members-keeps-source-cache",
+          "manager": 539135072,
+          "result": 2,
+          "revision": 1,
+          "readCount": 2,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            },
+            {
+              "handle": 2,
+              "register": 1
+            }
+          ]
+        },
+        {
+          "label": "delete-other-manager-clears-source-cache",
+          "manager": 539135072,
+          "result": 3,
+          "revision": 1,
+          "readCount": 4,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            },
+            {
+              "handle": 2,
+              "register": 1
+            },
+            {
+              "handle": 3,
+              "register": 2
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "id": 294,
+          "args": [],
+          "result": 65536,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+          "localSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4"
+        },
+        {
+          "id": 294,
+          "args": [],
+          "result": 65537,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4",
+          "localSha256": "d74ef1b32132852c13ef29277ba23ef66dd98b09e956e948888f8e13d7f73846"
+        },
+        {
+          "id": 304,
+          "args": [65536, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "bXV0YWJsZQ=="
+            }
+          ],
+          "beforeLocalSha256": "f1f4007a5d5cdf362b8b38098389d9d7325d66521607320b885ef07347df11b5",
+          "localSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d"
+        },
+        {
+          "id": 307,
+          "args": [65536, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 304,
+          "args": [65537, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d"
+        },
+        {
+          "id": 307,
+          "args": [65537, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 296,
+          "args": [65536],
+          "result": null,
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529"
+        },
+        {
+          "id": 304,
+          "args": [65537, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 2,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529",
+          "localSha256": "2db1287bc36f8c7ad411df70dbe4fc637bfaf0b1aa1af728fc8af212388318d7"
+        },
+        {
+          "id": 307,
+          "args": [65537, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "2db1287bc36f8c7ad411df70dbe4fc637bfaf0b1aa1af728fc8af212388318d7",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 295,
+          "args": [65536],
+          "result": null,
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529"
+        },
+        {
+          "id": 304,
+          "args": [65537, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 3,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529",
+          "localSha256": "422ab616ceabf2315bd60de716e96b8856b851dcb9d39e7f8563e051728a8fb6"
+        },
+        {
+          "id": 307,
+          "args": [65537, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "422ab616ceabf2315bd60de716e96b8856b851dcb9d39e7f8563e051728a8fb6",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 295,
+          "args": [65537],
+          "result": null,
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "c90696f2db059ff9d88c14f92688e78f859854488a31a63790a069b3e01ea14b"
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-SOURCE-CACHE-INITIALIZED-76.json",
+        "sha256": "3e387c9dff7fd9e6e1c0b4b377e31fc01a7e378cd7b0392880513d3491a151cf"
+      },
+      "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><INT><int00><int>mot</int><ext>kcs</ext><dir>loose</dir><name>mot</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT></document>",
+      "programs": [
+        "S0NTAAIAAAAAAAAANAAAAA0AAABBAAAAAAAAAAAAAAAAEAAAABAAAEEAAAAAAAAAGgAAAHicExWew8DQoMzIwMCgaw0ADkYB0Q==",
+        "S0NTAAIAAAAAAAAANAAAAA0AAABBAAAAAAAAAAAAAAAAEAAAABAAAEEAAAAAAAAAGgAAAHicExWew8DQoMzEwMCgaw0ADkwB0g=="
+      ],
+      "cases": [
+        {
+          "label": "first-manager-first-source",
+          "manager": 537311440,
+          "result": 1,
+          "revision": 0,
+          "readCount": 2,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            }
+          ]
+        },
+        {
+          "label": "second-manager-shared-cached-source",
+          "manager": 537311888,
+          "result": 1,
+          "revision": 1,
+          "readCount": 2,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            }
+          ]
+        },
+        {
+          "label": "clear-members-keeps-source-cache",
+          "manager": 537311888,
+          "result": 2,
+          "revision": 1,
+          "readCount": 2,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            },
+            {
+              "handle": 2,
+              "register": 1
+            }
+          ]
+        },
+        {
+          "label": "delete-other-manager-clears-source-cache",
+          "manager": 537311888,
+          "result": 3,
+          "revision": 1,
+          "readCount": 4,
+          "state": [
+            {
+              "handle": 1,
+              "register": 1
+            },
+            {
+              "handle": 2,
+              "register": 1
+            },
+            {
+              "handle": 3,
+              "register": 2
+            }
+          ]
+        }
+      ],
+      "rows": [
+        {
+          "id": 294,
+          "args": [],
+          "result": 65536,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+          "localSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4"
+        },
+        {
+          "id": 294,
+          "args": [],
+          "result": 65537,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4",
+          "localSha256": "d74ef1b32132852c13ef29277ba23ef66dd98b09e956e948888f8e13d7f73846"
+        },
+        {
+          "id": 304,
+          "args": [65536, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "bXV0YWJsZQ=="
+            }
+          ],
+          "beforeLocalSha256": "f1f4007a5d5cdf362b8b38098389d9d7325d66521607320b885ef07347df11b5",
+          "localSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d"
+        },
+        {
+          "id": 307,
+          "args": [65536, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 304,
+          "args": [65537, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d"
+        },
+        {
+          "id": 307,
+          "args": [65537, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "0f9a09f3a50572215bdfcf13aecbd3629c8adf9651af2f1f26daa3dfd717819d",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 296,
+          "args": [65536],
+          "result": null,
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529"
+        },
+        {
+          "id": 304,
+          "args": [65537, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 2,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529",
+          "localSha256": "2db1287bc36f8c7ad411df70dbe4fc637bfaf0b1aa1af728fc8af212388318d7"
+        },
+        {
+          "id": 307,
+          "args": [65537, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "2db1287bc36f8c7ad411df70dbe4fc637bfaf0b1aa1af728fc8af212388318d7",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 295,
+          "args": [65536],
+          "result": null,
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529"
+        },
+        {
+          "id": 304,
+          "args": [65537, 64, 4294967295, 0, 4294967295, 0, 0],
+          "result": 3,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "d61f4084b797b7cc8cd81234660abd64f61616e9927236056d01db246324b529",
+          "localSha256": "422ab616ceabf2315bd60de716e96b8856b851dcb9d39e7f8563e051728a8fb6"
+        },
+        {
+          "id": 307,
+          "args": [65537, 0, 0],
+          "result": 1,
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "422ab616ceabf2315bd60de716e96b8856b851dcb9d39e7f8563e051728a8fb6",
+          "localSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5"
+        },
+        {
+          "id": 295,
+          "args": [65537],
+          "result": null,
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "writes": [],
+          "beforeLocalSha256": "50f28a0c8a92472bd8a896d3e612179b2db9c082e32a48841f60bc052d2429b5",
+          "localSha256": "c90696f2db059ff9d88c14f92688e78f859854488a31a63790a069b3e01ea14b"
+        }
+      ]
+    }
+  ]
+}

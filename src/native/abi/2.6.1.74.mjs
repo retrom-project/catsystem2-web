@@ -1,0 +1,2113 @@
+// SPDX-License-Identifier: MPL-2.0
+// Reviewed per-version declarations and script-visible behavior.
+import { FES_COMMON_HEAD_REGISTRATIONS } from './fes-common-heads.mjs';
+import {
+  nativeRawCSSSignatures,
+  nativeContentDatabaseSignatures,
+  NATIVE_INTERPRETER_SCALAR_IDS,
+  nativeInterpreterScalarSignatures,
+  NATIVE_INTERPRETER_GEOMETRY_IDS,
+  nativeInterpreterGeometrySignatures,
+  NATIVE_PARTICLE_STATE_IDS,
+  nativeParticleStateSignatures,
+  nativeParticleRandomSignatures,
+  NATIVE_PARTICLE_GEOMETRY_IDS,
+  nativeParticleGeometrySignatures,
+  nativeParticleAttachmentSignatures,
+  NATIVE_TILE_GAME_IDS,
+  NATIVE_TILE_GAME_SIGNATURES,
+} from './semantics.mjs';
+
+const contentDatabaseSlots = [
+  742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760,
+  761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779,
+  780, 781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804,
+  805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823,
+  824, 825, 826, 827, 828, 829, 830, 831, 832,
+];
+
+const scalarEvidence =
+  'Own fixed 2.6.1.74 unmodified physical IA32 scalar wrappers/callees: 222 Main samples plus 233 Generic vectors and exact own-body/callee bridges to the 19 common scalar entries. Current real KCS verifies raw NaN/domain/signed-zero/endpoints, complete caller and owner state, fixed mapped argv prefixes, ignored tail words, actual unmapped diagnostics and independent cold interpreter continuation. Original initialization seed and platform boundaries remain explicit. This is finite-case functional evidence, not completion of all numeric shapes or other auxiliary entries. See tests/fixtures/modern-interpreter-scalar-golden.json and docs/native-scalar-math.md.';
+
+const geometryEvidence =
+  'Own fixed 2.6.1.74 initialized physical IA32 geometry: 110 complete-region vectors plus101 actual-KCS argv frame/alias/angle vectors, with 13 own complete-body/callee Main bridges and separately measured Main662. The existing92 Main corpus and independent current-matrix cold inverse are physical too. Real current KCS compares raw data/shared/heap/current-matrix, native control/result, exact fixed argv prefixes/tail and fresh-owner/World cold state. The old scalar-copy capture and nine exact initialized-backend discrepancies remain separately archived. No geometry pointer/shape outside the measured defined contracts is inferred. See tests/fixtures/modern-interpreter-geometry-golden.json and docs/native-vector-matrix.md.';
+
+const stringPlaneOperations = [
+  124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 138, 139, 456, 585, 599,
+];
+const stringPlaneSlots = [
+  123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 391, 456,
+  585, 599,
+];
+
+export default {
+  id: 'cs2-2.6.1.74',
+  profile: 'sdk-4.01-engine-2.6.1.74',
+  engineVersion: '2.6.1.74',
+  tileGame: { seedFromLocalClock: true, argumentsReadFrame: true },
+  math: {
+    interpreterUsesNativeScalarMath: true,
+    scalarArgumentsReadFrame: true,
+    atan2UsesX87: true,
+    remainderUsesX87: true,
+    triangleWaveUsesX87: true,
+    powUsesSSE2Identities: true,
+    trigUsesNativeReduction: true,
+    lerpUsesSSEWords: true,
+    geometryArgumentsReadFrame: true,
+    matrixCopyChunkBytes: 16,
+    matrixMultiplyUsesSSEWords: true,
+    matrixInverseUsesSSEWords: true,
+    vectorNormalizeUsesSSEWords: true,
+    axisRotationUsesX87Words: true,
+    yawPitchRollUsesSSEWords: true,
+    vectorWordArithmeticUsesSSEWords: true,
+    vectorTransformUsesSSEWords: true,
+  },
+  motion: {
+    addUsesFormat: true,
+    registerWordsAllowEmpty: true,
+    activeQueryUsesRawWord: true,
+    nativeFilenameQuery: true,
+    queryRequiresMappedFormat: true,
+    workingStartsUninitialized: true,
+    recordStartsUninitialized: true,
+    managerLifetime: 'explicit-delete',
+    sourceCacheRelease: 'manager-delete',
+    statePointersReadBeforeWrite: true,
+    persistenceArgumentsReadFrame: true,
+    controlIgnoresArgumentTail: true,
+    geometryArgumentsReadFrame: true,
+    currentMatrixFallback: true,
+    matrixMemoryOperationsUseNativeOrder: true,
+    vectorOperationsUseNativeGeometry: true,
+    vectorTransformUsesSSEWords: true,
+    vectorNormalizeUsesSSEWords: true,
+    matrixInverseUsesSSEWords: true,
+    relativeRotationUsesSSEWords: true,
+    vectorComponentsUseSSEWords: true,
+  },
+  scene: {
+    argumentsReadFrame: true,
+    cstFileMarkers: true,
+    messageCountTypeSideEffects: true,
+    historyCursorTypeSideEffects: true,
+    translations: false,
+    implicitReaderUsesDirectBehavior: true,
+    implicitTextRecordRequired: true,
+  },
+  particle: {
+    taskMessageStart: 309,
+    taskMessagesUseRawTransport: true,
+    taskFieldsPersistWithoutBank: true,
+    refBuffersFollowNativeHeap: true,
+    scriptLoadsBeforeTexture: true,
+    scriptLoadMissingReturnsUnwritten: true,
+    deferGraphAttachment: true,
+    debugUsesNativeLogger: true,
+    stateArgumentsReadFrame: true,
+    stateCopiesRawWords: true,
+    geometryUsesSSEWords: true,
+    geometryArgumentsReadFrame: true,
+    attachmentReadsRegistrationWord: true,
+    attachmentPositionRequiresOwner: true,
+    missingAttachmentGroupWritesZero: true,
+    attachmentRequiresProvider: true,
+    attachmentCopiesRawWords: true,
+    frameScale: 'sse-uint32',
+  },
+  xmlEncoding: 'Shift_JIS',
+  text: {
+    legacyConfigurationBytes: 1128,
+    legacyInitializerSlots: [123],
+    legacyInitializerBitmapBpp: 4,
+    legacyTaskWordOperations: stringPlaneOperations,
+    legacyTextServices: [391],
+    legacyClearPublishes: true,
+    legacyGraphRegistration: true,
+    legacyGlyphAtlas: true,
+    legacyGlyphKeepsTransparentRgb: true,
+    freeTypeCharacterEncoding: 'cp932',
+    freeTypeVersion: '2.4.8',
+    settingsCharacterBytes: 1,
+    fesNVFontWritesName: true,
+    pathBytes: 260,
+    clipboardUsesCP932: true,
+    debugPrintByteLimit: 500,
+    recordingPrefix: {
+      units: 'bytes',
+      limit: 64,
+    },
+    configurationLayout: {
+      encoding: 'CP932',
+      fontBytes: 64,
+      keyNameBytes: 32,
+      keyStride: 36,
+      bytes: 5592,
+      ownerOffset: 53288,
+    },
+    fesLayouts: {
+      21: {
+        dirty: 241,
+        colors: 329,
+        fontIndex: 236,
+        flags: 318,
+        weight: 231,
+        shadow: 232,
+        fix: 234,
+        wipe: 235,
+        profile: 333,
+        shift: 338,
+        category: null,
+        fontBytes: 32,
+        configBytes: 184,
+      },
+    },
+    layoutModes: [
+      'view',
+      'color',
+      'vcolor',
+      'acolor',
+      'vacolor',
+      'pcolor',
+      'vpcolor',
+      'margin',
+      'move',
+      'ruby',
+      'frame',
+      'font',
+      'fontind',
+      'shadow',
+      'size',
+      'rsize',
+      'indent',
+      'weight',
+      'd_prof',
+      'prof',
+      'shift',
+      'scrolltype',
+      'wipewidth',
+      'fontfix',
+    ],
+    resourceMessages: {
+      first: {
+        nv: 463,
+        cp932: 444,
+        utf8: 444,
+      },
+      clearCategory: false,
+      maxOperation: 18,
+    },
+  },
+  configuration: {
+    defaults: {
+      font: 'ＭＳ ゴシック',
+      title: 'CS2',
+      message: [4, 4, 0, 15, 5, 1, 0, 1, 0, 100, 0, 0xffffffff, 0, 0, 0],
+      effect: [0, 0, 1, 1, 1, 5, 0],
+      window: [0xffffffff, 1, 1],
+      voiceRecords: {
+        count: 48,
+        firstByte: 20,
+        stride: 116,
+        enabled: 1,
+        masterPercent: 100,
+        group: 100,
+      },
+      contVoice: 1,
+      rawVolumePercent: 100,
+    },
+    blockSizes: [5628, 60, 28, 12],
+    memory: {
+      layout: {
+        settingsOffset: 528,
+        font: 53288,
+        blocks: [58880, 64508, 64568, 64596],
+        systemVoice: 64608,
+        first: 52320,
+        second: 53188,
+        virtualSize: 1050,
+        sizes: 1056,
+        noSkip: 46960,
+        frameImage: 49336,
+        authorMode: 47888,
+        autoPresets: 47916,
+        variableCount: 49600,
+        variableRanges: 49604,
+        alphaPercent: 47532,
+        soundGroups: 47620,
+        autoSelect: 67872,
+        pathBytes: 260,
+        texture: 46204,
+        log: 48960,
+      },
+      scalarFields: [
+        ['scene.textFrame', 47908, 4],
+        ['screen.width', 52320, 2],
+        ['screen.height', 52322, 2],
+        ['screen.fullWidth', 52324, 2],
+        ['screen.fullHeight', 52326, 2],
+        ['screen.currentWidth', 52328, 2],
+        ['screen.currentHeight', 52330, 2],
+        ['screen.fullWide', 52332, 4],
+        ['screen.limit', 52336, 4],
+        ['screen.fps', 52340, 4],
+        ['screen.cursorMode', 52344, 4],
+        ['texture.bpp', 52348, 4],
+        ['texture.min', 52352, 4],
+        ['texture.mag', 52356, 4],
+        ['texture.dither', 52360, 4],
+        ['sound.use3d', 52364, 4],
+        ['sound.sticky', 52368, 4],
+        ['sound.stereo', 52372, 4],
+        ['general.imageCache', 52376, 4],
+        ['screen.screensaver', 52380, 4],
+        ['screen.camouflage', 52384, 4],
+        ['general.gdiCap', 52388, 4],
+        ['general.z32', 52392, 4],
+        ['general.useZ', 52396, 4],
+        ['screen.outInfo', 52400, 4],
+        ['general.cache', 52404, 4],
+        ['screen.mode', 53188, 4],
+        ['screen.fullscreen', 53192, 4],
+        ['screen.bpp', 53196, 4],
+        ['d3d.hardTnL', 53200, 4],
+        ['d3d.backBuffer', 53204, 4],
+        ['d3d.light', 53208, 4],
+        ['d3d.vsync', 53212, 4],
+        ['d3d.antialias', 53216, 4],
+        ['d3d.fogType', 53220, 4],
+        ['d3d.textureSize', 53224, 4],
+        ['d3d.textureCompression', 53228, 4],
+        ['general.dualCore', 53236, 4],
+        ['general.disableMovie', 53240, 4],
+        ['general.disablePixelShader', 53244, 4],
+        ['screen.fullSize', 53248, 4],
+        ['screen.fullPosition', 53252, 4],
+        ['screen.multiWindowPosition', 53256, 4],
+        ['screen.wall', 53260, 4],
+        ['general.waitD3DCommand', 53264, 4],
+        ['screen.noFullResolution', 53268, 4],
+        ['screen.setMode', 52316, 4],
+        ['configuration.type', 53280, 4],
+        ['window.drag', 53284, 4],
+        ['screen.virtualWidth', 1050, 2],
+        ['screen.virtualHeight', 1052, 2],
+        ['screen.noSkip', 46960, 4],
+        ['scene.autoSelect', 67872, 4],
+        ['scene.staticLog', 49064, 4],
+        ['application.touch', 52044, 4],
+        ['general.renderTargetCount', 47892, 4],
+        ['log.type', 48960, 4],
+        ['log.col', 48964, 4],
+        ['log.prof', 48968, 4],
+        ['log.nameline', 48972, 4],
+        ['log.indent', 49040, 4],
+        ['log.nameindent', 49044, 4],
+        ['log.dispMes', 49048, 4],
+        ['log.dispName', 49052, 4],
+        ['log.space', 49056, 4],
+        ['log.escape', 49060, 4],
+        ['log.crNext', 49068, 4],
+      ],
+      autoSelectBytes: 4,
+    },
+    extendedPreferences: false,
+    language: false,
+    keyHide: false,
+    windowActive: false,
+    sceneAnimation: false,
+    fontPreferenceLimit: null,
+    extendedQueries: false,
+  },
+  globalFile: { growthBytes: 65536 },
+  stringBank: { emptyGetResult: 1 },
+  database: { nullExportPolicy: 'sentinel', rawHeapAllocationFailureReturnsZero: true },
+  sound: {
+    legacyTypes: ['bgm', 'se', 'voice', 'sysvoice'],
+    legacyVolumeAliases: { bgm: 0, se: 1, voice: 2, sysvoice: 2 },
+    filenamePolicy: { classification: 'ascii-byte-directory', pairs: 'standard' },
+    banks: 32,
+    controlBytes: 120,
+    firstMessage: 177,
+    lastMessage: 218,
+    missingIdPathFields: ['volume', 'play', 'sysplay', 'voicevol'],
+    sameIdAllowsUnconfiguredSoundTree: true,
+    allowQuotedFesNames: false,
+    crossfade: false,
+    delegateFrom: 219,
+    fesExtensions: false,
+    fesLoadParameters: false,
+    completionFrame: true,
+  },
+  language: {
+    storage: 'bytes',
+    singleTable: true,
+    fixedFilename: 'language.txt',
+    resetOnReload: false,
+    archiveFallback: false,
+    switchWindowProtocol: false,
+    dynamicMenus: false,
+  },
+  plugins: {
+    emoteDriver: 'placeholder',
+    requiredRenderer: false,
+  },
+  capabilities: {
+    effekseerTask: false,
+    cubeFlipGridHeightProduct: false,
+    bitmapColorQuery: false,
+    nameTableAliases: false,
+    embeddedJavaScript: true,
+    steam: false,
+    windowReturnTitle: false,
+    windowBaseAccelerators: true,
+    windowLanguageAccelerators: false,
+    broadcast: false,
+    recordQueues: false,
+    unicodeOutput: false,
+    utf8Primitives: false,
+    utf8Text: false,
+    emoteFes: false,
+    engineWorkers: false,
+    hapMovieAnsiDriverPath: true,
+    windowsMediaReader: false,
+    systemEntropy: true,
+    inputNullText: true,
+    taskDumpTopWriter: true,
+  },
+  startup: {
+    applicationServices: [
+      'steam-if-capable',
+      'startup-sound',
+      'textures',
+      'global-strings',
+      'title',
+      'm2',
+      'root-script',
+    ],
+    titleMode: 'global-string',
+    verification: {
+      cipher: 'blowfish-le32',
+      codeEncoding: 'cp932',
+      comparison: 'open-cs2-literal',
+      defaultCodeBytes: [111, 112, 101, 110, 95, 99, 115, 50],
+    },
+    resourceCheck: 'before-defaults',
+    accelerators: 'ansi-resource',
+  },
+  fes: {
+    commonHeads: FES_COMMON_HEAD_REGISTRATIONS.sdk,
+    sharedIntegerRandom: true,
+    configurationMessage: { liveObjects: false, notification: null, filenameComparison: null },
+    controlResources: { scroll2Skin: 'state-direct' },
+    fileList: { patternEncoding: 'cp932', keyEncoding: 'cp932' },
+    frameDecodeResources: true,
+    macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
+    variableBankOffset: 1800,
+    imageBlockOffset: 1500,
+    imageIndexOffset: 1064,
+    imageTaskOffset: 1512,
+    textTaskWords: {
+      21: 240,
+      29: 297,
+    },
+    controls: {
+      13: {
+        size: 508,
+        task: 492,
+        value: 328,
+        priority: 484,
+      },
+      14: {
+        size: 564,
+        task: 524,
+        value: 364,
+        priority: 520,
+      },
+      15: {
+        size: 560,
+        task: 520,
+        value: 364,
+        priority: 516,
+      },
+    },
+    images: {
+      1: {
+        size: 680,
+      },
+      2: {
+        size: 1512,
+      },
+      6: {
+        size: 1788,
+      },
+      11: {
+        size: 1524,
+      },
+      12: {
+        size: 2076,
+      },
+      16: {
+        size: 1520,
+      },
+      17: {
+        size: 1520,
+      },
+      18: {
+        size: 1516,
+      },
+      19: {
+        size: 1516,
+      },
+      20: {
+        size: 1516,
+      },
+      22: {
+        size: 1512,
+      },
+      25: {
+        size: 960,
+      },
+      wrapperBytes: 276,
+    },
+    planes: {
+      3: {
+        size: 740,
+      },
+      4: {
+        size: 764,
+      },
+      5: {
+        size: 44,
+      },
+      offset: 852,
+    },
+    effects: {
+      objects: {
+        26: {
+          size: 76,
+        },
+        27: {
+          size: 144,
+        },
+        30: {
+          size: 92,
+        },
+        31: {
+          size: 84,
+        },
+        32: {
+          size: 88,
+        },
+      },
+    },
+  },
+  graphics: {
+    dividedMesh: { receiverKinds: [2], rejectOccupiedModel: false, requiresTexturePages: true },
+    planeInheritanceUsesRenderer: true,
+    planeInheritanceReceiverKinds: [2],
+    drawEnablePendingPolicy: 'value',
+    drawCountAndLayerRequireRenderer: true,
+    planeAlphaFlags: 1,
+    planeAlphaRequiresGraph: true,
+    planeButtonUsesTexturePose: true,
+    planeEmptyGraphRequiresMode1: true,
+    planeImageSelectorHidesTarget: true,
+    planePoseQueriesRequireReply: true,
+    planePoseUsesRawWords: 'unchanged',
+    planeResetReleasesTrackedInput: true,
+    sameSizeBitmapCopyClips: true,
+    textureCapsPolicy: 'virtual-d3d9',
+    texturedBoundsQuery: 'model-and-pages',
+    resizeRGB24: false,
+    compositeWideBase: false,
+    preserveRGB24: true,
+    renderSources: {
+      stride: 72,
+      bytes: 276,
+    },
+    deviceField: null,
+    synchronization: null,
+    retainedBytes: 196,
+    graphTypes: 188,
+  },
+  floatingPoint: {
+    x87ControlWord: 127,
+    mxcsr: 8064,
+    precisionBits: 24,
+    rounding: 'nearest',
+    evidence: 'ordinary Direct3D9 initialization; docs/ppi-compatibility.md',
+  },
+  input: { planeSourceViaInput: true },
+  fileIO: { rawModeAndBoundedBuffer: true, defaultReadOnly: true },
+  nameTable: { fixedPairs: true },
+  messages: {
+    scriptNotifications: { 570: 437, 571: 440, 572: 439 },
+    screenEvent: 21,
+    windowDirectClose: 0x433,
+    windowCloseConfirmation: {
+      caption: '$0000-0043$終了',
+      template: '$0000-0042$%s を終了してよろしいですか？',
+      localize: true,
+    },
+    root: {
+      start: 30,
+      captionWide: false,
+      field: 392,
+      soundReset: 192,
+    },
+    scriptBaseOnly: [30, 31],
+    movieInput: {
+      query: 32,
+      gate: 141,
+    },
+    imageOwnerOffset: 5,
+    taskDumpWrapper: 34,
+    areaNonReceiver: 262,
+    channels: {
+      planeMesh: {
+        unmapped: 'reject',
+        raw: [{ min: 83, max: 83, offset: -2, kinds: [2] }],
+        canonical: [{ min: 81, max: 81, offset: 2, kinds: [2] }],
+      },
+      taskQueries: {
+        raw: [{ min: 173, max: 173, offset: 2, kinds: [12] }],
+        canonical: [{ min: 175, max: 175, offset: -2, kinds: [12] }],
+      },
+      fesSound: {
+        raw: [
+          {
+            min: null,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      fesControl: {
+        canonical: [
+          {
+            min: 348,
+            max: null,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      fesImage: {
+        canonical: [
+          {
+            min: 275,
+            max: 275,
+            offset: 5,
+          },
+          {
+            min: 276,
+            max: 276,
+            offset: 5,
+          },
+          {
+            min: 284,
+            max: 284,
+            offset: 5,
+          },
+          {
+            min: 288,
+            max: 288,
+            offset: 5,
+          },
+          {
+            min: 290,
+            max: 290,
+            offset: 5,
+          },
+          {
+            min: 294,
+            max: 294,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      fesParticle: {
+        canonical: [
+          {
+            min: 309,
+            max: 316,
+            offset: 5,
+          },
+        ],
+      },
+      fesText: {
+        canonical: [
+          {
+            min: 444,
+            max: null,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      fesNvText: {
+        canonical: [
+          {
+            min: 463,
+            max: null,
+            offset: 26,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      window: {
+        canonical: [
+          {
+            min: 156,
+            max: 156,
+            offset: 2,
+          },
+          {
+            min: 160,
+            max: 160,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 158,
+            max: 158,
+            offset: -2,
+          },
+          {
+            min: 162,
+            max: 162,
+            offset: -2,
+          },
+        ],
+      },
+      sound: {
+        canonical: [
+          {
+            min: 177,
+            max: 218,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 179,
+            max: 220,
+            offset: -2,
+          },
+        ],
+      },
+      textLegacy: {
+        raw: [
+          {
+            min: 37,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      drawCommand: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      effectCommand: {
+        canonical: [
+          {
+            min: 490,
+            max: 497,
+            offset: 26,
+          },
+          {
+            min: null,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      areaCommand: {
+        canonical: [
+          {
+            min: 252,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      particleCommand: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 5,
+          },
+        ],
+      },
+      planeCommand: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 2,
+          },
+        ],
+      },
+      base: {
+        canonical: [
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+            exceptKinds: [1],
+          },
+        ],
+        raw: [
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      draw: {
+        raw: [
+          {
+            min: null,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      control: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 0,
+            kinds: [1, 13],
+          },
+          {
+            min: 267,
+            max: null,
+            offset: 5,
+            kinds: [15],
+          },
+          {
+            min: 326,
+            max: null,
+            offset: 5,
+            kinds: [34],
+          },
+          {
+            min: 348,
+            max: null,
+            offset: 5,
+            kinds: [40],
+          },
+          {
+            min: 363,
+            max: null,
+            offset: 5,
+            kinds: [41],
+          },
+          {
+            min: 354,
+            max: null,
+            offset: 5,
+            kinds: [42],
+          },
+          {
+            min: 444,
+            max: null,
+            offset: 5,
+            kinds: [48],
+          },
+          {
+            min: 463,
+            max: null,
+            offset: 26,
+            kinds: [49],
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 331,
+            max: null,
+            offset: -5,
+            kinds: [34],
+          },
+          {
+            min: 353,
+            max: null,
+            offset: -5,
+            kinds: [40],
+          },
+          {
+            min: 368,
+            max: null,
+            offset: -5,
+            kinds: [41],
+          },
+          {
+            min: 359,
+            max: null,
+            offset: -5,
+            kinds: [42],
+          },
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      area: {
+        canonical: [
+          {
+            min: 252,
+            max: 273,
+            offset: 5,
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 257,
+            max: 278,
+            offset: -5,
+          },
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+      screen: {
+        canonical: [
+          {
+            min: null,
+            max: null,
+            offset: 0,
+            kinds: [1],
+          },
+          {
+            min: 490,
+            max: 497,
+            offset: 26,
+            kinds: [35, 36, 37, 38, 39, 50, 51, 52, 57, 58],
+          },
+          {
+            min: 372,
+            max: 390,
+            offset: 5,
+            kinds: [35, 36, 37, 38, 39, 50, 51, 52, 57, 58],
+          },
+          {
+            min: 37,
+            max: null,
+            offset: 2,
+          },
+        ],
+        raw: [
+          {
+            min: 516,
+            max: 523,
+            offset: -26,
+          },
+          {
+            min: 377,
+            max: 395,
+            offset: -5,
+          },
+          {
+            min: 39,
+            max: null,
+            offset: -2,
+          },
+        ],
+      },
+    },
+    tilePlaneCommand: 44,
+  },
+  layouts: {
+    motionCheckpoint: {
+      size: 1076,
+      group: 36,
+      registers: 40,
+      nameBytes: 32,
+      wide: false,
+    },
+    bitmapMemory: {
+      wrapperBytes: 276,
+    },
+    configurationQuery: {
+      archive: 3192,
+      soundLoaded: 135236,
+      soundParts: 135272,
+      soundMaster: 135284,
+      query24D: 48172,
+    },
+    desktop: {
+      fields: 67464,
+    },
+    executableResources: {
+      wide: false,
+    },
+    fileServer: {
+      size: 79140,
+    },
+    memoryFile: {
+      size: 288,
+      data: 272,
+      length: 276,
+      wide: false,
+    },
+    languageBank: {
+      size: 64,
+    },
+    preferences: {
+      directory: 2672,
+      filename: 260,
+      wide: false,
+    },
+    engineImage: {
+      settingsOffset: 528,
+      ownerBootstrapOffsets: [67876, 135500],
+      allocationWords: [1, 3],
+    },
+    startupApplication: {
+      graphicsBytes: 84,
+    },
+    startupInstance: {
+      nameOffset: 1088,
+    },
+    optionalMenuCommands: [
+      [46104, 118],
+      [47368, 40034],
+    ],
+    startupSound: {
+      directory: 2672,
+      base: 135236,
+      wide: false,
+    },
+    startupWindow: {
+      menuFlag: 48804,
+      titleOffset: 828,
+    },
+    systemInformation: {
+      size: 1408,
+      memory: 1372,
+      directX: 408,
+      manufacturer: 860,
+      model: 1116,
+      cpu: {
+        fields: 540,
+      },
+      wide: false,
+    },
+    windowClass: {
+      suffix: 'A',
+    },
+    windowPump: {
+      mask: 1279,
+    },
+    fesGallery: {
+      listOffset: 1740,
+    },
+    rasterKernel: {
+      copyMMX: 580,
+    },
+    renderer: {
+      bitmap: 116,
+      bits: 120,
+    },
+    sceneMemory: {
+      readerBytes: 304,
+      translations: null,
+    },
+    screenCapture: {
+      recording: 132,
+      counter: 136,
+      prefix: 140,
+    },
+    scriptMessageBox: {
+      wide: false,
+    },
+    textCores: {
+      nv: {
+        size: 488,
+        configSize: 408,
+        packetSize: 456,
+        bitmapAt: 420,
+        dirtyAt: 424,
+      },
+      cp932: {
+        size: 72,
+        defaultAt: 196,
+        configSize: 184,
+      },
+    },
+  },
+  // Explicit slot registration and differences from the shared semantic catalog.
+  tables: {
+    main: {
+      count: 1009,
+      slots: {
+        recovered: [
+          1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+          27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+          49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+          71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92,
+          93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+          112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+          130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 142, 143, 144, 145, 146, 147, 148,
+          149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166,
+          167, 168, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+          208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225,
+          226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 237, 238, 239, 240, 241, 242, 243, 244,
+          245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262,
+          263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 284, 285,
+          286, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305,
+          306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323,
+          324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341,
+          342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359,
+          360, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378,
+          379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396,
+          397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414,
+          415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 430, 431, 433, 434, 435,
+          436, 437, 438, 440, 441, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456,
+          458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475,
+          476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493,
+          494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511,
+          512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529,
+          530, 531, 532, 534, 535, 536, 537, 538, 539, 540, 541, 542, 549, 557, 558, 564, 565, 566,
+          567, 568, 569, 570, 571, 572, 577, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592,
+          593, 594, 595, 596, 597, 598, 599, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612,
+          613, 614, 615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625, 628, 630, 631, 632, 633,
+          634, 635, 636, 637, 638, 639, 640, 641, 645, 646, 647, 649, 650, 651, 653, 654, 655, 657,
+          658, 659, 662, 664, 665, 666, 667, 668, 674, 675, 676, 677, 678, 679, 680, 681, 683, 684,
+          685, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 703, 704, 705, 706, 707, 708, 709,
+          710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727,
+          728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 739, 740, 741, 742, 743, 744, 745,
+          746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763,
+          764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781,
+          782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799,
+          800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817,
+          818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835,
+          836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860,
+          861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878,
+          879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896,
+          897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935, 936, 937, 938, 939, 940, 941, 942,
+          943, 944, 945, 946, 947, 948, 949, 950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960,
+          961, 962, 963, 964, 967, 968, 969, 970, 971, 972, 974, 975, 976, 977, 978, 979, 980, 981,
+          982, 988, 989, 990, 991, 992, 993, 994, 995, 996, 997, 998, 999, 1000, 1001, 1002, 1006,
+        ],
+
+        reserved: [
+          0, 2, 3, 141, 169, 170, 172, 173, 180, 182, 184, 185, 187, 188, 189, 190, 191, 429, 439,
+          543, 544, 545, 546, 547, 548, 550, 552, 553, 556, 559, 560, 561, 562, 563, 573, 574, 578,
+          579, 581, 626, 627, 642, 643, 644, 652, 656, 660, 661, 670, 671, 672, 673, 686, 687, 906,
+          907, 908, 910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920, 921, 922, 923, 924, 926,
+          927, 928, 929, 930, 931, 932, 933, 965, 966,
+        ],
+        'constant-zero': [
+          171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580, 909,
+          925,
+        ],
+        unknown: [
+          279, 280, 281, 282, 283, 287, 288, 361, 428, 442, 443, 457, 533, 576, 600, 601, 629, 648,
+          663, 669, 682, 688, 689, 690, 691, 692, 837, 838, 839, 840, 841, 842, 843, 973, 983, 984,
+          985, 986, 987, 1003, 1004, 1005, 1007, 1008,
+        ],
+      },
+      signatures: [
+        { ids: [82], fields: { controlCodes: [2], resultWritten: false, review: 'reviewed' } },
+        { ids: [467], fields: { controlCodes: [2], review: 'reviewed', resultWritten: false } },
+        { ids: [90], fields: { review: 'reviewed' } },
+        {
+          ids: stringPlaneSlots.filter((id) => ![124, 585, 599].includes(id)),
+          fields: { review: 'reviewed' },
+        },
+        {
+          ids: [124],
+          fields: {
+            argumentWords: 2,
+            parameters: [
+              {
+                description: 'nativeID kind8 task',
+                name: 'task',
+                type: { kind: 'object-id', objectKind: 'legacy-text' },
+              },
+              {
+                description: 'format* text',
+                name: 'text',
+                type: {
+                  addressSpace: 'unknown',
+                  direction: 'unknown',
+                  kind: 'pointer',
+                  target: { encoding: 'unknown', kind: 'format-string' },
+                },
+              },
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [585, 599],
+          fields: { controlCodes: [2], resultWritten: false, review: 'reviewed' },
+        },
+        ...NATIVE_TILE_GAME_SIGNATURES,
+        ...nativeInterpreterScalarSignatures('main'),
+        ...nativeInterpreterGeometrySignatures('main'),
+        ...nativeRawCSSSignatures(),
+        ...nativeContentDatabaseSignatures(contentDatabaseSlots).map((group) => ({
+          ...group,
+          fields: { ...group.fields, review: 'reviewed' },
+        })),
+        {
+          ids: [96, 97],
+          fields: { review: 'reviewed' },
+        },
+        {
+          ids: [98],
+          fields: { resultWritten: true, review: 'reviewed' },
+        },
+        {
+          ids: [289],
+          fields: {
+            resultWritten: true,
+            result: {
+              description: 'Owned name-pair array',
+              kind: 'handle',
+              handleKind: 'name-pairs',
+              ownership: 'owned',
+            },
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [290, 291],
+          fields: { resultWritten: false, review: 'reviewed' },
+        },
+        {
+          ids: [292, 293],
+          fields: { review: 'reviewed' },
+        },
+        {
+          ids: [259, 463, 862],
+          fields: { resultWritten: false, review: 'reviewed' },
+        },
+        {
+          ids: [264, 462],
+          fields: { resultWritten: true, review: 'reviewed' },
+        },
+        {
+          ids: [80, 83, 86, 87, 91, 94, 99, 102, 103, 110],
+          fields: { resultWritten: false, review: 'reviewed' },
+        },
+        {
+          ids: [89, 109],
+          fields: { resultWritten: true, review: 'reviewed' },
+        },
+        {
+          ids: [70],
+          fields: { resultWritten: true },
+        },
+        {
+          ids: [208],
+          fields: { resultWritten: true, review: 'reviewed' },
+        },
+        {
+          ids: [1],
+          fields: {
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [6],
+          fields: {
+            result: {
+              bits: 32,
+              description: 'u32',
+              kind: 'bits',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [9, 10, 11],
+          fields: { review: 'reviewed' },
+        },
+        {
+          ids: [27],
+          fields: {
+            result: {
+              addressSpace: 'vm',
+              description: 'VMptr to zeroed bytes or the empty allocation sentinel',
+              direction: 'out',
+              kind: 'pointer',
+              target: { kind: 'integer', bits: 8, signed: false },
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [28],
+          fields: {
+            parameters: [
+              {
+                description: 'Exact VM base of the block',
+                name: 'block',
+                type: {
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  kind: 'pointer',
+                  target: { kind: 'integer', bits: 8, signed: false },
+                },
+              },
+            ],
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [140, 142, 549],
+          fields: {
+            argumentWords: null,
+            parameters: { kind: 'ignored', description: 'The native handler reads no operands.' },
+            result: { kind: 'bits', bits: 32, initialization: 'uninitialized' },
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [
+            29, 32, 219, 220, 221, 222, 225, 226, 229, 230, 231, 232, 233, 234, 235, 239, 240, 242,
+            243, 245, 247, 248, 249, 250, 252, 253, 254, 255, 276, 277, 278, 322, 323, 324, 325,
+            326, 327, 330, 331, 334, 335, 336, 337, 338, 385, 386, 419, 420, 421, 422, 423, 424,
+            425, 458, 459, 608, 609, 610, 978, 979, 980, 981, 982, 990, 993,
+          ],
+          fields: {
+            review: 'recovered',
+          },
+        },
+        {
+          ids: [30, 31],
+          fields: {
+            result: {
+              bits: 32,
+              description: 'u32 bytes',
+              kind: 'integer',
+              signed: false,
+              unit: 'byte-count',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [33, 34, 40, 42, 47, 48],
+          fields: {
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [35, 36, 37, 41, 43, 44, 45, 65],
+          fields: {
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [38, 39],
+          fields: {
+            result: {
+              bits: 32,
+              description: 'u32 bytes',
+              kind: 'integer',
+              signed: false,
+              unit: 'byte-count',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [49],
+          fields: {
+            result: {
+              bits: 32,
+              description: 'u32 byteOffset',
+              kind: 'integer',
+              signed: false,
+              unit: 'byte-offset',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [593],
+          fields: {
+            parameters: [
+              {
+                description: 'handle document',
+                name: 'document',
+                type: {
+                  handleKind: 'xml-document',
+                  kind: 'handle',
+                  ownership: 'unknown',
+                },
+              },
+              {
+                description: 'char* inOutDefault',
+                name: 'inOutDefault',
+                type: {
+                  addressSpace: 'vm',
+                  direction: 'out',
+                  kind: 'pointer',
+                  target: {
+                    bits: 8,
+                    encoding: 'CP932',
+                    kind: 'character',
+                  },
+                  writePolicy: 'conditional',
+                },
+              },
+              {
+                description: 'format* path',
+                name: 'path',
+                type: {
+                  addressSpace: 'unknown',
+                  direction: 'unknown',
+                  kind: 'pointer',
+                  target: {
+                    encoding: 'unknown',
+                    kind: 'format-string',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      ],
+      observedArgumentWords: [
+        { ids: [467], value: [3] },
+        { ids: [50], value: [0, 1, 3] },
+        { ids: [51], value: [0, 1, 3] },
+        { ids: [52], value: [0, 1, 3] },
+        { ids: [53], value: [0, 1, 3] },
+        { ids: [54], value: [0, 1, 3] },
+        { ids: [55], value: [0, 1, 3] },
+        { ids: [56], value: [0, 1, 3] },
+        { ids: [57], value: [0, 1, 3] },
+        { ids: [58], value: [0, 1, 3] },
+        { ids: [59], value: [0, 1, 2, 4] },
+        { ids: [60], value: [0, 1, 3] },
+        { ids: [61], value: [0, 1, 2, 4] },
+        { ids: [62], value: [0, 1, 3] },
+        { ids: [63], value: [0, 1, 3] },
+        { ids: [64], value: [0, 1, 3] },
+        { ids: [204], value: [0, 3, 4, 6] },
+        { ids: [205], value: [0, 3, 4, 6] },
+        { ids: [206], value: [0, 3, 4, 6] },
+        { ids: [207], value: [0, 1, 3] },
+        { ids: [318], value: [0, 4, 5, 7] },
+        { ids: [319], value: [0, 1, 3] },
+        { ids: [321], value: [0, 1, 2, 4] },
+        { ids: [350], value: [0, 1, 3] },
+        { ids: [351], value: [0, 1, 2, 4] },
+        { ids: [352], value: [0, 1, 3] },
+        { ids: [353], value: [0, 1, 2, 4] },
+        { ids: [354], value: [0, 1, 2, 4] },
+        { ids: [355], value: [0, 1, 3] },
+        { ids: [356], value: [0, 1, 3] },
+        { ids: [357], value: [0, 1, 2, 4] },
+        { ids: [358], value: [0, 1, 2, 4] },
+        { ids: [397], value: [0, 1, 2, 4] },
+        { ids: [461], value: [0, 1, 3] },
+        { ids: [662], value: [0, 3, 4, 6] },
+        {
+          ids: [
+            0, 2, 3, 7, 12, 18, 20, 22, 24, 26, 74, 75, 77, 82, 89, 90, 91, 96, 97, 98, 99, 102,
+            103, 107, 110, 120, 121, 122, 123, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135,
+            136, 137, 138, 139, 140, 141, 142, 144, 145, 146, 147, 148, 151, 152, 153, 154, 155,
+            162, 164, 165, 166, 167, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
+            181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 198, 199,
+            202, 208, 214, 215, 216, 217, 223, 224, 227, 228, 236, 237, 251, 259, 264, 289, 290,
+            291, 292, 293, 297, 300, 303, 305, 306, 309, 312, 349, 360, 361, 370, 371, 374, 375,
+            376, 377, 378, 379, 380, 381, 382, 383, 384, 391, 395, 396, 401, 403, 405, 406, 407,
+            408, 409, 410, 411, 412, 413, 414, 415, 416, 428, 429, 430, 431, 432, 442, 443, 444,
+            446, 456, 457, 460, 462, 463, 468, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479,
+            480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496,
+            497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513,
+            525, 526, 529, 532, 533, 537, 538, 553, 558, 564, 569, 574, 582, 583, 584, 585, 587,
+            588, 589, 599, 602, 603, 616, 618, 622, 623, 624, 626, 627, 631, 632, 637, 638, 641,
+            648, 650, 656, 657, 658, 659, 660, 661, 663, 664, 665, 666, 667, 668, 669, 675, 676,
+            677, 678, 679, 680, 682, 695, 698, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722,
+            725, 729, 731, 734, 738, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753,
+            754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770,
+            771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 791, 792, 793,
+            794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810,
+            811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827,
+            828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843, 883, 884, 888, 893, 897,
+            912, 915, 919, 920, 922, 923, 935, 940, 941, 945, 949, 951, 952, 953, 954, 955, 958,
+            959, 961, 962, 969, 973, 983, 984, 985, 986, 987, 996, 997, 1003, 1004, 1005, 1007,
+            1008,
+          ],
+          value: [],
+        },
+        {
+          ids: [
+            1, 6, 9, 10, 17, 25, 27, 28, 32, 40, 47, 48, 67, 71, 80, 83, 109, 111, 114, 118, 125,
+            156, 158, 159, 160, 197, 200, 203, 209, 210, 212, 213, 220, 234, 235, 238, 246, 247,
+            248, 261, 265, 267, 268, 269, 270, 272, 273, 274, 278, 279, 283, 285, 287, 295, 296,
+            311, 314, 315, 317, 322, 324, 330, 331, 340, 341, 342, 365, 366, 389, 390, 393, 420,
+            421, 437, 440, 445, 448, 452, 453, 454, 516, 520, 549, 570, 572, 577, 581, 590, 591,
+            594, 595, 601, 605, 606, 607, 608, 615, 617, 628, 633, 634, 651, 673, 681, 683, 684,
+            691, 697, 702, 710, 711, 833, 834, 844, 854, 858, 864, 867, 870, 876, 877, 878, 886,
+            889, 890, 895, 898, 899, 908, 909, 930, 943, 944, 946, 947, 948, 950, 956, 957, 960,
+            963, 964, 970, 980, 982, 989, 990, 995, 998, 1000, 1001,
+          ],
+          value: [1],
+        },
+        {
+          ids: [
+            4, 5, 33, 34, 65, 68, 76, 113, 219, 225, 226, 286, 294, 323, 404, 419, 434, 436, 438,
+            465, 515, 542, 565, 566, 609, 610, 696, 741, 789, 845, 846, 847, 852, 885, 894, 925,
+            932, 933, 937, 938, 939, 942, 999,
+          ],
+          value: [0],
+        },
+        {
+          ids: [
+            8, 13, 14, 15, 16, 19, 21, 23, 29, 46, 49, 81, 88, 92, 94, 95, 105, 106, 108, 112, 124,
+            149, 157, 161, 196, 211, 221, 243, 245, 252, 253, 258, 262, 266, 275, 276, 277, 280,
+            281, 282, 284, 288, 298, 308, 310, 313, 316, 320, 325, 332, 338, 348, 364, 369, 392,
+            394, 400, 402, 417, 422, 423, 426, 427, 439, 447, 449, 450, 451, 455, 458, 464, 466,
+            469, 514, 518, 522, 524, 528, 531, 534, 540, 545, 546, 547, 548, 551, 554, 555, 557,
+            567, 568, 571, 573, 580, 586, 598, 611, 612, 613, 614, 619, 620, 635, 636, 646, 647,
+            653, 655, 670, 674, 687, 690, 694, 701, 723, 727, 728, 733, 737, 739, 740, 785, 848,
+            849, 855, 857, 861, 863, 865, 866, 868, 872, 873, 874, 891, 892, 900, 901, 903, 904,
+            907, 911, 913, 914, 916, 918, 921, 926, 927, 928, 929, 931, 966, 968, 972, 974, 975,
+            978, 979, 981, 988, 993, 1002, 1006,
+          ],
+          value: [2],
+        },
+        { ids: [11, 104, 304, 399, 536, 578, 724, 856, 967], value: [7] },
+        {
+          ids: [
+            30, 31, 38, 39, 44, 45, 69, 70, 72, 73, 79, 85, 86, 168, 229, 230, 233, 244, 249, 250,
+            254, 327, 333, 336, 337, 347, 359, 386, 388, 418, 527, 541, 544, 630, 640, 699, 713,
+            787, 790, 835, 869, 880, 965, 976, 992,
+          ],
+          value: [4],
+        },
+        {
+          ids: [
+            35, 36, 37, 41, 42, 43, 66, 78, 100, 119, 143, 150, 163, 201, 222, 231, 232, 241, 242,
+            256, 260, 263, 307, 326, 328, 329, 343, 344, 346, 362, 363, 368, 372, 373, 387, 424,
+            425, 435, 441, 459, 517, 519, 539, 543, 550, 552, 556, 559, 562, 563, 575, 576, 579,
+            592, 593, 600, 621, 625, 629, 639, 645, 649, 652, 654, 686, 688, 689, 692, 700, 712,
+            714, 715, 717, 718, 719, 720, 726, 730, 786, 836, 850, 851, 859, 871, 875, 879, 881,
+            882, 887, 896, 902, 906, 917, 924, 934, 991, 994,
+          ],
+          value: [3],
+        },
+        {
+          ids: [
+            84, 87, 93, 101, 218, 239, 240, 334, 335, 345, 385, 433, 530, 560, 561, 596, 597, 604,
+            642, 643, 671, 672, 685, 788, 862, 905, 910,
+          ],
+          value: [5],
+        },
+        { ids: [115, 116, 299, 301, 302, 367, 523, 735, 971], value: [10] },
+        { ids: [117, 255, 271, 339, 644, 693, 736, 853, 936], value: [6] },
+        { ids: [257, 732], value: [13] },
+        { ids: [398], value: [12] },
+        { ids: [521, 535, 860, 977], value: [8] },
+      ],
+      evidence: [
+        {
+          ids: [82],
+          value:
+            'Own exact PE normal Script/GCALL file-model bridge: native FileServer Win32 backslash paths, two-stage file reads, replacement removes the previous primary before IO, independent Plane shown/new-model hidden, missing-resource metadata retention, kind6 BasePlane and KX3 receiver-ignore, actual primary Input and subsequent 64x64 COM consumers. Four independent current cold continuations per build. Finite valid KX2 ordinary mode1 only; no KX3 decoder, INT mount, physical GPU or full76 application claim. See tests/fixtures/native-modern-plane-files.json.',
+        },
+        {
+          ids: [467],
+          value:
+            'Own fixed modern Main66 kind2 Plane, initialized native mode1 manager, actual Main542 two 8x8 pages and Main115 source-bitmap uploads. Actual Script Main467 copies 64-byte input to private 80-byte records, releases/rebuilds an occupied divided model, and ordinary Main92 shows each new record before Top update/draw and original View3D frame consume projected vertices and exact page alpha. Main83 unload/recreate and normal retirement match current VM and two independent cold continuations per build. Finite vertices/positive count/allocated page shapes only; no full76 M2 initialization, physical GPU or absent-page fallback claim. See tests/fixtures/native-modern-plane-mesh.json.',
+        },
+        {
+          ids: [89, 90, 91],
+          value:
+            'Own modern actual Main66 kind1/2 parent-child factory, Main79 live models and Script GCALLs for priority/parent inheritance/stop. Native pose outputs and real Top update/draw traversal match current VM with eight independent cold continuations per build. Only measured typed live-Plane/finite-offset shapes and native zero-target early returns; no arbitrary receiver, absent model getter, full76 M2 View1 or physical GPU claim. See tests/fixtures/native-modern-plane-inheritance.json.',
+        },
+        {
+          ids: stringPlaneSlots,
+          value:
+            'Own 74 actual Main66/Script/GCALL kind8 StringPlane: 1128B configuration, forty-byte cells, normal state messages, colour585/font599 consumed by later append, private 4x2 image atlas, borrowed bitmap/reconfigure and normal retirement. Paired raw cells/pixels and sixteen independent cold continuations across both builds. Only captured normal shapes; GDI fallback, extended initializer418, other receiver namespaces and ranges retain prior qualification. See tests/fixtures/native-modern-stringplane-state.json.',
+        },
+        {
+          ids: NATIVE_TILE_GAME_IDS,
+          value:
+            'Own fixed 2.6.1.74 registered model/scratch/calendar-seed initialization, actual 32-byte context construction and all44 complete GCALL wrappers. Real current KCS agrees on complete mapped local bytes, controls/results, independent context event caches and raw624-word RNG state; fresh cold restores preserve the shared model and context ownership. The bounded initialized/default-state command and empty-cache observations do not establish every nonempty choice/result or gameplay shape. No Task, FES command or renderer receiver is inferred from this rule context. See modern-tile-initialization and modern-tile-wrappers fixtures.',
+        },
+        { ids: NATIVE_INTERPRETER_GEOMETRY_IDS.main, value: geometryEvidence },
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS.main, value: scalarEvidence },
+        {
+          ids: contentDatabaseSlots,
+          value:
+            'Own fixed 2.6.1.74 85 content-database wrappers, constructors and callees are linked to the original 2117-call authored resource audit and the new 535-case independent full KCS GCALL comparison. Complete guest data/shared/heap blocks, raw progress formats, owner identities and both MT states agree. Question37 contains two valid-owner empty-member wrappers769/770; these are original stub behavior, not additional effective features. Resource allocation stages and raw/CSS failure are independently proved. Authored legal resources, no actual game database asset scenario; modern unwritten CSS record zero remains unproved.',
+        },
+        {
+          ids: [238, 833, 834, 835, 836],
+          value:
+            'Own fixed 2.6.1.74 raw/CSS wrappers and native hidden-reference helper execute successful allocation/release, independent copied bytes and explicit zero-byte records. A controlled small HeapAlloc failure returns zero/control1 from Main833 and Main836; Main836 leaves its guest length untouched. Actual original diagnostics execute, and successful follow-up allocations/releases remain usable. Production real GCALL confirms bounded exhaustion/free/reuse and cold ownership. These observations do not cover an unwritten record zero.',
+        },
+        {
+          ids: [289, 290, 291, 292, 293],
+          value:
+            'Own 2.6.1.74 fixed name-pair allocation, bytewise CP932 name comparison, word-pair match, output alias order and native release. See docs/native-name-tables.md.',
+        },
+        {
+          ids: [29, 30, 31, 32],
+          value:
+            'Own 2.6.1.74 file wrappers, kcFileServer and the regular IFile mode, read, write and release receivers. See docs/native-standard-review.md.',
+        },
+        {
+          ids: [1],
+          value:
+            'Own 2.6.1.74 KCS debug formatter and original native debug-window transport, control 2 with no guest result. See docs/native-standard-review.md.',
+        },
+        {
+          ids: [96, 97, 98],
+          value:
+            'reviewed-SDK-2.6.1.74-own-Plane-raw70-72; 48-byte-states-and-BasePlane-Input-bounds; low-halfword-texture-pose-selection-and-independent-blocked-bit; see docs/native-plane-sdk.md',
+        },
+        {
+          ids: [80, 83, 86, 87, 94, 99, 102, 103, 109, 110],
+          value:
+            'reviewed-SDK-2.6.1.74-own-Plane-BasePlane-and-Input-owner-packets-and-state; see docs/native-plane-sdk.md',
+        },
+        {
+          ids: [261],
+          value:
+            'reviewed-SDK-2.6.1.74-main261-own-full-wrapper-51CAF0; one-DWORD-native-target-no-zero-skip-raw280-canonical285-w0-flags0; L-alias-self-argument-slot-Draw5E4DE0-renderer-bitmap-borrowed-u32-VM-result-written-control1; missing-response-unrepresentable-self-pointer-explicitly-unsupported; see docs/native-draw-commands.md',
+        },
+        {
+          ids: [340],
+          value:
+            'reviewed-SDK-2.6.1.74-main340-own-full-wrapper-51C9E0; one-DWORD-native-target-no-zero-skip-raw285-canonical290-w0-l0-flags0-local-Q-initialized0-control2-VM-result-unwritten; Draw-dirty-before-renderer-check-and-existing-ordinary-compositor; see docs/native-draw-commands.md',
+        },
+        {
+          ids: [93],
+          value:
+            'reviewed-SDK-2.6.1.74-main93-own-full-wrapper-513B50; five-DWORD-native-target-f32-XYZ-raw-selector-target0-early-skip; raw53-canonical55-flags1-control2-VM-result-unwritten; existing-selected-model-rotation-and-child-owners; see docs/native-abi-data.md',
+        },
+        {
+          ids: [339],
+          value:
+            'reviewed-SDK-2.6.1.74-main339-own-full-wrapper-51CEE0; six-DWORD-native-target-raw-key-signed-XYWH-16B-RECT-wrapped-add-no-zero-skip-raw284-canonical289-flags0-control2-VM-result-unwritten; Draw-original-EqualRect-before-empty-full-range-reset; see docs/native-draw-commands.md',
+        },
+        {
+          ids: [455],
+          value:
+            'reviewed-SDK-2.6.1.74-main455-own-full-wrapper-51CE90; two-DWORD-native-target-and-bitmap-no-zero-skip-raw291-canonical296-w0-lraw-flags0-local-out-initialized0-control2-VM-result-unwritten; existing-Draw-private-deep-copy-zero-hide-and-owner-release; see docs/native-draw-commands.md',
+        },
+        {
+          ids: [341],
+          value:
+            'reviewed-SDK-2.6.1.74-main341-own-full-wrapper-51C940; one-DWORD-native-target-no-zero-skip-raw286-canonical291-w0-l0-flags0-local-out-initialized0-control2-VM-result-unwritten; existing-Draw-clear-retained-entries-and-bitmap-base-reinsertion; see docs/native-abi-data.md',
+        },
+        {
+          ids: [208],
+          value:
+            'docs/native-task-dump.md: SDK52A1A0 to Top4BABA0 raw34, Script4C50C0 88B and real VM8A6490/8A6540 contiguous region; control1 explicitly writes zero.',
+        },
+        {
+          ids: [101],
+          value:
+            'reviewed-SDK-2.6.1.74-main101-full-wrapper-513C10-own-scale64-canonical66-flags0; five-DWORD-native-target-raw-f32-XYZ-raw-selector-target0-skip-control2-VM-result-unwritten; four-word-XYZ-3F800000-packet; Base-forces-geometry-selector0-existing-scale-MOT-owner; see docs/native-abi-data.md',
+        },
+        {
+          ids: [84],
+          value:
+            'reviewed-SDK-2.6.1.74-main84-full-wrapper-513AD0-own-position49-canonical51-flags1; five-DWORD-native-target-raw-f32-XYZ-raw-selector-target0-skip-control2-VM-result-unwritten; existing-ordinary-position-MOT-and-child-owner; see docs/native-abi-data.md',
+        },
+        {
+          ids: [85],
+          value:
+            'reviewed-SDK-2.6.1.74-main85-full-wrapper-5137D0-own-query59-set47-canonical61-49-both-flags1; four-DWORD-native-target-raw-f32-XY-raw-selector-target0-skip-control2-VM-result-unwritten; preserve-initialized-query-Z-and-existing-MOT-owner; see docs/native-abi-data.md',
+        },
+        {
+          ids: [78],
+          value:
+            'reviewed-SDK-2.6.1.74-main78-full-wrapper-512B00-own-SimplePlane39-canonical41-4BCD18-54C9C0; native-target-plus-two-raw-f32-dimensions-target0-skip-control2-VM-result-unwritten; initialized-eight-word-packet-ordinary-mode1-factory-retained-fields; see docs/native-abi-data.md',
+        },
+        {
+          ids: [342],
+          value:
+            'reviewed-SDK-2.6.1.74-main342-full-wrapper-51CCF0-own-Draw287-canonical292-4CEDBD-and-5E4EC0-force-output; one-DWORD-native-target-no-zero-skip-w0-l0-flags0-control2-VM-result-unwritten; unconditional-dirty-and-renderer-present-pending-clear; see docs/native-draw-commands.md',
+        },
+        {
+          ids: [108],
+          value:
+            'reviewed-SDK-2.6.1.74-main108-full-wrapper-515670-own-Base92-canonical94-4BB829-full-DWORD-return-word78-and-poll-clear; two-DWORD-task-value-no-zero-skip-flags0-control2-VM-result-unwritten; see docs/native-abi-data.md',
+        },
+        {
+          ids: [100],
+          value:
+            'reviewed-SDK-2.6.1.74-main100-full-wrapper-5139C0-own-SimplePlane57-color-manager-54E2A0-554760; three-DWORD-task-ARGB-override-target0-skip-before-other-reads-flags0-control2-VM-result-unwritten; own-source55AB00-derived55A630-retain-override-DWORD-and-ARGB-with-zero-nonzero-dirty-policy; see docs/native-abi-data.md',
+        },
+        {
+          ids: [849],
+          value:
+            'reviewed-SDK-2.6.1.74-main849-full-wrapper-515700-own-BasePlane97-SimplePlane97-to-Input151; two-DWORD-task-drag-enabled-flags0-control2-VM-result-unwritten; own-first-owner-DWORD-region40-drag-mask2-consumer-without-dirty-write; see docs/native-abi-data.md',
+        },
+        {
+          ids: [848],
+          value:
+            'reviewed-SDK-2.6.1.74-main848-full-wrapper-5156D0-own-BasePlane96-SimplePlane96-to-Input133; two-DWORD-task-hover-enabled-flags0-control2-VM-result-unwritten; own-first-owner-DWORD-region2C-and-hover-enter7-leave8-consumer; see docs/native-abi-data.md',
+        },
+        {
+          ids: [106],
+          value:
+            'reviewed-SDK-2.6.1.74-main106-full-wrapper-515640-own-BasePlane91-SimplePlane91-input-active; two-DWORD-task-active-flags0-control2-VM-result-unwritten; own-Input130-all-owner-DWORD-active-and-nonzero-other-owner-clear; see docs/native-abi-data.md',
+        },
+        {
+          ids: [105],
+          value:
+            'reviewed-SDK-2.6.1.74-main105-full-wrapper-5156A0-own-BasePlane90-SimplePlane90-input-enable; two-DWORD-task-enabled-flags0-control2-VM-result-unwritten; own-Input132-DWORD-enabled-and-130-owner-active-clear; see docs/native-abi-data.md',
+        },
+        {
+          ids: [104],
+          value:
+            'reviewed-SDK-2.6.1.74-main104-full-wrapper-515770-own-BasePlane87-SimplePlane87-input-binding; seven-DWORD-RECT-priority-retainedword-flags0-control2-VM-result-unwritten; see docs/native-abi-data.md',
+        },
+        {
+          ids: [92],
+          value:
+            'reviewed-SDK-2.6.1.74-main92-full-wrapper-513C80-own-plane45-canonical47-flags1; native-task-ID-visible-DWORD-control2-VM-result-unwritten; see docs/native-abi-data.md',
+        },
+        {
+          ids: [88],
+          value:
+            'reviewed-SDK-2.6.1.74-main88-full-wrapper-5139F0-own-plane-query59-write47-flags1; native-task-ID-f32-z-control2-VM-result-unwritten; see docs/native-abi-data.md',
+        },
+        {
+          ids: [79],
+          value:
+            'reviewed-SDK-2.6.1.74-main79-full-wrapper-512A70-and-own-plane-4BCC70-mode1-factory-54B710; native-task-ID-f32-width-height-ARGB-control2-VM-result-unwritten; see docs/native-abi-data.md',
+        },
+        {
+          ids: [400],
+          value:
+            'reviewed-SDK-2.6.1.74-main400-loop-table-wrapper; see docs/native-engine-messages.md',
+        },
+        {
+          ids: [393],
+          value:
+            'reviewed-SDK-2.6.1.74-main393-full-wrapper-51B4A0-and-own-consumer-442080-8F2A20; raw-DWORD-settings-menu-command77-control2-VM-result-unwritten; see docs/native-abi-data.md',
+        },
+        {
+          ids: [450],
+          value:
+            'reviewed-SDK-2.6.1.74-main450-full-wrapper-raw330-canonical335-control1-local-result-to-VM; bounded original formatter corroboration; see docs/native-abi-data.md',
+        },
+        {
+          ids: [452],
+          value:
+            'reviewed-SDK-2.6.1.74-main452-full-wrapper-raw23-control1-VM-result-written; see docs/native-abi-data.md',
+        },
+        {
+          ids: [454],
+          value:
+            'reviewed-SDK-2.6.1.74-main454-full-wrapper-owned-CString-copy-control2-VM-result-unwritten; see docs/native-abi-data.md',
+        },
+        {
+          ids: [448],
+          value:
+            'reviewed-SDK-2.6.1.74-main448-full-wrapper-raw328-canonical333-control2; see docs/native-abi-data.md',
+        },
+        {
+          ids: [453],
+          value:
+            'reviewed-SDK-2.6.1.74-main453-full-wrapper-caller-exit-code-control2; see docs/native-abi-data.md',
+        },
+        {
+          ids: [449],
+          value:
+            'reviewed-SDK-2.6.1.74-main449-full-wrapper-raw329-canonical334-control2; see docs/native-abi-data.md',
+        },
+        {
+          ids: [451],
+          value:
+            'reviewed-SDK-2.6.1.74-main451-full-wrapper-raw331-canonical336-control2; see docs/native-abi-data.md',
+        },
+        {
+          ids: [256],
+          value:
+            'reviewed-SDK-2.6.1.74-main256-3words-control2-raw274-canonical279-VM-unwritten; normal-registered-draw-task; see docs/native-abi-data.md',
+        },
+        {
+          ids: [257],
+          value:
+            'reviewed-SDK-2.6.1.74-main257-13words-control2-raw275-canonical280-owned60Bzero-getter-u32alpha-clamp255-VM-unwritten; normal-registered-draw-task; see docs/native-abi-data.md',
+        },
+        {
+          ids: [259, 264, 462, 463, 862],
+          value:
+            'Own 2.6.1.74 Draw wrappers and kind 15 receiver. Raw 277 inserts or replaces the bitmap reference with unsigned alpha clamp. Raw 283 counts retained entries and writes the native result scratch, but control 2 leaves the VM stack void. Raw 293 initializes and queries the layer using the sender key, and 294 replaces it. Raw 305 redraws the supplied signed rectangle without adding x or y. See docs/native-draw-commands.md.',
+        },
+        {
+          ids: [258],
+          value:
+            'reviewed-SDK-2.6.1.74-main258-2words-control2-raw276-canonical281-VM-unwritten; normal-registered-draw-task; see docs/native-abi-data.md',
+        },
+        {
+          ids: [260],
+          value:
+            'reviewed-SDK-2.6.1.74-main260-3words-control2-raw278-canonical283-VM-unwritten; normal-registered-draw-task; see docs/native-abi-data.md',
+        },
+        {
+          ids: [263],
+          value:
+            'reviewed-SDK-2.6.1.74-main263-3words-control2-raw282-canonical287-VM-unwritten; normal-registered-draw-task; see docs/native-abi-data.md',
+        },
+        {
+          ids: [657],
+          value:
+            'reviewed-SDK-2.6.1.74-main657-2words-control1-raw302-canonical307-local-clear-copy-VM-word; normal-registered-draw-task; see docs/native-abi-data.md',
+        },
+        {
+          ids: [262],
+          value:
+            'reviewed-SDK-2.6.1.74-main262-full-wrapper-raw281-canonical286-control2; see docs/native-abi-data.md',
+        },
+        {
+          ids: [534],
+          value:
+            'reviewed-SDK-2.6.1.74-main534-full-wrapper-raw299-canonical304-control2; see docs/native-abi-data.md',
+        },
+        {
+          ids: [66],
+          value: 'reviewed-SDK-2.6.1.74-task-create; docs/native-engine-messages.md',
+        },
+        {
+          ids: [67],
+          value:
+            'reviewed-SDK-2.6.1.74-main67-full-wrapper; own Script binding, exact lookup, pending/frame and parent cleanup; see docs/native-abi-data.md',
+        },
+        {
+          ids: [68],
+          value: 'reviewed-SDK-2.6.1.74-task-current; docs/native-engine-messages.md',
+        },
+        {
+          ids: [69],
+          value:
+            'reviewed-SDK-2.6.1.74-main69-full-wrapper-raw170-canonical172-clear-copy-VM-word-and-caller-bank-restore; normal-registered-sender-receiver; see docs/native-abi-data.md',
+        },
+        {
+          ids: [70],
+          value:
+            'reviewed-SDK-2.6.1.74-main70-wrapper-529070-raw171-canonical173-deferred-four-word-Script-packet-4C5794-4C5DD0-result-word-control1; see docs/native-script-tasks.md',
+        },
+        {
+          ids: [71],
+          value:
+            'reviewed-SDK-2.6.1.74-main71-address-conversion-buffer-registration-control4; accepted-shared-VM-message-protocol; see docs/native-abi-data.md',
+        },
+        {
+          ids: [72, 73],
+          value:
+            'reviewed-SDK-2.6.1.74-main72-73-own-wrappers-5290F0-529210-raw172-canonical174-VM-byte-copy-control2-result-unwritten; see docs/native-script-tasks.md',
+        },
+        {
+          ids: [447],
+          value: 'reviewed-SDK-2.6.1.74-main447-full-wrapper; see docs/native-fes-task.md',
+        },
+        {
+          ids: [9],
+          value:
+            'reviewed-SDK-2.6.1.74-Main9-own-window-post-confirmation-and-filtered-close-sequence; see docs/native-standard-review.md',
+        },
+        {
+          ids: [10],
+          value:
+            'reviewed-SDK-2.6.1.74-Main10-CP932-format-raw-CRLF-and-CF_TEXT; see docs/native-standard-review.md',
+        },
+        {
+          ids: [11, 27, 28],
+          value:
+            'reviewed-SDK-2.6.1.74-own-local-clock-and-VM-allocator-list-control-and-GCALL-results; see docs/native-standard-review.md',
+        },
+        {
+          ids: [140, 142, 549],
+          value:
+            'reviewed-SDK-2.6.1.74-original-aliases-ignore-operands-return-control-1-with-unwritten-result; see docs/native-standard-review.md',
+        },
+        {
+          ids: [
+            4, 5, 7, 8, 12, 74, 75, 76, 77, 81, 95, 107, 111, 112, 113, 114, 115, 116, 117, 118,
+            119, 120, 121, 122, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
+            156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 192, 193, 194, 195,
+            214, 215, 216, 217, 218, 237, 241, 244, 246, 251, 265, 266, 267, 268, 269, 270, 284,
+            285, 286, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308,
+            309, 310, 311, 312, 313, 314, 315, 316, 317, 320, 343, 344, 345, 346, 347, 348, 349,
+            359, 360, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376,
+            377, 378, 379, 380, 381, 382, 383, 384, 387, 388, 389, 390, 392, 394, 395, 396, 398,
+            399, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416,
+            417, 418, 430, 431, 433, 434, 435, 436, 437, 438, 440, 441, 444, 445, 446, 460, 464,
+            465, 466, 468, 469, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526,
+            527, 528, 529, 530, 531, 532, 535, 536, 537, 538, 539, 540, 541, 542, 557, 558, 564,
+            565, 566, 567, 568, 569, 570, 571, 572, 577, 582, 583, 584, 586, 587, 588, 589, 594,
+            595, 596, 597, 598, 602, 603, 604, 605, 606, 607, 611, 612, 613, 614, 615, 616, 617,
+            618, 619, 620, 621, 622, 623, 624, 625, 628, 630, 631, 632, 641, 645, 646, 647, 649,
+            650, 651, 653, 654, 655, 658, 659, 664, 665, 666, 667, 668, 674, 675, 676, 677, 678,
+            679, 680, 681, 683, 684, 685, 694, 695, 696, 697, 698, 699, 700, 703, 704, 705, 706,
+            707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723,
+            724, 725, 726, 727, 728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 739, 740,
+            741, 785, 786, 787, 788, 789, 790, 844, 845, 846, 847, 850, 851, 852, 853, 854, 855,
+            856, 857, 858, 859, 860, 861, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873,
+            874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890,
+            891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 935, 936,
+            937, 938, 939, 940, 941, 942, 943, 944, 945, 946, 947, 948, 949, 950, 951, 952, 953,
+            954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964, 967, 968, 969, 970, 971, 972,
+            977, 991, 992, 994, 995, 996, 997, 998, 999, 1000, 1001, 1002,
+          ],
+          value: 'pinned-2.6.1.74-wrapper-and-subsystem-contract',
+        },
+        {
+          ids: [6, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47, 48, 49, 65],
+          value:
+            'reviewed-SDK-2.6.1.74-table-wrapper-body-and-authored-GCALL; see docs/native-standard-review.md',
+        },
+        {
+          ids: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 46],
+          value: 'both-pinned-original-basic-string-wrappers-and-full-memory-differential',
+        },
+        {
+          ids: [
+            219, 220, 221, 222, 225, 226, 229, 230, 231, 232, 233, 234, 235, 239, 240, 242, 243,
+            245, 247, 248, 249, 250, 252, 253, 254, 255, 276, 277, 278, 322, 323, 324, 325, 326,
+            327, 330, 331, 334, 335, 336, 337, 338, 385, 386, 419, 420, 421, 422, 423, 424, 425,
+            458, 459, 608, 609, 610, 978, 979, 980, 981, 982, 990, 993,
+          ],
+          value:
+            'reviewed-SDK-2.6.1.74-main-table-wrapper-body-and-normal-JS-dispatch; docs/native-domain4-review.md',
+        },
+        {
+          ids: [196, 197, 198, 199, 200, 201, 202, 203],
+          value: 'both-pinned-area-effect-wrappers-and-native-receiver-browser-tests',
+        },
+        {
+          ids: [209, 210, 211, 212, 213],
+          value: 'both-pinned-variable-primitive-wrappers-and-27892-differential-comparisons',
+        },
+        {
+          ids: [223, 328],
+          value: 'both-pinned-original-seen-mark-wrappers-and-raw-history-differential',
+        },
+        {
+          ids: [224, 228, 329, 333],
+          value: 'both-pinned-original-scene-path-wrappers-and-raw-history-differential',
+        },
+        {
+          ids: [227, 332],
+          value: 'both-pinned-original-seen-query-wrappers-and-raw-history-differential',
+        },
+        {
+          ids: [271, 272, 273, 274, 275, 426, 427, 693],
+          value: 'both-pinned-particle-wrappers-and-original-receiver-tests',
+        },
+        {
+          ids: [590, 591, 592, 593],
+          value: 'both-pinned-original-xml-wrappers-and-fresh-world-ownership',
+        },
+        {
+          ids: [633, 634, 635, 636, 637, 638, 639, 640],
+          value: 'both-pinned-original-name-table-wrappers-and-15684-differential-comparisons',
+        },
+        {
+          ids: [701, 702, 988, 989],
+          value: 'both-pinned-plane-movie-wrappers-and-rendered-filtergraph-browser-tests',
+        },
+        {
+          ids: [934],
+          value: 'both-pinned-original-scene-alias-wrappers-and-raw-history-differential',
+        },
+        {
+          ids: [974, 975, 976, 1006],
+          value: 'pinned-sdk-javascript-wrappers-and-original-kcs-v8-world-test',
+        },
+      ],
+      migrationReview: [
+        {
+          ids: [241, 251, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 695, 884],
+          value: {
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-domain5-review.md',
+            phase: 5,
+          },
+        },
+      ],
+    },
+    generic: {
+      count: 45,
+      slots: {
+        recovered: [
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+        ],
+      },
+      signatures: [
+        ...nativeInterpreterScalarSignatures('generic'),
+        ...nativeInterpreterGeometrySignatures('generic'),
+      ],
+      evidence: [
+        {
+          ids: [0],
+          value:
+            'Own unchanged physical IA32 formatter and actual CRT logger retain CP932 bytes through both stages, mapped first argv word and ignored tails, exact 499-byte terminated logs and control2 without a result store. Current real KCS compares complete VM/owner state and cold continuation against each own-PE input; native 500-byte unterminated output and unprovided logger variadic conversions remain diagnosed. See tests/fixtures/native-logger-golden.json and docs/kcs-vm.md.',
+        },
+        { ids: NATIVE_INTERPRETER_GEOMETRY_IDS.generic, value: geometryEvidence },
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS['generic'], value: scalarEvidence },
+        {
+          ids: [38, 39, 40],
+          value:
+            'Own actual Motion memory constructor binds its1192-byte shared record at receiver+8 and registers this same receiver on its live VM. Generic38 writes only receiver+9c zero and returns control4 without storing a result; actual KCS stops before later writes, preserves earlier writes, and accepts ignored argv tails. Normal return retains the active word. Actual destructor releases the VM/actor allocations. Generic39/40 read no argv words and retain the independently proved integer/real MT19937 streams and complete state; current real KCS tail and cold cases reuse the own random goldens. See tests/fixtures/modern-motion-control-golden.json and docs/native-motion-checkpoints.md.',
+        },
+      ],
+    },
+    'particle-v1': {
+      count: 44,
+      slots: {
+        recovered: [
+          0,
+          33,
+          34,
+          ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'],
+          ...NATIVE_PARTICLE_STATE_IDS['particle-v1'],
+          ...NATIVE_PARTICLE_GEOMETRY_IDS,
+        ].sort((a, b) => a - b),
+      },
+      signatures: [
+        ...nativeInterpreterScalarSignatures('particle-v1'),
+        ...nativeParticleStateSignatures('particle-v1'),
+        ...nativeParticleRandomSignatures(),
+        ...nativeParticleGeometrySignatures('particle-v1'),
+      ],
+      evidence: [
+        {
+          ids: [0],
+          value:
+            'Own unchanged physical IA32 formatter and actual CRT logger retain CP932 bytes through both stages, mapped first argv word and ignored tails, exact 499-byte terminated logs and control2 without a result store. Current real KCS compares complete VM/owner state and cold continuation against each own-PE input; native 500-byte unterminated output and unprovided logger variadic conversions remain diagnosed. See tests/fixtures/native-logger-golden.json and docs/kcs-vm.md. The two own Particle tables select the same exact receiver, which reads no owner field and uses the same formatter/logger bodies as Generic0; eight actual Particle entry calls verify the bridge with full writable .data snapshots.',
+        },
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'], value: scalarEvidence },
+        {
+          ids: NATIVE_PARTICLE_GEOMETRY_IDS,
+          value:
+            'Own constructed 2.6.1.74 Particle receiver, original physical geometry/CRT/D3DX helpers and complete KCS actor/VM/array lifecycle. Full local/arrays/control/result/owner and current cold comparisons cover strided raw vertex words, exact SSE operand order, non-finite/signed-zero values, actual trig reduction, UV first/third-word semantics and exact matrix projection/in-place singular inverse. Mapped short/tail/alias argv and exact100/96-byte vertex accesses are included; SetTex reads three words regardless of declared GCALL length. Renderer registration, file/texture loading and live attachment graphs remain separate. See tests/fixtures/modern-particle-geometry-golden.json.',
+        },
+        {
+          ids: [33, 34],
+          value:
+            'Own complete Particle wrappers and Generic39/40 differ only in relative-call displacement and target the identical own callee/global RNG state. Neither reads argv or receiver fields. Existing own complete integer/real MT golden is reused at its original source pin; current real Particle KCS validates both full streams, zero/one/two ignored tails, whole local/owner state and independent cold continuation. See tests/fixtures/modern-particle-random-bridge.json.',
+        },
+        {
+          ids: NATIVE_PARTICLE_STATE_IDS['particle-v1'],
+          value:
+            'Own physical 2.6.1.74 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
+        },
+      ],
+    },
+    'particle-v2': {
+      count: 51,
+      slots: {
+        recovered: [
+          0,
+          33,
+          34,
+          ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'],
+          ...NATIVE_PARTICLE_STATE_IDS['particle-v2'],
+          47,
+          48,
+          49,
+          ...NATIVE_PARTICLE_GEOMETRY_IDS,
+        ].sort((a, b) => a - b),
+      },
+      signatures: [
+        ...nativeInterpreterScalarSignatures('particle-v2'),
+        ...nativeParticleStateSignatures('particle-v2'),
+        ...nativeParticleRandomSignatures(),
+        ...nativeParticleGeometrySignatures('particle-v2'),
+        ...nativeParticleAttachmentSignatures(),
+      ],
+      evidence: [
+        {
+          ids: [0],
+          value:
+            'Own unchanged physical IA32 formatter and actual CRT logger retain CP932 bytes through both stages, mapped first argv word and ignored tails, exact 499-byte terminated logs and control2 without a result store. Current real KCS compares complete VM/owner state and cold continuation against each own-PE input; native 500-byte unterminated output and unprovided logger variadic conversions remain diagnosed. See tests/fixtures/native-logger-golden.json and docs/kcs-vm.md. The two own Particle tables select the same exact receiver, which reads no owner field and uses the same formatter/logger bodies as Generic0; eight actual Particle entry calls verify the bridge with full writable .data snapshots.',
+        },
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'], value: scalarEvidence },
+        {
+          ids: NATIVE_PARTICLE_GEOMETRY_IDS,
+          value:
+            'Own constructed 2.6.1.74 Particle receiver, original physical geometry/CRT/D3DX helpers and complete KCS actor/VM/array lifecycle. Full local/arrays/control/result/owner and current cold comparisons cover strided raw vertex words, exact SSE operand order, non-finite/signed-zero values, actual trig reduction, UV first/third-word semantics and exact matrix projection/in-place singular inverse. Mapped short/tail/alias argv and exact100/96-byte vertex accesses are included; SetTex reads three words regardless of declared GCALL length. Renderer registration, file/texture loading and live attachment graphs remain separate. See tests/fixtures/modern-particle-geometry-golden.json.',
+        },
+        {
+          ids: [33, 34],
+          value:
+            'Own complete Particle wrappers and Generic39/40 differ only in relative-call displacement and target the identical own callee/global RNG state. Neither reads argv or receiver fields. Existing own complete integer/real MT golden is reused at its original source pin; current real Particle KCS validates both full streams, zero/one/two ignored tails, whole local/owner state and independent cold continuation. See tests/fixtures/modern-particle-random-bridge.json.',
+        },
+        {
+          ids: NATIVE_PARTICLE_STATE_IDS['particle-v2'],
+          value:
+            'Own physical 2.6.1.74 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
+        },
+        {
+          ids: [47, 48, 49],
+          value:
+            'Own physical 2.6.1.74 actual view.addGroup/type map and manager GraphGroup construction, original base/position/registration setters and full Particle KCS receiver. Whole VM/local/arrays/model/record, return/control, fixed argv, absent groups/device, raw float words and cold continuation are compared. Original deletion releases the model/map/list nodes but retains its 60-byte record allocation; no manual free is attributed to the original. Explicit view/configuration/rectangle OS services are not complete renderer/device or product-scene evidence. See tests/fixtures/modern-particle-attachment-golden.json.',
+        },
+      ],
+    },
+  },
+};

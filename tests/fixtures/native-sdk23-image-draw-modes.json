@@ -1,0 +1,561 @@
+{
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "originalReceiptSha256": "8ccc66918715c5ba21fe8e88ff57c48617416f35d6b13b04d637eb81362d583d",
+  "resource": {
+    "name": "pixels.hg3",
+    "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+  },
+  "rows": [
+    {
+      "id": 66,
+      "args": [15, 3, 320],
+      "resultAddress": 32,
+      "result": null,
+      "itemCount": null,
+      "scriptOwnerCount": 0,
+      "bitmap": null,
+      "packets": [
+        {
+          "message": 25,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 256,
+      "args": [[19, 32], 8, 6],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 253,
+          "w": 8,
+          "flags": 0,
+          "fields": null
+        },
+        {
+          "message": 2,
+          "w": 6,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 260,
+      "args": [[19, 32], 0, 0],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 257,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 262,
+      "args": [[19, 32], 0],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 260,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 710,
+      "args": [256],
+      "resultAddress": 36,
+      "result": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": []
+    },
+    {
+      "id": 731,
+      "args": [
+        [19, 32],
+        7,
+        [19, 36],
+        1073741824,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 254,
+          "w": 7,
+          "flags": 0,
+          "fields": [
+            0,
+            0,
+            0,
+            "image-owner",
+            1073741824,
+            1065353216,
+            0,
+            0,
+            0,
+            1065353216,
+            1065353216,
+            200,
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 264,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 261,
+      "args": [[19, 32]],
+      "resultAddress": 40,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 259,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 731,
+      "args": [
+        [19, 32],
+        7,
+        [19, 36],
+        1082130432,
+        1077936128,
+        1065353216,
+        1065353216,
+        1106247680,
+        1065353216,
+        1065353216,
+        128,
+        1,
+        2
+      ],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 254,
+          "w": 7,
+          "flags": 0,
+          "fields": [
+            0,
+            0,
+            0,
+            "image-owner",
+            1082130432,
+            1077936128,
+            1065353216,
+            1065353216,
+            1106247680,
+            1065353216,
+            1065353216,
+            128,
+            1,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAOEVrNm5ogQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqO2VtaGR+FAAAAAAAAAAAAAAAAAAAAAAAAAAADSlZARwyXzUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 264,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 731,
+      "args": [
+        [19, 32],
+        7,
+        [19, 36],
+        1075838976,
+        1067450368,
+        1056964608,
+        1056964608,
+        3245342720,
+        1069547520,
+        1061158912,
+        73,
+        1,
+        4294967295
+      ],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAOEVrNm5ogQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqO2VtaGR+FAAAAAAAAAAAAAAAAAAAAAAAAAAADSlZARwyXzUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 254,
+          "w": 7,
+          "flags": 0,
+          "fields": [
+            0,
+            0,
+            0,
+            "image-owner",
+            1075838976,
+            1067450368,
+            1056964608,
+            1056964608,
+            3245342720,
+            1069547520,
+            1061158912,
+            73,
+            1,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLUXINAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8qWQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 264,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 731,
+      "args": [
+        [19, 32],
+        7,
+        [19, 36],
+        1073741824,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        999,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLUXINAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8qWQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 254,
+          "w": 7,
+          "flags": 0,
+          "fields": [
+            0,
+            0,
+            0,
+            "image-owner",
+            1073741824,
+            1065353216,
+            0,
+            0,
+            0,
+            1065353216,
+            1065353216,
+            255,
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YIAvP2f/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 264,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 711,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YIAvP2f/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": []
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YIAvP2f/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 264,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 258,
+      "args": [[19, 32], 7],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YIAvP2f/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 255,
+          "w": 7,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 264,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "packets": [
+        {
+          "message": 3,
+          "w": 0,
+          "flags": 0,
+          "fields": null
+        }
+      ]
+    },
+    {
+      "operation": "retire-then-parent-update",
+      "drawReleased": true,
+      "bitmap": null
+    }
+  ],
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/draw16-20261127/ORIGINAL-IMAGE-DRAW-MODES.json",
+  "producerSha256": "5ac0a3c9c6a2d9f9a92dfe2ed772a7dbe7a851bd3264d220011cdd49aecdd33a",
+  "helperSha256": "0b4fb98b0b02e4fcefe0e17e364db59c0add90ca2075358f87b8c4d0bef82294"
+}

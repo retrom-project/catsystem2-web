@@ -1,0 +1,776 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "executableSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "scope": "Two real loaded FES owners; own-bank caller has no inherited private Script context. Scalar/named callbacks, rebuild and normal FES-before-supplier cleanup are functional;665/666 are defined no-ops in THIS caller shape, not proof of copied words or arbitrary supplier-first disposal. Current cold is internal checkpoint only.",
+  "provenance": [
+    {
+      "path": ".local/phase11/sdk23-fes-live-20261127/ORIGINAL-FES-BANK-CONTROLLER23.json",
+      "sha256": "33d9a3de64329e06185e481f0cbc4695e6490363c49716290b746ec95ff5edd7"
+    },
+    {
+      "path": ".local/phase11/sdk23-fes-live-20261127/G1-CONTROLLER-SEALED-PLAN.json",
+      "sha256": "1c58c82bd3a797f7bff200019c84dfe11d3970f5e143b3c911fd1cdeac761631"
+    },
+    {
+      "path": ".local/phase11/sdk23-fes-live-20261127/CONTROLLER-PREFLIGHT-CLEAN23.json",
+      "sha256": "091a7589aedf9a3f4d174062cc4520674c31c5b1fd0c871f04d95e6042882632"
+    }
+  ],
+  "accounting": {
+    "target": 31,
+    "factory": 2,
+    "support": 5,
+    "cleanup": 2,
+    "carrier": 13,
+    "bootstrap": 3,
+    "featureFrameDirect": 13,
+    "featureMessageDirect": 0,
+    "featureCtorOrCollectorDirect": 0,
+    "hostSetup": "Unchanged qualified true-resource23-host + true-script23-context; every actual step is retained separately. Third ordinary configured FES mount is included in actual host journal, not hidden as free setup.",
+    "totalGCALL": 56
+  },
+  "instructions": [
+    [37, 591807827],
+    [37, 762537318],
+    [38, 256],
+    [37, 65],
+    [38, 260],
+    [37, 762537318],
+    [38, 288],
+    [37, 66],
+    [38, 292],
+    [37, 1802396002],
+    [38, 320],
+    [37, 24877],
+    [38, 324],
+    [37, 1802396002],
+    [38, 352],
+    [37, 25133],
+    [38, 356],
+    [37, 1802396002],
+    [38, 384],
+    [37, 29229],
+    [38, 388],
+    [37, 1129596230],
+    [38, 416],
+    [37, 72],
+    [38, 420],
+    [37, 1229734751],
+    [38, 448],
+    [37, 1281313603],
+    [38, 452],
+    [37, 95],
+    [38, 456],
+    [37, 0],
+    [38, 480],
+    [37, 2714411390],
+    [38, 96],
+    [37, 2714411390],
+    [38, 100],
+    [37, 2714411390],
+    [38, 104],
+    [37, 2714411390],
+    [38, 108],
+    [37, 2714411390],
+    [38, 112],
+    [37, 2714411390],
+    [38, 116],
+    [37, 2714411390],
+    [38, 120],
+    [37, 2714411390],
+    [38, 124],
+    [37, 2714411390],
+    [38, 128],
+    [37, 2714411390],
+    [38, 132],
+    [37, 2714411390],
+    [38, 136],
+    [37, 2714411390],
+    [38, 140],
+    [37, 2714411390],
+    [38, 144],
+    [37, 2714411390],
+    [38, 148],
+    [37, 2714411390],
+    [38, 152],
+    [37, 2714411390],
+    [38, 156],
+    [43, 76, 0],
+    [38, 44],
+    [43, 65, 0],
+    [37, 34],
+    [37, [19, 44]],
+    [37, 256],
+    [43, 66, 12],
+    [38, 32],
+    [37, 34],
+    [37, [19, 44]],
+    [37, 288],
+    [43, 66, 12],
+    [38, 36],
+    [37, [19, 32]],
+    [37, 320],
+    [43, 447, 8],
+    [37, [19, 36]],
+    [37, 352],
+    [43, 447, 8],
+    [37, [19, 32]],
+    [43, 448, 4],
+    [37, [19, 36]],
+    [43, 448, 4],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 0],
+    [37, 286331153],
+    [43, 645, 12],
+    [37, [19, 36]],
+    [37, 0],
+    [37, 572662306],
+    [43, 645, 12],
+    [37, [19, 32]],
+    [37, 0],
+    [43, 646, 8],
+    [38, 96],
+    [37, [19, 36]],
+    [37, 0],
+    [43, 646, 8],
+    [38, 100],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 448],
+    [37, 9],
+    [43, 664, 12],
+    [37, [19, 36]],
+    [37, 448],
+    [37, 3],
+    [43, 664, 12],
+    [37, [19, 32]],
+    [37, 416],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [37, [19, 32]],
+    [37, 1],
+    [43, 646, 8],
+    [38, 104],
+    [37, [19, 32]],
+    [43, 667, 4],
+    [38, 108],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 511],
+    [37, 305441741],
+    [43, 645, 12],
+    [37, [19, 32]],
+    [43, 666, 4],
+    [37, [19, 36]],
+    [43, 665, 4],
+    [37, [19, 36]],
+    [37, 0],
+    [43, 646, 8],
+    [38, 112],
+    [37, [19, 36]],
+    [37, 511],
+    [43, 646, 8],
+    [38, 116],
+    [43, 65, 0],
+    [37, [19, 36]],
+    [37, 416],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [37, [19, 36]],
+    [37, 1],
+    [43, 646, 8],
+    [38, 120],
+    [37, [19, 36]],
+    [43, 667, 4],
+    [38, 124],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 384],
+    [43, 447, 8],
+    [37, [19, 32]],
+    [37, 0],
+    [43, 646, 8],
+    [38, 128],
+    [37, [19, 36]],
+    [37, 0],
+    [43, 646, 8],
+    [38, 132],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [43, 448, 4],
+    [37, [19, 32]],
+    [37, 0],
+    [43, 646, 8],
+    [38, 136],
+    [37, [19, 32]],
+    [37, 416],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [37, [19, 32]],
+    [37, 1],
+    [43, 646, 8],
+    [38, 140],
+    [37, [19, 32]],
+    [43, 667, 4],
+    [38, 144],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 448],
+    [37, 12],
+    [43, 664, 12],
+    [37, [19, 32]],
+    [43, 665, 4],
+    [37, [19, 32]],
+    [37, 416],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [37, [19, 32]],
+    [37, 1],
+    [43, 646, 8],
+    [38, 148],
+    [37, [19, 32]],
+    [37, 511],
+    [43, 646, 8],
+    [38, 152],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [43, 67, 4],
+    [43, 65, 0],
+    [37, [19, 36]],
+    [37, 0],
+    [43, 646, 8],
+    [38, 156],
+    [43, 65, 0],
+    [37, [19, 36]],
+    [43, 67, 4],
+    [43, 65, 0],
+    [43, 65, 0],
+    [59]
+  ],
+  "sources": {
+    "bank-a.fes": "#DEFINE\r\nBASE marker\r\n#START\r\n\\0=41\r\nresult 0x12345678\r\nnext WAIT\r\n#WAIT\r\n#FETCH\r\n\\1=_CLICK_L_\r\nresult _CLICK_L_\r\nbreak\r\n",
+    "bank-b.fes": "#DEFINE\r\nBASE marker\r\n#START\r\n\\0=42\r\nresult 0x12345678\r\nnext WAIT\r\n#WAIT\r\n#FETCH\r\n\\1=_CLICK_L_\r\nresult _CLICK_L_\r\nbreak\r\n",
+    "bank-r.fes": "#DEFINE\r\nBASE marker\r\n#START\r\n\\0=43\r\nresult 0x12345678\r\nnext WAIT\r\n#WAIT\r\n#FETCH\r\n\\1=_CLICK_L_\r\nresult _CLICK_L_\r\nbreak\r\n"
+  },
+  "rows": [
+    {
+      "label": "authored bootstrap",
+      "frame": 100,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "real parent identity",
+          "id": 76,
+          "args": [],
+          "category": "support",
+          "output": 44
+        }
+      ],
+      "outputs": [
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 418,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [],
+      "resourceCounts": []
+    },
+    {
+      "label": "two real FES owners",
+      "frame": 101,
+      "drive": "parent",
+      "calls": [
+        {
+          "label": "create A",
+          "id": 66,
+          "args": [34, [19, 44], 256],
+          "category": "factory",
+          "output": 32
+        },
+        {
+          "label": "create B",
+          "id": 66,
+          "args": [34, [19, 44], 288],
+          "category": "factory",
+          "output": 36
+        },
+        {
+          "label": "load A",
+          "id": 447,
+          "args": [[19, 32], 320],
+          "category": "support"
+        },
+        {
+          "label": "load B",
+          "id": 447,
+          "args": [[19, 36], 352],
+          "category": "support"
+        },
+        {
+          "label": "start A",
+          "id": 448,
+          "args": [[19, 32]],
+          "category": "support"
+        },
+        {
+          "label": "start B",
+          "id": 448,
+          "args": [[19, 36]],
+          "category": "support"
+        }
+      ],
+      "outputs": [
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 579,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "separate private words",
+      "frame": 102,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "write A local0",
+          "id": 645,
+          "args": [[19, 32], 0, 286331153],
+          "category": "target"
+        },
+        {
+          "label": "write B local0",
+          "id": 645,
+          "args": [[19, 36], 0, 572662306],
+          "category": "target"
+        },
+        {
+          "label": "read A local0",
+          "id": 646,
+          "args": [[19, 32], 0],
+          "category": "target",
+          "output": 96
+        },
+        {
+          "label": "read B local0",
+          "id": 646,
+          "args": [[19, 36], 0],
+          "category": "target",
+          "output": 100
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 706,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "named callback in A",
+      "frame": 103,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "name A",
+          "id": 664,
+          "args": [[19, 32], 448, 9],
+          "category": "target"
+        },
+        {
+          "label": "name B",
+          "id": 664,
+          "args": [[19, 36], 448, 3],
+          "category": "target"
+        },
+        {
+          "label": "run A FETCH",
+          "id": 630,
+          "args": [[19, 32], 416, 480, 0],
+          "category": "target"
+        },
+        {
+          "label": "read A callback word",
+          "id": 646,
+          "args": [[19, 32], 1],
+          "category": "target",
+          "output": 104
+        },
+        {
+          "label": "read A callback result",
+          "id": 667,
+          "args": [[19, 32]],
+          "category": "target",
+          "output": 108
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 862,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "word copy excludes names",
+      "frame": 104,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "write A last word",
+          "id": 645,
+          "args": [[19, 32], 511, 305441741],
+          "category": "target"
+        },
+        {
+          "label": "copy A to real Script",
+          "id": 666,
+          "args": [[19, 32]],
+          "category": "target"
+        },
+        {
+          "label": "copy real Script to B",
+          "id": 665,
+          "args": [[19, 36]],
+          "category": "target"
+        },
+        {
+          "label": "read B copied first word",
+          "id": 646,
+          "args": [[19, 36], 0],
+          "category": "target",
+          "output": 112
+        },
+        {
+          "label": "read B copied last word",
+          "id": 646,
+          "args": [[19, 36], 511],
+          "category": "target",
+          "output": 116
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 2714411390, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 994,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "B keeps its named context",
+      "frame": 105,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "run B FETCH",
+          "id": 630,
+          "args": [[19, 36], 416, 480, 0],
+          "category": "target"
+        },
+        {
+          "label": "read B callback word",
+          "id": 646,
+          "args": [[19, 36], 1],
+          "category": "target",
+          "output": 120
+        },
+        {
+          "label": "read B callback result",
+          "id": 667,
+          "args": [[19, 36]],
+          "category": "target",
+          "output": 124
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 2714411390, 2714411390, 2714411390,
+        2714411390, 2714411390, 2714411390, 2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 1092,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "reload A before first new frame",
+      "frame": 106,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "replace A source through full Main447",
+          "id": 447,
+          "args": [[19, 32], 384],
+          "category": "target"
+        },
+        {
+          "label": "read newly initialized A local0",
+          "id": 646,
+          "args": [[19, 32], 0],
+          "category": "target",
+          "output": 128
+        },
+        {
+          "label": "B survives A rebuild",
+          "id": 646,
+          "args": [[19, 36], 0],
+          "category": "target",
+          "output": 132
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 0, 572662306, 2714411390, 2714411390,
+        2714411390, 2714411390, 2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 1184,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "new A callback defaults",
+      "frame": 107,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "start replacement A",
+          "id": 448,
+          "args": [[19, 32]],
+          "category": "target"
+        },
+        {
+          "label": "read replacement START",
+          "id": 646,
+          "args": [[19, 32], 0],
+          "category": "target",
+          "output": 136
+        },
+        {
+          "label": "run replacement FETCH",
+          "id": 630,
+          "args": [[19, 32], 416, 480, 0],
+          "category": "target"
+        },
+        {
+          "label": "read replacement callback word",
+          "id": 646,
+          "args": [[19, 32], 1],
+          "category": "target",
+          "output": 140
+        },
+        {
+          "label": "read replacement callback result",
+          "id": 667,
+          "args": [[19, 32]],
+          "category": "target",
+          "output": 144
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 0, 572662306, 43, 0, 0, 2714411390,
+        2714411390, 2714411390
+      ],
+      "vm": {
+        "pc": 1328,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "copy to rebuilt context preserves names",
+      "frame": 108,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "set replacement name",
+          "id": 664,
+          "args": [[19, 32], 448, 12],
+          "category": "target"
+        },
+        {
+          "label": "restore caller words into A",
+          "id": 665,
+          "args": [[19, 32]],
+          "category": "target"
+        },
+        {
+          "label": "run rebuilt FETCH",
+          "id": 630,
+          "args": [[19, 32], 416, 480, 0],
+          "category": "target"
+        },
+        {
+          "label": "read rebuilt callback word",
+          "id": 646,
+          "args": [[19, 32], 1],
+          "category": "target",
+          "output": 148
+        },
+        {
+          "label": "read restored last word",
+          "id": 646,
+          "args": [[19, 32], 511],
+          "category": "target",
+          "output": 152
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 0, 572662306, 43, 0, 0, 12, 0, 2714411390
+      ],
+      "vm": {
+        "pc": 1478,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "request A normal close",
+      "frame": 109,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "unregister A",
+          "id": 67,
+          "args": [[19, 32]],
+          "category": "cleanup"
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 0, 572662306, 43, 0, 0, 12, 0, 2714411390
+      ],
+      "vm": {
+        "pc": 1506,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [32, 36],
+      "resourceCounts": [0, 0]
+    },
+    {
+      "label": "parent retires A; B remains valid",
+      "frame": 110,
+      "drive": "parent",
+      "calls": [
+        {
+          "label": "query B after A close",
+          "id": 646,
+          "args": [[19, 36], 0],
+          "category": "target",
+          "output": 156
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 0, 572662306, 43, 0, 0, 12, 0, 572662306
+      ],
+      "vm": {
+        "pc": 1546,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [36],
+      "resourceCounts": [0]
+    },
+    {
+      "label": "request B normal close",
+      "frame": 111,
+      "drive": "script",
+      "calls": [
+        {
+          "label": "unregister B",
+          "id": 67,
+          "args": [[19, 36]],
+          "category": "cleanup"
+        }
+      ],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 0, 572662306, 43, 0, 0, 12, 0, 572662306
+      ],
+      "vm": {
+        "pc": 1574,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [36],
+      "resourceCounts": [0]
+    },
+    {
+      "label": "parent retires B",
+      "frame": 112,
+      "drive": "parent",
+      "calls": [],
+      "outputs": [
+        286331153, 572662306, 9, 9, 572662306, 0, 3, 3, 0, 572662306, 43, 0, 0, 12, 0, 572662306
+      ],
+      "vm": {
+        "pc": 1585,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "liveSlots": [],
+      "resourceCounts": []
+    }
+  ],
+  "outcomeCorrections": {
+    "word copy excludes names": "Original own-bank caller has no private Script context: both copies preserve B words. The raw label is historical, not a functional copy claim.",
+    "copy to rebuilt context preserves names": "Copy remains an absent-context no-op after reload; callback uses the newly set own FES name."
+  },
+  "untested": [
+    "inherited caller successful word copy in this truehost supplement",
+    "supplier-first native destruction",
+    "native GAME_SAVE/CSS export",
+    "Sound or unavailable FILELIST/STRTABLE",
+    "physical graphics/font/device output"
+  ]
+}

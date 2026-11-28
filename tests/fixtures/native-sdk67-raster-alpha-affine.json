@@ -1,0 +1,3925 @@
+{
+  "profile": "bokutomo-engine-2.6.1.67",
+  "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+  "wholeTextSha256": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6",
+  "original": {
+    "path": ".local/phase11/sdk63-67-base-collector-20261127/ORIGINAL-C1-AFFINE-67.json",
+    "sha256": "3ab6e0c112d96e941550d7786623bf83431787e299f2b1242efabc6a2504c3a3"
+  },
+  "scope": "C1 freshalpha opaque-copy/opacity,affine/mask/hidden/clipped normalcallers. FulloutputexplicitlyfilledthroughborrowedMain261+Main117; rawunclassifiedheaderscaptureonly.",
+  "counts": {
+    "targetGCALLs": 15,
+    "dependencyGCALLs": 34,
+    "currentFullFrames": 46,
+    "directBridgeInvocations": 99,
+    "internalCold": 6,
+    "directBridgeIncludesGCALLs": true
+  },
+  "resources": {
+    "fresh-alpha.bmp": "Qk1OAAAAAAAAADYAAAAoAAAAAwAAAAIAAAABACAAAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAtYtl/8edf0DfrZf/f0kf/5VhO4CncVMA",
+    "fresh-opaque.kcf": "S0NGAAMAAgAMAAQAS0NMWgEAAAAYAAAAAAAAAAAAAAAcAAAAHwAAAAAAAB9Jf/82XIr/TW+V/zBWhv9HaZH/Xnyc/w=="
+  },
+  "cases": [
+    {
+      "id": 66,
+      "args": [15, "caller", 128],
+      "text": "C1 fresh-alpha Draw67",
+      "textAt": 128,
+      "save": "draw",
+      "kind": "task",
+      "dependency": true,
+      "ordinal": 0,
+      "control": 1,
+      "result": "owned:draw",
+      "borrowed": null,
+      "state": {
+        "renderer": null,
+        "offset": null,
+        "enabled": 1,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 256,
+      "args": ["draw", 8, 6],
+      "dependency": true,
+      "ordinal": 1,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": null,
+        "enabled": 1,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 260,
+      "args": ["draw", 0, 0],
+      "dependency": true,
+      "ordinal": 2,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 1,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 262,
+      "args": ["draw", 0],
+      "dependency": true,
+      "ordinal": 3,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 341,
+      "args": ["draw"],
+      "dependency": true,
+      "ordinal": 4,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 261,
+      "args": ["draw"],
+      "save": "surface",
+      "kind": "bitmap",
+      "dependency": true,
+      "ordinal": 5,
+      "control": 1,
+      "result": "borrowed:surface",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 117,
+      "args": ["surface", 0, 0, 8, 6, 1074798640],
+      "dependency": true,
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner0",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 7,
+      "control": 1,
+      "result": "owned:owner0",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner0",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner0",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        1
+      ],
+      "ownerGroup": "owner0",
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner0",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner0",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 9,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 199, 157, 127, 50, 223, 173, 151, 200, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 200, 149, 97, 59,
+              100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner0",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner0",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner0"],
+      "close": "owner0",
+      "dependency": true,
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 199, 157, 127, 50, 223, 173, 151, 200, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 200, 149, 97, 59,
+              100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner0",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 11,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 199, 157, 127, 50, 223, 173, 151, 200, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 200, 149, 97, 59,
+              100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner1",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 12,
+      "control": 1,
+      "result": "owned:owner1",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 199, 157, 127, 50, 223, 173, 151, 200, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 200, 149, 97, 59,
+              100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner1",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner1",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        1097859072,
+        1065353216,
+        1065353216,
+        129,
+        1,
+        1
+      ],
+      "ownerGroup": "owner1",
+      "ordinal": 13,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 199, 157, 127, 50, 223, 173, 151, 200, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 200, 149, 97, 59,
+              100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner1",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner1",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 14,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              203, 156, 129, 68, 153, 103, 65, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner1",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner1",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner1"],
+      "close": "owner1",
+      "dependency": true,
+      "ordinal": 15,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              203, 156, 129, 68, 153, 103, 65, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner1",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 16,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              203, 156, 129, 68, 153, 103, 65, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner2",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 17,
+      "control": 1,
+      "result": "owned:owner2",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              203, 156, 129, 68, 153, 103, 65, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner2",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner2",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1061158912,
+        1061158912,
+        255,
+        1,
+        1
+      ],
+      "ownerGroup": "owner2",
+      "ordinal": 18,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              203, 156, 129, 68, 153, 103, 65, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner2",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner2",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 19,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 206, 162, 134, 127, 223, 173, 151, 255, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 255, 152, 100, 64,
+              99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner2",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner2",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner2"],
+      "close": "owner2",
+      "dependency": true,
+      "ordinal": 20,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 206, 162, 134, 127, 223, 173, 151, 255, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 255, 152, 100, 64,
+              99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner2",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 21,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 206, 162, 134, 127, 223, 173, 151, 255, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 255, 152, 100, 64,
+              99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner3",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 22,
+      "control": 1,
+      "result": "owned:owner3",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 206, 162, 134, 127, 223, 173, 151, 255, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 255, 152, 100, 64,
+              99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner3",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 728,
+      "args": ["owner3", 1],
+      "dependency": true,
+      "ordinal": 23,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 206, 162, 134, 127, 223, 173, 151, 255, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 255, 152, 100, 64,
+              99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner3",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner3",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        0
+      ],
+      "ownerGroup": "owner3",
+      "ordinal": 24,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 206, 162, 134, 127, 223, 173, 151, 255, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 73, 31, 255, 152, 100, 64,
+              99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner3",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner3",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 25,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner3",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner3",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 2,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner3"],
+      "close": "owner3",
+      "dependency": true,
+      "ordinal": 26,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner3",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 27,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner4",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 28,
+      "control": 1,
+      "result": "owned:owner4",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner4",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 728,
+      "args": ["owner4", 4],
+      "dependency": true,
+      "ordinal": 29,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner4",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 4,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner4",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        255,
+        1,
+        0
+      ],
+      "ownerGroup": "owner4",
+      "ordinal": 30,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner4",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 4,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner4",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 4,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 31,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner4",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 4,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner4",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 2,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 4,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner4"],
+      "close": "owner4",
+      "dependency": true,
+      "ordinal": 32,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner4",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 4,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 33,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner5",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 34,
+      "control": 1,
+      "result": "owned:owner5",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 728,
+      "args": ["owner5", 1],
+      "dependency": true,
+      "ordinal": 35,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner5",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        1
+      ],
+      "ownerGroup": "owner5",
+      "ordinal": 36,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner5",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 37,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner5",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner5"],
+      "close": "owner5",
+      "dependency": true,
+      "ordinal": 38,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner5",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 39,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner6",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 40,
+      "control": 1,
+      "result": "owned:owner6",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner6",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        1097859072,
+        1065353216,
+        1065353216,
+        129,
+        1,
+        1
+      ],
+      "ownerGroup": "owner6",
+      "ordinal": 41,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner6",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 339,
+      "args": ["draw", 7, 6, 4, 8, 6],
+      "ordinal": 42,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner6",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 43,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner6",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner6"],
+      "close": "owner6",
+      "dependency": true,
+      "ordinal": 44,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner6",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 45,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    }
+  ],
+  "coldAfter": [10, 15, 20, 26, 32, 39]
+}

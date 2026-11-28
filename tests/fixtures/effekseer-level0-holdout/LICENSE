@@ -1,0 +1,9 @@
+SPDX-License-Identifier: CC0-1.0
+
+The three tiny PNG images in this directory were authored independently for
+this project after the converter was frozen. Their authors waive copyright
+and related rights under CC0 1.0 Universal:
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The accompanying numerical fixture records factual source/level0 byte values;
+it contains no executable, library, game art, or private source data.

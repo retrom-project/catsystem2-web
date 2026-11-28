@@ -1,0 +1,1725 @@
+// SPDX-License-Identifier: MPL-2.0
+import { FES_PLATFORM_COMMANDS } from '../native/fes-platform-frontends.mjs';
+// Adapted from CatSystemKit FESInstance (OWCramer).
+import { evaluate, evaluateOperand, assign, condition } from './expression.mjs';
+import { FESObject, objectCommand, objectVerbs } from './object.mjs';
+import { FES_OBJECT_DEFINITION_ORDER } from './types.mjs';
+import { NativeDictionary } from '../native/dictionary.mjs';
+import { expandNativeFESSoundConfigurationToken } from '../native/fes-sound-config.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
+import { NATIVE_FES_SAVE_COMMANDS } from '../native/save-slots.mjs';
+import { nativeABI } from '../native/abi/index.mjs';
+import { replaceFESMacros, fesRawTail } from './source.mjs';
+import {
+  tokenizeFESByteLine,
+  fesSourceBytes,
+  fesByteView,
+  fesViewBytes,
+  fesNarrowText,
+} from './tokens.mjs';
+const nativeArgumentDecoder = new TextDecoder('shift_jis');
+
+// External text parameters use the existing narrow CP932 boundary. Runtime
+// block keys already are reversible byte views and never pass through here.
+const labelBytes = (value) =>
+  fesSourceBytes(typeof value === 'string' ? encodeCP932(value) : value);
+const labelKey = (value) => fesByteView(labelBytes(value));
+function objectEventLabels(instance, object, event) {
+  const name = instance.collection
+    ? instance.collection.reference(object).nameBytes
+    : encodeCP932(object.baseName);
+  return [
+    object.defaultHandler && `${object.defaultHandler}.${event}`,
+    `${fesByteView(name)}.${event}`,
+  ].filter(Boolean);
+}
+
+// The standalone consumer's grammar is also a static inventory aid. This only
+// reads a raw row: no bank/SCRIPT expansion, expression evaluation or handlers.
+// Normal native DEFINE uses the coordinator's original byte-getter chain.
+export function parseBareFESDefinition(row, tokens = tokenizeFESByteLine) {
+  const line = fesByteView(row);
+  if (!line || line.startsWith('#') || line.startsWith(';')) return null;
+  const [first, operand] = tokens(row),
+    type = fesNarrowText(first);
+  if (!type) return null;
+  const match = /^([\w-]+)(?:\[([^\s[\];]+)\])?;?$/.exec(fesNarrowText(operand));
+  if (!match) return undefined;
+  return { type, name: match[1], count: match[2] ?? null };
+}
+
+export class FESInstance {
+  constructor(
+    name,
+    program,
+    player,
+    { nativeVariableContextKey = null, macros = null, restoring = false } = {},
+  ) {
+    Object.assign(this, {
+      name,
+      program,
+      player,
+      childTaskID: null,
+      kcsTaskID: null,
+      objects: [],
+      locals: {},
+      nativeVariableContextKey,
+      label: 'START',
+      exitCode: -1,
+      finished: null,
+      suspended: null,
+      waitFrames: 0,
+      waitMotion: false,
+      waitSound: null,
+      waitObjects: null,
+      transitionUntil: 0,
+      eventObject: null,
+      nativeContext: { nameBytes: new Uint8Array(), index: 0, current: 0 },
+      clickL: 0,
+      clickR: 0,
+      scrollUp: 0,
+      scrollDown: 0,
+      scrollPosition: 0,
+      pageUp: 0,
+      pageDown: 0,
+      pushUp: 0,
+      pushDown: 0,
+      pushLeft: 0,
+      pushRight: 0,
+      frameOrigin: player.frameCount,
+      defaultButton: null,
+      keySkipEnabled: true,
+      keySkipControlOnly: false,
+      keySkipContinuous: false,
+      keySkipForced: false,
+      skipPressed: false,
+      skipControl: false,
+      inputPropagation: 1,
+      forceRedrawPending: false,
+      resultValue: 0,
+      commandDelayUntil: null,
+      deferredCommandReturn: null,
+      decodePending: false,
+      nativeQueuePending: false,
+      dynamicDefinitions: [],
+      declaredGroups: Object.create(null),
+    });
+    this.byKey = new Map();
+    this.macros = new Map(macros);
+    if (!macros)
+      for (const [name, value] of program.macros) {
+        const key = fesByteView(this.argumentBytes(name));
+        if (value !== undefined) this.macros.set(key, this.argumentBytes(value).slice());
+      }
+    this.nativeDictionary = new NativeDictionary();
+    this.keyNames = new Set();
+    if (player.runtimeFactory) {
+      this.frameOrigin = 0;
+      this.nativeFrameWord = 0;
+      this.waitParameters = {
+        frameThreshold: 0,
+        reference: null,
+        privateIndex: 0,
+        tagBytes: new Uint8Array(32),
+      };
+      this.runtime = player.runtimeFactory(this);
+    }
+    if (restoring || this.runtime) return;
+    for (const row of program.definitions) {
+      const declaration = parseBareFESDefinition(row, (source) => this.tokens(source));
+      if (declaration === null) continue;
+      if (declaration === undefined) throw new Error(`Invalid FES definition: ${fesByteView(row)}`);
+      const { type, name, count: expression } = declaration,
+        count = (expression === null ? 1 : evaluate(expression, this)) | 0;
+      if (count < 0) throw new Error(`Unsupported FES declaration count ${count}`);
+      this.declaredGroups[name] = count;
+      if (player.nativeObjectAllocates?.(type) === false) continue;
+      if (expression === null) this.add(type, name, null);
+      else {
+        if (count > 10000) throw new Error('FES object limit');
+        for (let i = 0; i < count; i++) this.add(type, name, i);
+      }
+    }
+    for (const table of program.tables)
+      for (const { target: token, values, source } of table.rows) {
+        const target = this.soundArgument(token),
+          found = this.elements(target);
+        if (!found.length && !Object.hasOwn(this.declaredGroups, target.replace(/\[.*$/, ''))) {
+          this.player.unresolvedTargets.add(`${this.name}: undeclared #OBJECT target ${target}`);
+        }
+        for (const o of found)
+          this.apply(o, table.columns, values, { header: table.header, source });
+      }
+  }
+  add(type, name, index) {
+    const o = new FESObject(type, name, index, 0x1001 + this.objects.length);
+    this.objects.push(o);
+    this.byKey.set(o.key, o);
+    return o;
+  }
+  createObjects(typeIndex, name, count) {
+    if (this.runtime) return this.runtime.createObjects(typeIndex, name, count);
+    const type = FES_OBJECT_DEFINITION_ORDER[typeIndex];
+    if (!type)
+      throw new Error(`FES ${this.name}: unknown native object factory index ${typeIndex}`);
+    if (!/^\w+$/.test(name) || !Number.isInteger(count) || count < 0 || count > 10000)
+      throw new Error(`FES ${this.name}: invalid dynamic object declaration ${name}[${count}]`);
+    if (this.objects.some((object) => object.baseName === name && !object.deleted))
+      throw new Error(
+        `FES ${this.name}: replacing a live dynamic object group requires its native ownership contract`,
+      );
+    this.dynamicDefinitions.push({ typeIndex, name, count });
+    this.declaredGroups[name] = count;
+    if (this.player.nativeObjectAllocates?.(type) === false) return true;
+    for (let index = 0; index < count; index++) this.add(type, name, index);
+    return true;
+  }
+  applyObjects(columnHeader, row) {
+    if (this.runtime) {
+      const [target, ...values] = this.tokens(row);
+      return this.runtime.definitions.row(this.tokens(columnHeader).slice(1), target, values);
+    }
+    const columns = this.tokens(columnHeader).slice(1),
+      [target, ...values] = this.tokens(row),
+      objects = this.elements(this.soundArgument(target));
+    if (!columns.length || !objects.length) return false;
+    for (const object of objects)
+      this.apply(object, columns, values, { header: columnHeader, source: row });
+    return true;
+  }
+  diagnostic(message) {
+    this.player.unsupported(
+      `${this.name}#${this.executingLabel || this.label}:${this.executingLine || 0}: ${message}`,
+    );
+  }
+  elements(name) {
+    if (this.runtime) return this.runtime.elements(name);
+    name = fesNarrowText(name);
+    if (name === '@') return this.eventObject ? [this.eventObject] : [];
+    if (this.byKey.has(name)) return this.byKey.get(name).deleted ? [] : [this.byKey.get(name)];
+    const match = /^(\w+)\[(.*)\]$/.exec(name);
+    if (match) {
+      const index = this.value(match[2]),
+        object =
+          this.byKey.get(`${match[1]}[${index}]`) ??
+          (index === 0 ? this.byKey.get(match[1]) : null);
+      return object && !object.deleted ? [object] : [];
+    }
+    return this.objects.filter((o) => !o.deleted && o.baseName === name);
+  }
+  selectionIndex(name) {
+    if (this.runtime) return this.runtime.reference(name).index;
+    name = fesNarrowText(name);
+    if (name === '@') return this.eventIndex ?? this.eventObject?.index ?? 0;
+    const match = /^(\w+)\[(.*)\]$/.exec(name);
+    return match ? this.value(match[2]) : -1;
+  }
+  get discardLiteralAssignmentWrites() {
+    const profile = this.runtime?.world?.profile;
+    return profile && nativeABI(profile).fes.discardLiteralAssignmentWrites;
+  }
+  get trailingIntegerAfterCurrent() {
+    const profile = this.runtime?.world?.profile;
+    return profile && nativeABI(profile).fes.trailingIntegerAfterCurrent;
+  }
+  global(n) {
+    if (!Number.isInteger(n) || n < 0) throw new Error(`Invalid FES global index ${n}`);
+    return this.player.globals[n] || 0;
+  }
+  setGlobal(n, v) {
+    if (!Number.isInteger(n) || n < 0) throw new Error(`Invalid FES global index ${n}`);
+    this.player.globals[n] = v | 0;
+  }
+  local(n) {
+    if (!Number.isInteger(n)) throw new Error(`Invalid FES local index ${n}`);
+    if (n >>> 0 > 511) return 0;
+    n >>>= 0;
+    if (this.player.nativeVariableContext)
+      return this.player.nativeVariableContext(this)?.words[n] | 0;
+    return this.locals[n] || 0;
+  }
+  setLocal(n, v) {
+    if (!Number.isInteger(n)) throw new Error(`Invalid FES local index ${n}`);
+    if (n >>> 0 > 511) return;
+    n >>>= 0;
+    if (this.player.nativeVariableContext) {
+      const words = this.player.nativeVariableContext(this)?.words;
+      if (words) words[n] = v >>> 0;
+      return;
+    }
+    this.locals[n] = v | 0;
+  }
+  tokens(line) {
+    const bytes = fesSourceBytes(line);
+    return this.player.tokens ? this.player.tokens(bytes) : tokenizeFESByteLine(bytes);
+  }
+  expandMacros(line) {
+    return replaceFESMacros(
+      line,
+      this.macros,
+      this.macros.size ? this.player.host.fesMacroLiterals?.() : undefined,
+    );
+  }
+  operandValue(bytes) {
+    if (!this.runtime) throw new Error('FES byte operands require the normal runtime');
+    return evaluateOperand(bytes, this);
+  }
+  sharedIntegerRandom(head, args) {
+    const table = head === 'randtbl',
+      count = table ? 4 : 3,
+      operands = args
+        .slice(0, count)
+        .map((token) => this.operandValue(this.argumentBytes(token)) | 0);
+    if (operands.length < count) return;
+    const low = operands[table ? 0 : 1],
+      high = operands[table ? 1 : 2],
+      width = (high - low + 1) >>> 0;
+    if (!width) throw new RangeError('Native FES ' + head + ' has a zero unsigned range');
+    if (table && high === 0x7fffffff)
+      throw new RangeError('Native FES randtbl initialization reaches signed index overflow');
+
+    const world = this.runtime.world,
+      owner = world.objects.objects.get(this.player.nativeOwner),
+      bank = owner && world.runtime.variableBank(owner, false);
+    if (!bank) throw new Error('Native FES ' + head + ' requires its owning variable bank');
+    const pick = () => (low + (world.random.rand() % width)) >>> 0;
+    if (!table) {
+      bank.set(operands[0], pick());
+      return;
+    }
+    // The original bank ignores out-of-range writes. Only the target bounds
+    // determine its initialized span. The fourth operand is evaluated once.
+    const last = Math.min(high, bank.capacity - 1);
+    for (let at = Math.max(0, low); at <= last; at++) bank.set(at, operands[2] + at - low);
+    for (let i = 0; i < 1001; i++) {
+      const a = pick(),
+        b = pick(),
+        previous = bank.get(a);
+      bank.set(a, bank.get(b));
+      bank.set(b, previous);
+    }
+  }
+  valueLookup(nameBytes, index) {
+    if (!this.runtime || !(nameBytes instanceof Uint8Array))
+      throw new TypeError('FES numeric lookup requires a normal raw-name reference');
+    return (
+      this.player.nativeNamedVariable?.(this, nameBytes, index) ??
+      this.collection.lookup(nameBytes, index)?.handle ??
+      0
+    );
+  }
+  objectHandle(name, index) {
+    if (this.runtime) return this.collection.lookup(name, index ?? 0)?.handle;
+    return (
+      this.byKey.get(index === undefined ? name : `${name}[${index}]`)?.handle ??
+      (index === 0 ? this.byKey.get(name)?.handle : undefined)
+    );
+  }
+  system(name) {
+    if (name === '_EXITCODE_') return this.player.childExitCode(this);
+    return {
+      _CLICK_L_: this.clickL,
+      _CLICK_R_: this.clickR,
+      _SCRL_U_: this.scrollUp,
+      _SCRL_D_: this.scrollDown,
+      _SCRL_P_: this.scrollPosition,
+      _PAGE_U_: this.pageUp,
+      _PAGE_D_: this.pageDown,
+      _PUSH_UP_: this.pushUp,
+      _PUSH_DOWN_: this.pushDown,
+      _PUSH_LEFT_: this.pushLeft,
+      _PUSH_RIGHT_: this.pushRight,
+      _RELEASE_UP_: this.releaseUp ?? 0,
+      _RELEASE_DOWN_: this.releaseDown ?? 0,
+      _RELEASE_LEFT_: this.releaseLeft ?? 0,
+      _RELEASE_RIGHT_: this.releaseRight ?? 0,
+      _TOUCH_: this.touch ?? 0,
+      _FRAME_: this.runtime
+        ? (this.nativeFrameWord - this.frameOrigin) >>> 0
+        : this.player.frameCount - this.frameOrigin,
+      _SAVEOBJ_: this.player.saveObject ?? this.player.host.saveObject?.handle,
+      _MOUSE_X_: this.player.mouse.x,
+      _MOUSE_Y_: this.player.mouse.y,
+      '@':
+        this.currentValue ??
+        (this.runtime
+          ? this.nativeContext.current
+          : (this.eventIndex ?? this.eventObject?.index ?? 0)),
+    }[name];
+  }
+  value(text, currentValue) {
+    text = fesNarrowText(text);
+    const context =
+      currentValue === undefined ? this : Object.assign(Object.create(this), { currentValue });
+    return evaluate(text.replace(/%$/, ''), context);
+  }
+  text(token = '') {
+    return fesNarrowText(token)
+      .replace(/\$str(\d+)/g, (_, n) => this.player.strings[n] || '')
+      .replace(/\\_/g, ' ')
+      .replace(/\\n/g, '\n');
+  }
+  frameReference(token) {
+    const m = /^(.*):(-?\d+)$/.exec(token || '');
+    if (!m) return null;
+    const file = this.text(m[1]),
+      id = +m[2];
+    return { file, id, frame: this.player.picture(file)?.frame(id) };
+  }
+  apply(
+    o,
+    columns,
+    values,
+    { header = '#OBJECT ' + columns.join(' '), source = o.key + ' ' + values.join(' ') } = {},
+  ) {
+    (o.nativeDefinitions ||= []).push({
+      columns: [...columns],
+      values: [...values],
+      header,
+      source,
+    });
+    columns = columns.map((value) => this.soundArgument(value));
+    values = values.map((value, index) =>
+      columns[index] === 'DEFAULT'
+        ? fesByteView(this.argumentBytes(value))
+        : this.soundArgument(value),
+    );
+    {
+      o.nativeDefinition ||= {};
+      for (let i = 0; i < Math.min(columns.length, values.length); i++)
+        o.nativeDefinition[columns[i]] = values[i];
+    }
+    for (let i = 0; i < Math.min(columns.length, values.length); i++) {
+      const column = columns[i],
+        value = values[i],
+        pair =
+          /^(POS|SIZE|POS2|SIZE2|BASE|VRAM|KEYBLOCK)$/.test(column) && !value.includes(':')
+            ? value.split(',').map((v) => this.value(v))
+            : [],
+        ref = /^(POS2|SIZE2)$/.test(column) ? this.frameReference(value) : null;
+      switch (column) {
+        case 'FILE':
+          o.file = this.text(value);
+          break;
+        case 'POS':
+          o.x = pair[0] || 0;
+          o.y = pair[1] || 0;
+          o.z = pair[2] || 0;
+          break;
+        case 'BASE':
+          [o.baseX, o.baseY, o.baseZ] = [pair[0] || 0, pair[1] || 0, pair[2] || 0];
+          break;
+        case 'VRAM':
+          [o.vramX, o.vramY, o.vramZ] = [pair[0] || 0, pair[1] || 0, pair[2] || 0];
+          break;
+        case 'KEYBLOCK':
+          if (pair.length !== 3)
+            throw new Error(`${this.name}: invalid KEYBLOCK assignment ${value}`);
+          o.keyblock = { block: pair[0], x: pair[1], y: pair[2] };
+          this.keyNames.add(o.baseName);
+          break;
+        case 'DEFAULT':
+          o.defaultHandler = value;
+          break;
+        case 'POS2':
+          if (ref) {
+            o.x = ref.frame?.offsetX || 0;
+            o.y = ref.frame?.offsetY || 0;
+            o.areaWidth = ref.frame?.width || 0;
+            o.areaHeight = ref.frame?.height || 0;
+            o.areaFile = ref.file;
+            o.areaID = ref.id;
+          } else {
+            o.x = pair[0] || 0;
+            o.y = pair[1] || 0;
+          }
+          break;
+        case 'SIZE':
+          if (o.type === 'SNDTABLE') o.soundCapacity = pair[0] || 0;
+          else {
+            o.width = pair[0] || 0;
+            o.height = pair[1] || 0;
+            o.depth = pair[2] || 0;
+          }
+          break;
+        case 'SIZE2':
+          if (ref) {
+            o.areaWidth = ref.frame?.width || 0;
+            o.areaHeight = ref.frame?.height || 0;
+            if (!o.isPlane && o.type !== 'STRING8') {
+              o.width = o.areaWidth;
+              o.height = o.areaHeight;
+            }
+          } else {
+            o.width = pair[0] || 0;
+            o.height = pair[1] || 0;
+          }
+          break;
+        case 'PRI':
+          o.pri = this.value(value);
+          break;
+        case 'DISP':
+          o.disp = this.value(value) !== 0;
+          break;
+        case 'ENABLE':
+          o.enable = this.value(value) !== 0;
+          break;
+        case 'BLEND':
+          if (['SOUND', 'SNDTABLE'].includes(o.type)) o.soundBypassVolume = this.value(value);
+          else o.alpha = this.value(value);
+          break;
+        case 'TYPE':
+          o.hitTransparent = this.value(value) !== 0;
+          break;
+        case 'CHANNEL':
+          o.channel = this.value(value);
+          break;
+        case 'DIV':
+          o.div = this.value(value);
+          break;
+        case 'STYPE':
+          o.soundType = this.value(value);
+          break;
+        case 'PL':
+          o.plane = value;
+          break;
+        case 'PARENT':
+          o.parent = value;
+          break;
+        case 'GROUP':
+          o.group = value;
+          break;
+        case 'COUNT':
+          o.count = Number(value);
+          break;
+        case 'COLOR':
+          o.color = this.value(value) >>> 0;
+          break;
+        case 'IDN':
+          o.idIndex = this.value(value);
+          break;
+        default:
+          if (/^ID\.\d+$/.test(column)) o.ids[+column.slice(3)] = Number(value);
+          else if (
+            !(
+              this.player.nativeControls?.supports(o) ||
+              this.player.nativeImages?.supports(o) ||
+              this.player.nativeData?.supports(o) ||
+              this.player.nativeEffects?.supports(o) ||
+              this.player.nativePlanes?.supports(o) ||
+              this.player.nativeArea?.supports(o) ||
+              this.player.nativeText?.supports(o) ||
+              this.player.nativeLog?.supports(o)
+            )
+          )
+            this.diagnostic(`unsupported #OBJECT column ${column} for ${o.type} ${o.key}`);
+      }
+    }
+    if (['SOUND', 'SNDTABLE'].includes(o.type) && this.player.nativeSound) {
+      if (typeof this.player.nativeSound.initialize !== 'function')
+        throw new Error('Native FES sound initialization adapter is unavailable');
+      this.player.nativeSound.initialize(this, o, columns);
+    }
+  }
+  plane(o) {
+    return this.byKey.get(o.plane || o.parent) || this.byKey.get(`${o.plane || o.parent}[0]`);
+  }
+  placement(o) {
+    let x = o.x,
+      y = o.y,
+      z = o.z,
+      alpha = o.alpha,
+      shown = true,
+      p = this.plane(o),
+      depth = 0;
+    while (p) {
+      if (++depth > 16) throw new Error('FES plane cycle');
+      x += p.x;
+      y += p.y;
+      z += p.z;
+      alpha *= p.alpha / 255;
+      shown &&= p.disp;
+      p = this.plane(p);
+    }
+    return { x, y, z, alpha, shown };
+  }
+  rect(o) {
+    if (this.runtime && (o.nativeType === 14 || o.nativeType === 15)) {
+      const x = o.x | 0,
+        y = o.y | 0,
+        right = (x + (o.width | 0)) | 0,
+        bottom = (y + (o.height | 0)) | 0;
+      return { x, y, w: right - x, h: bottom - y };
+    }
+    const bounds = this.player.nativeImages?.supports(o)
+      ? this.player.nativeInput?.bounds?.(o)
+      : null;
+    if (bounds)
+      return { x: bounds[0], y: bounds[1], w: bounds[2] - bounds[0], h: bounds[3] - bounds[1] };
+    if (o.lockedRect) return o.lockedRect;
+    const at = this.placement(o),
+      f =
+        this.player.picture(o.file)?.frame(o.currentID) ||
+        this.player.picture(o.file)?.frames[0] ||
+        o.nativeImageMetrics;
+    if (['SLIDER', 'SCROLL2'].includes(o.type))
+      return { x: at.x, y: at.y, w: o.areaWidth, h: o.areaHeight };
+    if (o.width > 0 && o.height > 0) return { x: at.x, y: at.y, w: o.width, h: o.height };
+    return f ? { x: at.x + f.offsetX, y: at.y + f.offsetY, w: f.width, h: f.height } : null;
+  }
+  waitObject(reference) {
+    return this.runtime
+      ? this.collection.lookup(reference.nameBytes, reference.index)
+      : this.byKey.get(reference);
+  }
+  tick(frameWord) {
+    if (this.runtime) {
+      if (!Number.isInteger(frameWord) || frameWord < 0 || frameWord > 0xffffffff)
+        throw new TypeError('Native FES frame requires an unsigned input word');
+      frameWord >>>= 0;
+      if (this.frameOrigin === 0) this.frameOrigin = (frameWord - 1) >>> 0;
+      this.nativeFrameWord = frameWord;
+      return this.tickNative();
+    }
+    if (this.finished !== null) return;
+    if (this.deferredCommandReturn !== null) {
+      const value = this.deferredCommandReturn;
+      this.deferredCommandReturn = null;
+      const { action } = this.nativeCommandReturn(value);
+      if (action === 'suspend') return;
+      if (action === 'flush') {
+        this.decodePending = true;
+        return;
+      }
+    }
+    if (
+      (this.waitFrames > 0 ||
+        this.waitMotion ||
+        this.waitObjects ||
+        this.commandDelayUntil !== null) &&
+      this.consumeWaitSkip()
+    ) {
+      this.waitFrames = 0;
+      this.commandDelayUntil = null;
+      for (const object of this.objects) {
+        if (object.motionTarget) object.motionTarget.manager.skip();
+        if (object.motions.length) object.finish();
+      }
+      this.transitionUntil = this.player.frameCount;
+    }
+    if (this.commandDelayUntil !== null) {
+      const frame = this.runtime ? this.nativeFrameWord : this.player.frameCount;
+      if (frame >>> 0 < this.commandDelayUntil) return;
+      this.commandDelayUntil = null;
+    }
+    if (this.waitFrames > 0 && --this.waitFrames > 0) return;
+    if (this.waitObjects?.some((reference) => this.waitObject(reference)?.motionBusy)) return;
+    this.waitObjects = null;
+    if (
+      this.waitMotion &&
+      (this.objects.some((o) => o.motionBusy) || this.player.frameCount < this.transitionUntil)
+    )
+      return;
+    this.waitMotion = false;
+    const stack = this.suspended || [[this.label, 0]];
+    this.suspended = null;
+    this.run(stack);
+  }
+  async tickNative() {
+    if (this.finished !== null) return;
+    if (this.deferredCommandReturn !== null) {
+      const value = this.deferredCommandReturn;
+      this.deferredCommandReturn = null;
+      const { action } = this.nativeCommandReturn(value);
+      if (action === 'suspend') return;
+      if (action === 'flush') {
+        this.decodePending = true;
+        return;
+      }
+    }
+    if (!(await this.runtime.pollWait())) return;
+    const stack = this.suspended || [[this.label, 0]];
+    this.suspended = null;
+    this.run(stack);
+  }
+  commonCommandReturn({ binding, word }, mode) {
+    if (binding === 'native-wait') {
+      if (mode === 'event') return word ? { action: 'event-stop' } : {};
+      const signed = word | 0;
+      if ([-1, -2, -4, -6, -7].includes(signed)) {
+        this.commandDelayUntil = signed;
+        return { action: 'suspend' };
+      }
+    }
+    return this.nativeCommandReturn(word);
+  }
+  consumeWaitSkip() {
+    if (
+      !this.keySkipEnabled ||
+      (!this.skipControl && !this.keySkipForced && (!this.skipPressed || this.keySkipControlOnly))
+    )
+      return false;
+    if (!this.keySkipContinuous && !this.skipControl && !this.keySkipForced)
+      this.skipPressed = false;
+    return true;
+  }
+  event(o, event) {
+    if (
+      this.runtime &&
+      !this.player.publicEventLive(
+        this,
+        this.runtime,
+        this.runtime.world.objects.objects.get(this.runtimeID),
+        o,
+      )
+    )
+      return false;
+    const labels = objectEventLabels(this, o, event).filter((label) => this.program.blocks[label]);
+    if (!labels.length || this.finished !== null) return false;
+    if (this.runtime) return this.player.completePublicEvent(this, o, event);
+    const saved = this.suspended,
+      current = this.eventObject;
+    this.suspended = null;
+    this.eventObject = o;
+    let jumped = false;
+    for (const label of labels) {
+      jumped = this.run([[label, 0]], 'event', label) || jumped;
+      if (jumped || this.finished !== null) break;
+    }
+    this.eventObject = current;
+    if (!jumped && !this.suspended) this.suspended = saved;
+    return true;
+  }
+  async invokeEventLabels(labels, { object, nameBytes, index, current }, settled) {
+    if (this.finished !== null) {
+      settled?.({ handled: false, failed: false });
+      return false;
+    }
+    // Script can synchronously notify the FES that sent it a message. The
+    // notification must finish its own commands before the send can settle.
+    const scope = { pending: new Set(), reply: null },
+      run = (stack, label) =>
+        this.player.withCommandScope(scope, () => this.run(stack, 'event', label)),
+      entry = this.runtime ? { nameBytes: nameBytes.slice(), index, current } : null,
+      bindContext = () => {
+        if (entry) this.nativeContext = entry;
+        else this.eventIndex = index;
+      };
+    const saved = {
+      suspended: this.suspended,
+      decodePending: this.decodePending,
+      object: this.eventObject,
+      index: this.eventIndex,
+      nativeContext: this.nativeContext,
+      executingLabel: this.executingLabel,
+      executingLine: this.executingLine,
+      waits: this.runtime
+        ? null
+        : Object.fromEntries(
+            [
+              'waitFrames',
+              'waitMotion',
+              'waitSound',
+              'waitObjects',
+              'transitionUntil',
+              'commandDelayUntil',
+            ].map((key) => [key, this[key]]),
+          ),
+    };
+    this.suspended = null;
+    this.decodePending = false;
+    this.eventObject = object;
+    bindContext();
+    let jumped = false,
+      handled = false,
+      failed = false,
+      failure;
+    try {
+      for (const label of labels) {
+        if (!this.program.blocks[label]) continue;
+        handled = true;
+        bindContext();
+        jumped = run([[label, 0]], label) || jumped;
+        let flushes = 0;
+        while (this.decodePending) {
+          if (++flushes > 10000) throw new Error(`${this.name}: FES notification decode budget`);
+          const continuation = this.suspended;
+          this.decodePending = false;
+          this.suspended = null;
+          await this.player.flush({ commandsOnly: true, pending: scope.pending });
+          bindContext();
+          if (scope.reply !== null) {
+            const value = scope.reply;
+            scope.reply = null;
+            const reply = this.nativeCommandReturn(value);
+            if (reply.action === 'suspend') break;
+            if (this.nativeYieldEndsEvent(reply)) {
+              await this.flushNativeRecords();
+              break;
+            }
+          }
+          await this.flushNativeRecords();
+          bindContext();
+          jumped = run(continuation, label) || jumped;
+        }
+        if (jumped || this.finished !== null) break;
+      }
+    } catch (error) {
+      failed = true;
+      failure = error;
+      throw error;
+    } finally {
+      this.eventObject = saved.object;
+      if (entry) this.nativeContext = saved.nativeContext;
+      else this.eventIndex = saved.index;
+      this.executingLabel = saved.executingLabel;
+      this.executingLine = saved.executingLine;
+      if (!jumped && this.finished === null) {
+        this.suspended = saved.suspended;
+        this.decodePending = saved.decodePending;
+        if (saved.waits) Object.assign(this, saved.waits);
+      }
+      // Public adapters observe completion only after this sole owner restores
+      // the caller. The returned Promise does not expose synchronous settlement.
+      settled?.({ handled, failed, error: failure });
+    }
+    return handled;
+  }
+  dispatchEvent(object, event, settled) {
+    const reference = this.collection
+      ? this.collection.reference(object)
+      : { nameBytes: encodeCP932(object.baseName), index: object.index ?? 0 };
+    return this.invokeEventLabels(
+      objectEventLabels(this, object, event),
+      {
+        object,
+        ...reference,
+        current: reference.index,
+      },
+      settled,
+    );
+  }
+  notify(event, name = null, index = 0) {
+    const bytes = name == null ? null : labelBytes(name),
+      object =
+        bytes === null
+          ? null
+          : this.collection
+            ? this.collection.lookup(bytes, index)
+            : this.elements(`${fesNarrowText(bytes)}[${index}]`)[0] || null,
+      target = bytes === null ? labelKey(event) : `${fesByteView(bytes)}.${labelKey(event)}`;
+    const current = this.runtime && bytes === null ? 0 : index;
+    return this.invokeEventLabels([target], {
+      object,
+      nameBytes: bytes ?? new Uint8Array(),
+      index: current,
+      current,
+    });
+  }
+  nativeCommandReturn(value, { queue = true } = {}) {
+    const word = value >>> 0,
+      signed = word | 0;
+    if (!word) return {};
+    if (signed === -3) {
+      if (queue) this.nativeQueuePending = true;
+      return this.nativeYieldEndsEvent({ nativeReturn: signed })
+        ? { action: 'flush', nativeReturn: signed }
+        : { action: 'flush' };
+    }
+    if (signed === -1) {
+      if (this.runtime) this.commandDelayUntil = -1;
+      else this.waitMotion = true;
+      return { action: 'suspend' };
+    }
+    if ([-2, -4, -5, -6, -7].includes(signed))
+      throw new Error(
+        `Native FES return state ${signed} requires its command-specific wait context`,
+      );
+    const frame = this.runtime ? this.nativeFrameWord : this.player.frameCount;
+    this.commandDelayUntil = (frame + word) >>> 0;
+    return { action: 'suspend' };
+  }
+  enqueueCommandReply(promise) {
+    const scope = this.player.commandScope;
+    this.player.enqueue(
+      promise.then((value) => {
+        if (scope) scope.reply = value;
+        else this.deferredCommandReturn = value;
+      }),
+    );
+  }
+  async flushNativeRecords(executorEntry) {
+    if (!this.nativeQueuePending) return;
+    // Consume this caller's native -3 request before yielding. A return0
+    // notification must not borrow it while this drain awaits its owner.
+    this.nativeQueuePending = false;
+    await this.runtime?.flushRecords(executorEntry);
+  }
+  invoke(label, parameters = []) {
+    label = labelKey(label);
+    if (!this.program.blocks[label]) return false;
+    parameters.forEach((v, i) => this.setLocal(i, v));
+    const saved = this.suspended;
+    this.suspended = null;
+    const jumped = this.run([[label, 0]]);
+    if (!jumped && !this.suspended) this.suspended = saved;
+    return true;
+  }
+  run(stack, mode = 'frame', eventLabel = stack?.[0]?.[0]) {
+    if (this.runtime?.closed) return false;
+    let budget = 20000;
+    let jumped = false;
+    while (stack.length) {
+      const [label, offset] = stack.pop(),
+        lines = this.program.blocks[label];
+      if (!lines) throw new Error(`${this.name}: no FES block ${label}`);
+      for (let pc = offset; pc < lines.length; ) {
+        if (--budget <= 0) throw new Error(`${this.name}#${label}: FES instruction budget`);
+        this.executingLabel = label;
+        this.executingLine = pc + 1;
+        let result;
+        try {
+          result = this.execute(lines[pc++], lines, pc, undefined, mode);
+        } catch (error) {
+          error.message = `${this.name}#${label}:${pc}: ${error.message}`;
+          throw error;
+        }
+        if (result.action === 'empty-head') {
+          if (mode === 'event') return jumped;
+          result = this.nativeCommandReturn(1);
+        }
+        pc = result.pc ?? pc;
+        if (result.action === 'call') {
+          stack.push([label, pc], [result.target, 0]);
+          break;
+        }
+        if (result.action === 'event-stop') return jumped;
+        if (result.action === 'return') break;
+        if (result.action === 'next') {
+          if (this.runtime && mode === 'event') {
+            // The event cursor is distinct from the main label/command word.
+            // Only a changed formatted label at entry depth transfers the main continuation.
+            if (result.target !== eventLabel && stack.length === 0) {
+              if (!this.program.blocks[result.target])
+                throw new Error(`${this.name}: no FES block ${result.target}`);
+              this.label = result.target;
+              this.suspended = [[result.target, 0]];
+              this.commandDelayUntil = null;
+              return true;
+            }
+            stack.push([result.target, 0]);
+            break;
+          }
+          jumped = true;
+          stack.length = 0;
+          stack.push([result.target, 0]);
+          break;
+        }
+        if (result.action === 'stop') return true;
+        if (result.action === 'suspend' || result.action === 'flush') {
+          // A native queue yield ends the legacy event cursor. Async work
+          // introduced by the JavaScript host still resumes its continuation.
+          if (mode === 'event' && this.nativeYieldEndsEvent(result)) stack.length = 0;
+          else stack.push([label, pc]);
+          this.suspended = stack;
+          this.decodePending = result.action === 'flush';
+          return jumped;
+        }
+      }
+    }
+    return jumped;
+  }
+  nativeYieldEndsEvent(result) {
+    return (
+      result.nativeReturn === -3 &&
+      this.runtime &&
+      nativeABI(this.runtime.world.profile).fes.nativeQueueYieldStopsNotification === true
+    );
+  }
+  skip(lines, pc, stopAtElse) {
+    let depth = 0;
+    for (; pc < lines.length; pc++) {
+      const line = fesByteView(this.expandMacros(lines[pc]));
+      if (/^if *\(/.test(line) && !condition(line)[1]) depth++;
+      else if (line === 'endif') {
+        if (!depth) return pc + 1;
+        depth--;
+      } else if (line === 'else' && !depth && stopAtElse) return pc + 1;
+    }
+    return pc;
+  }
+  execute(line, lines, pc, execution, mode = 'frame') {
+    if (this.runtime?.closed) throw new Error('FES runtime owner is closed');
+    let bytes = fesSourceBytes(line);
+    if (!execution) {
+      if (this.runtime) {
+        const expanded = this.player.host.nativeFESStringBytes(bytes, this);
+        if (!(expanded instanceof Uint8Array))
+          throw new Error('FES native row service must return bytes synchronously');
+        bytes = fesSourceBytes(expanded).slice();
+      }
+      bytes = this.expandMacros(bytes);
+      execution = { bytes, offset: 0 };
+    }
+    line = fesByteView(bytes);
+    const words = this.tokens(bytes);
+    if (this.runtime && words[0] === undefined) return { action: 'empty-head' };
+    const head = fesNarrowText(words[0]),
+      args = words.slice(1),
+      p = (i) => this.value(this.soundArgument(args[i] || '0'));
+    const store = (i, v) => {
+      if (args[i] !== undefined) this.setGlobal(p(i), v);
+    };
+    if (/^if *\(/.test(line)) {
+      const [expr, rest] = condition(line),
+        truth = this.value(expr) !== 0;
+      return rest
+        ? truth
+          ? this.execute(
+              fesViewBytes(rest),
+              lines,
+              pc,
+              {
+                bytes: execution.bytes,
+                offset: execution.offset + line.length - rest.length,
+              },
+              mode,
+            )
+          : {}
+        : truth
+          ? {}
+          : { pc: this.skip(lines, pc, true) };
+    }
+    if (head === 'else') return { pc: this.skip(lines, pc, false) };
+    if (head === 'endif') return {};
+    if (head === 'break') return { action: 'return' };
+    if (/^(?:\+\+|--)?[$\\]/.test(head)) {
+      assign(line, this);
+      return {};
+    }
+    const profile = this.runtime?.world?.profile;
+    const fesBehavior = profile ? nativeABI(profile).fes : null;
+    const resolvedHead = fesBehavior?.objectHeadsFirst
+      ? this.runtime.commandHead(words[0])
+      : undefined;
+    if (resolvedHead?.object)
+      return this.executeNativeHead(words, args, bytes, execution, pc, mode, resolvedHead);
+    const host = this.player.host;
+    if (this.runtime && FES_PLATFORM_COMMANDS.includes(head))
+      return this.nativeCommandReturn(this.runtime.platform.command(head, args, bytes));
+    if (this.runtime && head === 'react') return this.nativeCommandReturn(this.runtime.react());
+    if (this.runtime && head === 'automove')
+      return this.nativeCommandReturn(this.runtime.autoMove(args));
+    if (this.runtime && head === 'automoveex')
+      return this.nativeCommandReturn(this.runtime.autoMoveEx(args));
+    if (this.runtime && head === 'restoremove')
+      return this.nativeCommandReturn(this.runtime.restoreMove());
+    if (this.runtime && head === 'btnsimulate')
+      return this.nativeCommandReturn(this.runtime.buttonSimulate(args));
+    if (this.runtime && ['sysvoice', 'sysvoiceex'].includes(head))
+      return this.nativeCommandReturn(this.runtime.systemVoiceCommand(head, args));
+    if (fesBehavior?.sharedIntegerRandom && (head === 'rand' || head === 'randtbl')) {
+      this.sharedIntegerRandom(head, args);
+      return {};
+    }
+    if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {
+      this.enqueueCommandReply(this.runtime.screenCommand(head, args));
+      return { action: 'flush' };
+    }
+    if (NATIVE_FES_SAVE_COMMANDS.includes(head) && typeof host.nativeSaveCommand === 'function') {
+      this.player.enqueue(Promise.resolve(host.nativeSaveCommand(head, bytes, this)));
+      return { action: 'flush' };
+    }
+    if (this.player.nativeEffects?.commands.has(head)) {
+      this.enqueueCommandReply(this.player.nativeEffects.commandLine(head, bytes, this));
+      return { action: 'flush' };
+    }
+    switch (head) {
+      case 'next':
+        if (args[0] === undefined) break;
+        {
+          const target = fesByteView(this.argumentBytes(args[0]));
+          if (!this.runtime || mode !== 'event') this.label = target;
+          this.waitFrames = 0;
+          this.waitMotion = false;
+          this.waitSound = null;
+          this.waitObjects = null;
+          return { action: 'next', target };
+        }
+      case 'call': {
+        if (args[0] === undefined) break;
+        const target = fesByteView(this.argumentBytes(args[0]));
+        if (!this.program.blocks[target]) {
+          this.player.unresolvedTargets.add(`${this.name}: missing call ${target}`);
+          break;
+        }
+        return { action: 'call', target };
+      }
+      case 'wait':
+        if (this.runtime)
+          return this.executeNativeHead(words, args, bytes, execution, pc, mode, resolvedHead);
+        if (this.executingLabel?.includes('.')) {
+          this.diagnostic('wait is not permitted in an event handler');
+          return {};
+        }
+        if (
+          args.length &&
+          this.elements(args[0]).some((o) => ['SOUND', 'SNDTABLE'].includes(o.type))
+        ) {
+          const object = this.elements(args[0])[0];
+          this.waitSound = this.runtime ? this.collection.reference(object) : object.key;
+          return { action: 'suspend' };
+        }
+        if (args.length && this.elements(args[0]).length) {
+          this.waitObjects = this.elements(args[0]).map((o) =>
+            this.runtime ? this.collection.reference(o) : o.key,
+          );
+          return this.waitObjects.some((reference) => this.waitObject(reference).motionBusy)
+            ? { action: 'suspend' }
+            : {};
+        }
+        if (args.length) {
+          if (this.consumeWaitSkip()) return {};
+          this.waitFrames = Math.max(1, p(0));
+          return { action: 'suspend' };
+        }
+        if (
+          !args.length &&
+          (this.objects.some((o) => o.motionBusy) || this.player.frameCount < this.transitionUntil)
+        ) {
+          this.waitMotion = true;
+          return { action: 'suspend' };
+        }
+        return {};
+      case 'decode': {
+        const result = mode === 'frame' ? this.runtime?.queueDecode?.() : 0;
+        if (result) return this.nativeCommandReturn(result);
+        return (this.player.commandScope?.pending ?? this.player.pending).size
+          ? { action: 'flush' }
+          : {};
+      }
+      case 'reset_frame':
+        this.frameOrigin = this.runtime ? this.nativeFrameWord : this.player.frameCount;
+        break;
+      case 'randtbl': {
+        const values = Array.from({ length: Math.max(0, p(3) - p(2) + 1) }, (_, i) => p(2) + i);
+        for (let i = values.length - 1; i > 0; i--) {
+          const j = this.player.random(0, i);
+          [values[i], values[j]] = [values[j], values[i]];
+        }
+        if (p(1) - p(0) + 1 !== values.length) {
+          this.diagnostic('randtbl requires matching source and destination range sizes');
+          break;
+        }
+        values.forEach((v, i) => this.setGlobal(p(0) + i, v));
+        break;
+      }
+      case 'automove': {
+        const object = this.elements(args[0])[0];
+        if (object && host.config?.('automove') !== 0) this.player.focusObject(this, object);
+        break;
+      }
+      case 'react': {
+        const focused = this.player.focused;
+        if (focused) focused.s.event(focused.o, 'FOCUS');
+        break;
+      }
+      case 'exit':
+        this.finished = args.length ? p(0) : 0;
+        return { action: 'stop' };
+      case 'result':
+        this.resultValue = !args.length
+          ? 0
+          : fesBehavior?.localAccessUsesNativeTypes
+            ? this.runtime.evaluateBankExpression(this.argumentBytes(args[0]), {
+                systemNames: true,
+              })
+            : p(0);
+        return this.nativeCommandReturn(-3, { queue: false });
+      case 'execfes':
+        if (args[0] === undefined && fesBehavior?.emptyExecReturnsZero) return {};
+        this.player.requestFES(
+          this.text(args[0]),
+          this,
+          Array.from({ length: 16 }, (_, i) => (args[i + 1] === undefined ? 0 : p(i + 1))),
+        );
+        return this.nativeCommandReturn(-3, { queue: false });
+      case 'execkcs':
+        if (args[0] === undefined && fesBehavior?.emptyExecReturnsZero) return {};
+        this.exitCode = -1;
+        this.player.requestKCS(this.text(args[0]), this);
+        return this.nativeCommandReturn(-3, { queue: false });
+      case 'endfes':
+      case 'endkcs': {
+        const endKCS = head === 'endkcs';
+        if (endKCS || fesBehavior?.endChildYieldsFrame) this.exitCode = -1;
+        if (endKCS) this.player.endKCS(this);
+        else this.player.endFES(this);
+        if (fesBehavior?.endChildYieldsFrame)
+          return mode === 'event' ? { action: 'event-stop' } : this.nativeCommandReturn(1);
+        return { action: 'flush' };
+      }
+      case 'baseimg': {
+        const object = args.length ? this.elements(args[0])[0] : null;
+        if (args.length && !object) return {};
+        this.player.snapshotBase(this, object);
+        if (this.runtime) return this.nativeCommandReturn(-3);
+        return { action: 'flush' };
+      }
+      case 'rdraw':
+      case 'rwipe':
+      case 'rwmos': {
+        const frames = p(0) || 20;
+        this.player.transition(frames, head, args[1] ? this.text(args[1]) : undefined);
+        this.transitionUntil = this.player.frameCount + frames;
+        break;
+      }
+      case 'strvar': {
+        // SDK 4.01 select.fes uses indexed string copying, rather than printf.
+        if (fesNarrowText(args[0]) === 'get') {
+          this.player.strings[p(1)] = this.player.strings[p(2)] ?? '';
+          break;
+        }
+        let i = 2;
+        this.player.strings[p(0)] = this.text(args[1]).replace(/%%|%(0?\d*)d/g, (match, width) => {
+          if (match === '%%') return '%';
+          const value = p(i++),
+            digits = String(Math.abs(value)),
+            negative = value < 0;
+          if (width.startsWith('0'))
+            return `${negative ? '-' : ''}${digits.padStart(Math.max(0, Number(width) - Number(negative)), '0')}`;
+          return String(value).padStart(Number(width) || 0, ' ');
+        });
+        break;
+      }
+      case 'setstbl':
+        this.player.stringTable[p(0)] = this.text(args[1]);
+        break;
+      case 'getstbl':
+        this.player.strings[p(1)] = this.player.stringTable[p(0)] ?? '';
+        break;
+      case 'strcmp':
+        store(
+          0,
+          args.length > 2
+            ? Number(this.text(args[1]) !== this.text(args[2]))
+            : Number(!!this.text(args[1])),
+        );
+        break;
+      case 'rand':
+        store(0, this.player.random(p(1), p(2)));
+        break;
+      case 'fileexist':
+        store(1, Number(this.player.game.has(this.text(args[0]).split('/').pop())));
+        break;
+      case 'config': {
+        if (!args.length) break;
+        const index = p(0);
+        if (args.length < 2) break;
+        const value = host.config?.(this.text(args[1]), 0, 0, {
+          instance: this,
+          legacyVolume: true,
+        });
+        if (value !== undefined) this.setGlobal(index, value);
+        break;
+      }
+      case 'getconf': {
+        if (args.length < 2) break;
+        if (fesBehavior?.configurationOperandOrder === 'value-extras-key') {
+          const index = p(0),
+            ex1 = p(2),
+            ex2 = p(3),
+            key = this.text(args[1]),
+            value = host.config?.(key, ex1, ex2, { instance: this });
+          if (value !== undefined) {
+            if (typeof value === 'string') this.player.strings[index] = value;
+            else this.setGlobal(index, value);
+          }
+          break;
+        }
+        const value = host.config?.(this.text(args[1]), p(2), p(3), { instance: this });
+        if (value !== undefined) {
+          if (typeof value === 'string') this.player.strings[p(0)] = value;
+          else store(0, value);
+        }
+        break;
+      }
+      case 'setconf':
+        if (args.length >= 2 && fesBehavior?.configurationOperandOrder === 'value-extras-key') {
+          const value = p(0),
+            ex1 = p(2),
+            ex2 = p(3),
+            key = this.text(args[1]);
+          this.player.enqueue(
+            host.setConfig?.(key, value, ex1, ex2, {
+              strings: this.player.strings,
+              instance: this,
+            }),
+          );
+          break;
+        }
+        if (args.length >= 2)
+          this.player.enqueue(
+            host.setConfig?.(this.text(args[1]), p(0), p(2), p(3), {
+              strings: this.player.strings,
+              instance: this,
+            }),
+          );
+        break;
+      case 'getsndconfex': {
+        if (typeof host.soundConfigTokens !== 'function')
+          throw new Error('FES getsndconfex requires its native sound configuration token service');
+        const tokens = host.soundConfigTokens(line).slice(1);
+        if (!tokens.length) break;
+        const index = this.value(this.soundArgument(tokens[0]));
+        if (tokens[1] === undefined) break;
+        if (typeof host.soundConfig !== 'function')
+          throw new Error('FES getsndconfex requires its native sound configuration service');
+        const value = host.soundConfig(tokens.slice(1), {
+          instance: this,
+          text: (token) => this.soundArgument(token),
+          evaluate: (token) => this.value(token),
+        });
+        if (value !== undefined) this.setGlobal(index, value);
+        break;
+      }
+      case 'setsndconfex': {
+        if (typeof host.soundConfigTokens !== 'function')
+          throw new Error('FES setsndconfex requires its native sound configuration token service');
+        const tokens = host.soundConfigTokens(line).slice(1);
+        if (!tokens.length) break;
+        const value = this.value(this.soundArgument(tokens[0]));
+        if (tokens[1] === undefined) break;
+        if (typeof host.setSoundConfig !== 'function')
+          throw new Error('FES setsndconfex requires its native sound configuration service');
+        this.player.enqueue(
+          host.setSoundConfig(tokens.slice(1), value, {
+            instance: this,
+            text: (token) => this.soundArgument(token),
+            evaluate: (token) => this.value(token),
+          }),
+        );
+        break;
+      }
+      case 'm2_getconf': {
+        if (args.length < 2) break;
+        const value = host.config?.(this.text(args[0]), 0, 0, {
+          m2: true,
+          part: args[2] === undefined ? undefined : this.text(args[2]),
+          instance: this,
+        });
+        if (value !== undefined && p(1) >>> 0 <= 511) this.setLocal(p(1), value);
+        break;
+      }
+      case 'm2_setconf':
+        if (args.length)
+          this.player.enqueue(
+            host.setConfig?.(this.text(args[0]), args[1] === undefined ? undefined : p(1), 0, 0, {
+              m2: true,
+              part: args[2] === undefined ? undefined : this.text(args[2]),
+              instance: this,
+            }),
+          );
+        break;
+      case 'saveexist': {
+        const info = host.saveInfo?.(p(0));
+        store(1, Number(!!info && (args.length < 3 || info.version === p(2))));
+        if (args.length > 2 && info && info.version === undefined)
+          this.diagnostic('saveexist version comparison requires saved data version metadata');
+        break;
+      }
+      case 'newsave':
+        store(0, host.newestSave?.(p(1), p(2)) ?? -1);
+        break;
+      case 'datasave':
+        this.player.enqueue(host.save?.(p(0)));
+        break;
+      case 'savedelete':
+        this.player.enqueue(host.deleteSave?.(p(0)));
+        break;
+      case 'savecopy':
+        this.player.enqueue(host.copySave?.(p(0), p(1)));
+        break;
+      case 'gettime': {
+        const d = new Date();
+        [
+          d.getFullYear(),
+          d.getMonth() + 1,
+          d.getDate(),
+          d.getDay(),
+          d.getHours(),
+          d.getMinutes(),
+          d.getSeconds(),
+        ].forEach((v, i) => store(i, v));
+        break;
+      }
+      case 'getweek': {
+        const date = new Date(0);
+        date.setUTCFullYear(p(1), p(2) - 1, p(3));
+        store(0, date.getUTCDay());
+        break;
+      }
+      case 'messagebox': {
+        if (typeof host.messageBox !== 'function')
+          throw new Error('FES messagebox requires its browser dialog service');
+        const tokens = host.soundConfigTokens ? host.soundConfigTokens(bytes).slice(1) : args;
+        if (tokens.length < 4)
+          throw new Error('FES messagebox requires a variable, type, title and text');
+        const index = this.value(this.soundArgument(tokens[0])),
+          type = this.value(this.soundArgument(tokens[1])),
+          text = (token) =>
+            nativeArgumentDecoder
+              .decode(this.argumentBytes(token))
+              .split('\0', 1)[0]
+              .replace(/\\_/g, ' ')
+              .replace(/\\n/g, '\n');
+        // FES sends the ANSI packet in both profiles. Only IDOK and IDYES
+        // map to one; -1 suppresses the variable-bank write altogether.
+        this.player.enqueue(
+          Promise.resolve(
+            host.messageBox({
+              buttons: type === 1 ? 1 : type === 2 ? 4 : 0,
+              caption: text(tokens[2]),
+              message: text(tokens[3]),
+            }),
+          ).then((result) => {
+            if (index !== -1) this.setGlobal(index >>> 0, Number(result === 1 || result === 6));
+          }),
+        );
+        return { action: 'flush' };
+      }
+      case 'rettitle':
+        if (typeof host.postWindowMessage !== 'function')
+          throw new Error('FES rettitle requires the native window message host');
+        this.player.enqueue(
+          Promise.resolve(host.postWindowMessage({ message: 0x468, wParam: 0, lParam: 0 }, this)),
+        );
+        return { action: 'flush' };
+      case 'send':
+      case 'sendscript': {
+        if (typeof host.send !== 'function')
+          throw new Error(`FES ${head} message routing is unavailable`);
+        this.player.enqueue(
+          host.send(
+            args.map((_, i) => p(i)),
+            this,
+            { target: head === 'send' ? 'parent' : 'script' },
+          ),
+        );
+        return { action: 'flush' };
+      }
+      case 'steam_init': {
+        const initialize =
+          typeof host.initializeSteam === 'function'
+            ? () => host.initializeSteam()
+            : typeof host.steam?.initialize === 'function'
+              ? () => host.steam.initialize()
+              : null;
+        if (!initialize) throw new Error('FES Steam initialization service is unavailable');
+        this.player.enqueue(Promise.resolve(initialize()));
+        return { action: 'flush' };
+      }
+      case 'steam_isenable': {
+        const tokens =
+          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(line) : words;
+        if (tokens[1] !== undefined)
+          this.setGlobal(
+            this.value(this.soundArgument(tokens[1])),
+            Number(Boolean(host.steam?.enabled)),
+          );
+        break;
+      }
+      case 'steam_isbroadcast': {
+        const tokens =
+          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(line) : words;
+        if (tokens[1] === undefined) break;
+        if (typeof host.nativeSteamBroadcast !== 'function')
+          throw new Error('FES broadcast query requires the native application flag service');
+        const index = this.value(this.soundArgument(tokens[1]));
+        this.player.enqueue(
+          Promise.resolve(host.nativeSteamBroadcast()).then((value) => {
+            if (!Number.isInteger(value))
+              throw new Error('FES native broadcast query did not return a word');
+            this.setGlobal(index, value >>> 0);
+          }),
+        );
+        return { action: 'flush' };
+      }
+      case 'cgreg_init': {
+        if (typeof host.openGallery !== 'function')
+          throw new Error('CG gallery storage is unavailable');
+        this.cgGallery = null;
+        const descriptor = {
+          file: this.text(args[0]),
+          entry: p(1),
+          list: this.text(args[2]),
+        };
+        const { file, entry, list } = descriptor;
+        this.player.enqueue(
+          Promise.resolve(host.openGallery(file, entry, list)).then((gallery) => {
+            this.cgGallery = gallery;
+          }),
+        );
+        return { action: 'flush' };
+      }
+      case 'cgreg':
+        store(0, Number(this.cgGallery?.registry.hasReference(this.text(args[1]), true) ?? false));
+        break;
+      case 'cgreg_t': {
+        const block = /^[\\$\\\\0-9]/.test(fesNarrowText(args[1])) ? p(1) : this.text(args[1]);
+        store(0, Number(this.cgGallery?.seen(block, p(2)) ?? false));
+        break;
+      }
+      case 'cgregnum':
+      case 'cgregmax': {
+        const block = /^[\\$\\\\0-9]/.test(fesNarrowText(args[0])) ? p(0) : this.text(args[0]);
+        store(1, this.cgGallery?.variants(block, p(2), head === 'cgregnum').length ?? 0);
+        break;
+      }
+      case 'cgregtbl':
+        store(1, this.cgGallery?.index(this.text(args[0])) ?? 0);
+        break;
+      case 'cgreg_getlist': {
+        if (!this.cgGallery || p(0) === -1) break;
+        const block = /^[$0-9]/.test(fesNarrowText(args[2])) ? p(2) : this.text(args[2]);
+        this.player.strings[p(0)] = this.cgGallery.get(block, p(3), p(4));
+        break;
+      }
+      case 'input_text':
+        this.player.enqueue(
+          Promise.resolve(host.inputText?.(this.text(args[1])) || '').then((v) => {
+            this.player.strings[p(0)] = v;
+          }),
+        );
+        break;
+      case 'xchgcursor':
+        this.player.cursorOverButton = fesNarrowText(args[0]) === 'btndown';
+        break;
+      case 'keyskip':
+        this.keySkipEnabled = true;
+        this.keySkipControlOnly = false;
+        this.keySkipContinuous = false;
+        for (let i = 0; i < args.length; i++) {
+          const option = fesNarrowText(args[i]).replace(/[A-Z]/g, (c) => c.toLowerCase());
+          if (option === 'on') this.keySkipEnabled = true;
+          else if (option === 'off') this.keySkipEnabled = false;
+          else if (option === 'ctrl') this.keySkipControlOnly = true;
+          else if (option === 'cont') this.keySkipContinuous = true;
+          else if (option === 'force') {
+            this.keySkipForced = args[i + 1] !== undefined ? Boolean(p(++i)) : false;
+            if (this.keySkipForced) {
+              this.clickL = -1;
+              if (this.runtime) this.skipPressed = this.skipControl = true;
+            }
+          } else this.keySkipEnabled = Boolean(p(i));
+        }
+        break;
+      case 'dbgstr':
+      case 'dbgstru8':
+      case 'debug':
+        this.player.debugLog({
+          kind: head,
+          value:
+            head === 'debug'
+              ? p(0)
+              : head === 'dbgstru8'
+                ? new TextDecoder().decode(this.argumentBytes(args[0] ?? new Uint8Array()))
+                : this.text(args[0] || ''),
+          expression: fesNarrowText(args[0]),
+          file: this.name,
+          label: this.executingLabel || this.label,
+          line: this.executingLine || 0,
+        });
+        break;
+      case 'basebtnpri':
+        if (!this.player.nativeInput)
+          throw new Error('FES basebtnpri requires the native input task adapter');
+        this.player.enqueue(this.player.nativeInput.priority(args.length ? p(0) : -1));
+        return { action: 'flush' };
+      case 'deletebgbutton':
+        if (!this.player.nativeInput)
+          throw new Error('FES deletebgbutton requires the native input task adapter');
+        this.player.enqueue(this.player.nativeInput.deleteLowButton());
+        return { action: 'flush' };
+      case 'sendbtn':
+        this.inputPropagation = args.length ? p(0) : 1;
+        break;
+      case 'force_redraw':
+        this.forceRedrawPending = true;
+        break;
+      case 'wndmenu':
+        if (args.length) {
+          const parameter =
+            typeof host.soundConfigTokens === 'function'
+              ? host.soundConfigTokens(bytes)[1]
+              : args[0];
+          if (typeof this.player.host.postWindowMessage !== 'function')
+            throw new Error('FES wndmenu requires the native window message host');
+          this.player.enqueue(
+            Promise.resolve(
+              this.player.host.postWindowMessage(
+                {
+                  message: 0x46c,
+                  wParam: 0,
+                  lParam: this.value(this.soundArgument(parameter)) >>> 0,
+                },
+                this,
+              ),
+            ),
+          );
+          return { action: 'flush' };
+        }
+        break;
+      case 'steam_achievement': {
+        const tokens =
+          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(bytes) : words;
+        if (
+          tokens[1] !== undefined &&
+          this.player.host.steam !== null &&
+          this.player.host.steam !== undefined
+        ) {
+          if (typeof this.player.host.steam.achievement !== 'function')
+            throw new Error('FES Steam provider has no achievement operation');
+          this.player.enqueue(
+            Promise.resolve(this.player.host.steam.achievement(this.argumentBytes(tokens[1]))),
+          );
+          return { action: 'flush' };
+        }
+        break;
+      }
+      case 'steam_achievement_reset':
+        if (host.steam !== null && host.steam !== undefined) {
+          if (typeof host.steam.resetAllStats !== 'function')
+            throw new Error('FES Steam provider has no stats reset operation');
+          this.player.enqueue(Promise.resolve(host.steam.resetAllStats()));
+          return { action: 'flush' };
+        }
+        break;
+      case 'steam_enablescreenshot': {
+        const tokens =
+          typeof host.soundConfigTokens === 'function' ? host.soundConfigTokens(bytes) : words;
+        if (this.player.host.steam !== null && this.player.host.steam !== undefined) {
+          if (typeof this.player.host.steam.enableScreenshot !== 'function')
+            throw new Error('FES Steam provider has no screenshot operation');
+          this.player.enqueue(
+            Promise.resolve(
+              this.player.host.steam.enableScreenshot(
+                tokens[1] !== undefined ? this.value(this.soundArgument(tokens[1])) : 1,
+              ),
+            ),
+          );
+          return { action: 'flush' };
+        }
+        break;
+      }
+      case 'saveapend_str':
+        this.diagnostic(`unimplemented FES command ${head}`);
+        break;
+      default: {
+        if (this.runtime) return this.executeNativeHead(words, args, bytes, execution, pc, mode);
+        const objects = this.elements(head);
+        if (!objects.length) {
+          if (
+            this.player.nativeObjectAllocates &&
+            Object.hasOwn(this.declaredGroups, head.replace(/\[.*$/, ''))
+          )
+            return {};
+          if (objectVerbs.has(fesNarrowText(args[0])))
+            this.player.unresolvedTargets.add(`${this.name}: ${line}`);
+          else this.diagnostic(`unsupported command ${line}`);
+        }
+        const source = this.program.sourceKey
+          ? (this.player.nativeSources || this.player.localSources).context(
+              this.program.sourceKey,
+              this.executingLabel || this.label,
+              (this.executingLine || pc) - 1,
+              { ...execution, nameBytes: encodeCP932(objects[0]?.baseName || head) },
+            )
+          : {};
+        const selectedIndex = this.selectionIndex(head),
+          groupCount = objects.length
+            ? this.objects.filter((o) => o.baseName === objects[0].baseName).length
+            : 0,
+          index = groupCount === 1 ? 0 : selectedIndex;
+        const results = objects.map((o) =>
+          objectCommand(this, o, fesNarrowText(args[0]), args.slice(1), {
+            ...source,
+            commandBytes: bytes,
+            index,
+            rawTail: fesRawTail(bytes, 2),
+          }),
+        );
+        if (results.some((result) => result && typeof result.then === 'function')) {
+          this.enqueueCommandReply(
+            Promise.all(results).then((values) => {
+              const reply = values.find((value) => value && Object.hasOwn(value, 'nativeReturn'));
+              return reply?.nativeReturn ?? null;
+            }),
+          );
+          return { action: 'flush' };
+        }
+        const reply = results.find((value) => value && Object.hasOwn(value, 'nativeReturn'));
+        if (reply) return this.nativeCommandReturn(reply.nativeReturn);
+      }
+    }
+    return {};
+  }
+  executeNativeHead(
+    words,
+    args,
+    bytes,
+    execution,
+    pc,
+    mode,
+    { selection, object } = this.runtime.commandHead(words[0]),
+  ) {
+    if (!object)
+      return this.commonCommandReturn(this.runtime.commonHead(words[0], args, bytes), mode);
+    if (args[0] === undefined) return {};
+    const verb = this.argumentBytes(args[0]);
+    const source = this.program.sourceKey
+      ? (this.player.nativeSources || this.player.localSources).context(
+          this.program.sourceKey,
+          this.executingLabel || this.label,
+          (this.executingLine || pc) - 1,
+          { ...execution, nameBytes: selection.nameBytes },
+        )
+      : {};
+    this.enqueueCommandReply(
+      this.runtime.command(fesNarrowText(verb), selection, args.slice(1), {
+        ...source,
+        commandBytes: bytes,
+        rawTail: fesRawTail(bytes, 2),
+      }),
+    );
+    return { action: 'flush' };
+  }
+  soundArgument(a) {
+    return nativeArgumentDecoder.decode(this.argumentBytes(a));
+  }
+  argumentBytes(a) {
+    if (typeof this.player.host.nativeFESArgumentBytes === 'function') {
+      const result = this.player.host.nativeFESArgumentBytes(a, this);
+      if (!(result instanceof Uint8Array))
+        throw new Error('FES native argument service must return bytes synchronously');
+      return result;
+    }
+    const source = a instanceof Uint8Array ? a : encodeCP932(String(a ?? '')),
+      expanded = expandNativeFESSoundConfigurationToken(fesByteView(source), {
+        string: (index) => fesByteView(encodeCP932(this.player.strings[index] ?? '')),
+        replace: (value) =>
+          value
+            .replace(/%LANG_M%/g, () =>
+              fesByteView(encodeCP932(this.player.languageMain || this.player.language)),
+            )
+            .replace(/%LANG%/g, () => fesByteView(encodeCP932(this.player.language))),
+      });
+    let bytes = fesViewBytes(expanded);
+    if (typeof this.player.host.nativeFESScriptBytes === 'function') {
+      bytes = this.player.host.nativeFESScriptBytes(bytes, this);
+      if (!(bytes instanceof Uint8Array))
+        throw new Error('FES SCRIPT replacement must return bytes synchronously');
+    }
+    return bytes;
+  }
+}

@@ -1,0 +1,788 @@
+{
+  "scope": "Own complete original GCALLs after true Main66 owners and Main143-loaded Script VM. Explicit byte-backed FileServer, allocation/window platform ports; no original FES/Script/VM feature body replacement. Only the authored no-IO event has zero pump entries.",
+  "versions": [
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "executableSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "sourceBytes": [
+        35, 83, 84, 65, 82, 84, 13, 10, 114, 101, 115, 117, 108, 116, 32, 48, 120, 49, 50, 51, 52,
+        53, 54, 55, 56, 13, 10, 110, 101, 120, 116, 32, 87, 65, 73, 84, 13, 10, 35, 87, 65, 73, 84,
+        13, 10, 35, 77, 69, 83, 95, 83, 72, 79, 87, 13, 10, 92, 48, 61, 55, 13, 10, 35, 70, 69, 84,
+        67, 72, 13, 10, 92, 49, 61, 95, 67, 76, 73, 67, 75, 95, 76, 95, 13, 10, 92, 50, 61, 95, 69,
+        88, 73, 84, 67, 79, 68, 69, 95, 13, 10, 92, 51, 61, 95, 80, 85, 83, 72, 95, 68, 79, 87, 78,
+        95, 13, 10, 92, 52, 61, 95, 67, 76, 73, 67, 75, 95, 76, 95, 91, 49, 93, 13, 10, 114, 101,
+        115, 117, 108, 116, 32, 95, 67, 76, 73, 67, 75, 95, 76, 95, 43, 95, 69, 88, 73, 84, 67, 79,
+        68, 69, 95, 13, 10, 98, 114, 101, 97, 107, 13, 10, 35, 95, 76, 79, 65, 68, 95, 13, 10, 110,
+        101, 120, 116, 32, 87, 65, 73, 84, 13, 10
+      ],
+      "mainRawToShared": [
+        [664, 664],
+        [665, 665],
+        [666, 666],
+        [667, 667],
+        [668, 668]
+      ],
+      "receiverRaw": [
+        317, 312, 311, 318, 311, 317, 312, 308, 312, 316, 319, 316, 316, 316, 308, 312, 312, 312,
+        312, 319, 311, 311, 311, 318, 311, 311, 311, 317, 312, 312, 312, 320, 319
+      ],
+      "calls": [
+        {
+          "label": "copy actual loaded Script zero words into FES",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "loaded caller zero reached FES",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "set FES private scalar",
+          "id": 645,
+          "args": [2, 0, 4275878552],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy FES words to actual loaded Script",
+          "id": 666,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear FES scalar",
+          "id": 645,
+          "args": [2, 0, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy retained Script words to FES",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "roundtrip private scalar",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 4275878552
+        },
+        {
+          "label": "synchronous native notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "notification updated local",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 7
+        },
+        {
+          "label": "set named private word",
+          "id": 664,
+          "args": [2, 352, 2147483649],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 305419896
+        },
+        {
+          "label": "set named _CLICK_L_",
+          "id": 664,
+          "args": [2, 352, 5],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set named _EXITCODE_",
+          "id": 664,
+          "args": [2, 352, 7],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set named _PUSH_DOWN_",
+          "id": 664,
+          "args": [2, 352, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "synchronously fetch named operands",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "named operand 1",
+          "id": 646,
+          "args": [2, 1],
+          "control": 1,
+          "result": 5
+        },
+        {
+          "label": "named operand 2",
+          "id": 646,
+          "args": [2, 2],
+          "control": 1,
+          "result": 7
+        },
+        {
+          "label": "named operand 3",
+          "id": 646,
+          "args": [2, 3],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "named operand 4",
+          "id": 646,
+          "args": [2, 4],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "named result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 12
+        },
+        {
+          "label": "set edge local 1",
+          "id": 645,
+          "args": [2, 1, 305419897],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set edge local 510",
+          "id": 645,
+          "args": [2, 510, 305420406],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set edge local 511",
+          "id": 645,
+          "args": [2, 511, 305420407],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy private edge words to Script",
+          "id": 666,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 1",
+          "id": 645,
+          "args": [2, 1, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 510",
+          "id": 645,
+          "args": [2, 510, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 511",
+          "id": 645,
+          "args": [2, 511, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy private edge words from Script",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "edge roundtrip 1",
+          "id": 646,
+          "args": [2, 1],
+          "control": 1,
+          "result": 305419897
+        },
+        {
+          "label": "edge roundtrip 510",
+          "id": 646,
+          "args": [2, 510],
+          "control": 1,
+          "result": 305420406
+        },
+        {
+          "label": "edge roundtrip 511",
+          "id": 646,
+          "args": [2, 511],
+          "control": 1,
+          "result": 305420407
+        },
+        {
+          "label": "clear result",
+          "id": 668,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query cleared result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        }
+      ],
+      "platformPumpEntries": 0
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "executableSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "sourceBytes": [
+        35, 83, 84, 65, 82, 84, 13, 10, 114, 101, 115, 117, 108, 116, 32, 48, 120, 49, 50, 51, 52,
+        53, 54, 55, 56, 13, 10, 110, 101, 120, 116, 32, 87, 65, 73, 84, 13, 10, 35, 87, 65, 73, 84,
+        13, 10, 35, 77, 69, 83, 95, 83, 72, 79, 87, 13, 10, 92, 48, 61, 55, 13, 10, 35, 70, 69, 84,
+        67, 72, 13, 10, 92, 49, 61, 95, 67, 76, 73, 67, 75, 95, 76, 95, 13, 10, 92, 50, 61, 95, 69,
+        88, 73, 84, 67, 79, 68, 69, 95, 13, 10, 92, 51, 61, 95, 80, 85, 83, 72, 95, 68, 79, 87, 78,
+        95, 13, 10, 92, 52, 61, 95, 67, 76, 73, 67, 75, 95, 76, 95, 91, 49, 93, 13, 10, 114, 101,
+        115, 117, 108, 116, 32, 95, 67, 76, 73, 67, 75, 95, 76, 95, 43, 95, 69, 88, 73, 84, 67, 79,
+        68, 69, 95, 13, 10, 98, 114, 101, 97, 107, 13, 10, 35, 95, 76, 79, 65, 68, 95, 13, 10, 110,
+        101, 120, 116, 32, 87, 65, 73, 84, 13, 10
+      ],
+      "mainRawToShared": [
+        [664, 664],
+        [665, 665],
+        [666, 666],
+        [667, 667],
+        [668, 668]
+      ],
+      "receiverRaw": [
+        334, 329, 328, 335, 328, 334, 329, 325, 329, 333, 336, 333, 333, 333, 325, 329, 329, 329,
+        329, 336, 328, 328, 328, 335, 328, 328, 328, 334, 329, 329, 329, 337, 336
+      ],
+      "calls": [
+        {
+          "label": "copy actual loaded Script zero words into FES",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "loaded caller zero reached FES",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "set FES private scalar",
+          "id": 645,
+          "args": [2, 0, 4275878552],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy FES words to actual loaded Script",
+          "id": 666,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear FES scalar",
+          "id": 645,
+          "args": [2, 0, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy retained Script words to FES",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "roundtrip private scalar",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 4275878552
+        },
+        {
+          "label": "synchronous native notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "notification updated local",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 7
+        },
+        {
+          "label": "set named private word",
+          "id": 664,
+          "args": [2, 352, 2147483649],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 305419896
+        },
+        {
+          "label": "set named _CLICK_L_",
+          "id": 664,
+          "args": [2, 352, 5],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set named _EXITCODE_",
+          "id": 664,
+          "args": [2, 352, 7],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set named _PUSH_DOWN_",
+          "id": 664,
+          "args": [2, 352, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "synchronously fetch named operands",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "named operand 1",
+          "id": 646,
+          "args": [2, 1],
+          "control": 1,
+          "result": 5
+        },
+        {
+          "label": "named operand 2",
+          "id": 646,
+          "args": [2, 2],
+          "control": 1,
+          "result": 7
+        },
+        {
+          "label": "named operand 3",
+          "id": 646,
+          "args": [2, 3],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "named operand 4",
+          "id": 646,
+          "args": [2, 4],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "named result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 12
+        },
+        {
+          "label": "set edge local 1",
+          "id": 645,
+          "args": [2, 1, 305419897],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set edge local 510",
+          "id": 645,
+          "args": [2, 510, 305420406],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set edge local 511",
+          "id": 645,
+          "args": [2, 511, 305420407],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy private edge words to Script",
+          "id": 666,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 1",
+          "id": 645,
+          "args": [2, 1, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 510",
+          "id": 645,
+          "args": [2, 510, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 511",
+          "id": 645,
+          "args": [2, 511, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy private edge words from Script",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "edge roundtrip 1",
+          "id": 646,
+          "args": [2, 1],
+          "control": 1,
+          "result": 305419897
+        },
+        {
+          "label": "edge roundtrip 510",
+          "id": 646,
+          "args": [2, 510],
+          "control": 1,
+          "result": 305420406
+        },
+        {
+          "label": "edge roundtrip 511",
+          "id": 646,
+          "args": [2, 511],
+          "control": 1,
+          "result": 305420407
+        },
+        {
+          "label": "clear result",
+          "id": 668,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query cleared result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        }
+      ],
+      "platformPumpEntries": 0
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "executableSHA256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "sourceBytes": [
+        35, 83, 84, 65, 82, 84, 13, 10, 114, 101, 115, 117, 108, 116, 32, 48, 120, 49, 50, 51, 52,
+        53, 54, 55, 56, 13, 10, 110, 101, 120, 116, 32, 87, 65, 73, 84, 13, 10, 35, 87, 65, 73, 84,
+        13, 10, 35, 77, 69, 83, 95, 83, 72, 79, 87, 13, 10, 92, 48, 61, 55, 13, 10, 35, 70, 69, 84,
+        67, 72, 13, 10, 92, 49, 61, 95, 67, 76, 73, 67, 75, 95, 76, 95, 13, 10, 92, 50, 61, 95, 69,
+        88, 73, 84, 67, 79, 68, 69, 95, 13, 10, 92, 51, 61, 95, 80, 85, 83, 72, 95, 68, 79, 87, 78,
+        95, 13, 10, 92, 52, 61, 95, 67, 76, 73, 67, 75, 95, 76, 95, 91, 49, 93, 13, 10, 114, 101,
+        115, 117, 108, 116, 32, 95, 67, 76, 73, 67, 75, 95, 76, 95, 43, 95, 69, 88, 73, 84, 67, 79,
+        68, 69, 95, 13, 10, 98, 114, 101, 97, 107, 13, 10, 35, 95, 76, 79, 65, 68, 95, 13, 10, 110,
+        101, 120, 116, 32, 87, 65, 73, 84, 13, 10
+      ],
+      "mainRawToShared": [
+        [664, 664],
+        [665, 665],
+        [666, 666],
+        [667, 667],
+        [668, 668]
+      ],
+      "receiverRaw": [
+        335, 330, 329, 336, 329, 335, 330, 326, 330, 334, 337, 334, 334, 334, 326, 330, 330, 330,
+        330, 337, 329, 329, 329, 336, 329, 329, 329, 335, 330, 330, 330, 338, 337
+      ],
+      "calls": [
+        {
+          "label": "copy actual loaded Script zero words into FES",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "loaded caller zero reached FES",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "set FES private scalar",
+          "id": 645,
+          "args": [2, 0, 4275878552],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy FES words to actual loaded Script",
+          "id": 666,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear FES scalar",
+          "id": 645,
+          "args": [2, 0, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy retained Script words to FES",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "roundtrip private scalar",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 4275878552
+        },
+        {
+          "label": "synchronous native notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "notification updated local",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 7
+        },
+        {
+          "label": "set named private word",
+          "id": 664,
+          "args": [2, 352, 2147483649],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 305419896
+        },
+        {
+          "label": "set named _CLICK_L_",
+          "id": 664,
+          "args": [2, 352, 5],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set named _EXITCODE_",
+          "id": 664,
+          "args": [2, 352, 7],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set named _PUSH_DOWN_",
+          "id": 664,
+          "args": [2, 352, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "synchronously fetch named operands",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "named operand 1",
+          "id": 646,
+          "args": [2, 1],
+          "control": 1,
+          "result": 5
+        },
+        {
+          "label": "named operand 2",
+          "id": 646,
+          "args": [2, 2],
+          "control": 1,
+          "result": 7
+        },
+        {
+          "label": "named operand 3",
+          "id": 646,
+          "args": [2, 3],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "named operand 4",
+          "id": 646,
+          "args": [2, 4],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "named result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 12
+        },
+        {
+          "label": "set edge local 1",
+          "id": 645,
+          "args": [2, 1, 305419897],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set edge local 510",
+          "id": 645,
+          "args": [2, 510, 305420406],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "set edge local 511",
+          "id": 645,
+          "args": [2, 511, 305420407],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy private edge words to Script",
+          "id": 666,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 1",
+          "id": 645,
+          "args": [2, 1, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 510",
+          "id": 645,
+          "args": [2, 510, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "clear edge local 511",
+          "id": 645,
+          "args": [2, 511, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "copy private edge words from Script",
+          "id": 665,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "edge roundtrip 1",
+          "id": 646,
+          "args": [2, 1],
+          "control": 1,
+          "result": 305419897
+        },
+        {
+          "label": "edge roundtrip 510",
+          "id": 646,
+          "args": [2, 510],
+          "control": 1,
+          "result": 305420406
+        },
+        {
+          "label": "edge roundtrip 511",
+          "id": 646,
+          "args": [2, 511],
+          "control": 1,
+          "result": 305420407
+        },
+        {
+          "label": "clear result",
+          "id": 668,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query cleared result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        }
+      ],
+      "platformPumpEntries": 0
+    }
+  ]
+}

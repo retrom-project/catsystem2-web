@@ -1,0 +1,1363 @@
+{
+  "scope": "Own PE/CRT/D3DX2 initialized resource/Task idle. Minimal authored count3 v2 KCS, not game-authored scene/physical GPU/product. All nine requested buffers remain single owners; known sorting references are checkpoint-relative offsets.",
+  "builds": [
+    {
+      "version": "74",
+      "drawCases": [
+        {
+          "visibility": "visible",
+          "projection": {
+            "getter": 5560480,
+            "width": 800,
+            "height": 600
+          },
+          "viewReference": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-VIEW-74-visible.json",
+            "sha256": "141b95c70d375a93436161e861787a58ee6736d7591894066e7d1b871a555ddc"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-VIEW-74-visible.json",
+            "sha256": "141b95c70d375a93436161e861787a58ee6736d7591894066e7d1b871a555ddc",
+            "bytes": 67051,
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-draw-view-modern.mjs",
+              "sha256": "69e4b9805198966d942ce4df7233e1a6866dae576e5e8adc8951436b75dfc646"
+            },
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f"
+          },
+          "draws": [
+            {
+              "alpha": 256,
+              "result": 1,
+              "bufferReads": {
+                "visibility": 3,
+                "scales": 9,
+                "rotations": 9,
+                "bases": 9,
+                "quads": 336,
+                "positions": 48
+              },
+              "commands": [
+                {
+                  "type": "triangles",
+                  "triangles": [
+                    [
+                      {
+                        "x": 0.606658935546875,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 0
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 0.606658935546875,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      }
+                    ],
+                    [
+                      {
+                        "x": 0.606658935546875,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 1
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "type": "triangles",
+                  "triangles": [
+                    [
+                      {
+                        "x": 0.606658935546875,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 0
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 0.606658935546875,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      }
+                    ],
+                    [
+                      {
+                        "x": 0.606658935546875,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 1
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "type": "triangles",
+                  "triangles": [
+                    [
+                      {
+                        "x": 0.606658935546875,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 0
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 0.606658935546875,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      }
+                    ],
+                    [
+                      {
+                        "x": 0.606658935546875,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 3.74114990234375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 2.62890625,
+                        "y": 4.752288818359375,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 1
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "alpha": 0,
+              "result": 0,
+              "bufferReads": {},
+              "commands": []
+            }
+          ],
+          "observerLabelCorrection": "Buffer address +318 is positions, +31c is bases; historic read observer labels bases/positions are transposed, not native data. Allocation request3 remains bases,4 positions."
+        },
+        {
+          "visibility": "hidden",
+          "projection": {
+            "getter": 5560480,
+            "width": 800,
+            "height": 600
+          },
+          "viewReference": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-VIEW-74-visible.json",
+            "sha256": "141b95c70d375a93436161e861787a58ee6736d7591894066e7d1b871a555ddc"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAFcAAACLAAAAAAAAAAAAAAAAEAAAABAAAIsAAAAAAAAArgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk9RWVgExGSDqwALqIAEOBgYGawCJoQcd",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-OWNED-74-hidden.json",
+            "sha256": "22261045894efd18161189aa85ddfc3559966d5d01d5ccea13b217298c1359eb",
+            "bytes": 61432,
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-draw-owned-modern.mjs",
+              "sha256": "0897674b7bf5432ed751caecd96f4697ea67828ddac20172552054b5de425dc5"
+            },
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f"
+          },
+          "draws": [
+            {
+              "alpha": 256,
+              "result": 1,
+              "bufferReads": {
+                "visibility": 3
+              },
+              "commands": []
+            },
+            {
+              "alpha": 0,
+              "result": 0,
+              "bufferReads": {},
+              "commands": []
+            }
+          ],
+          "observerLabelCorrection": "Buffer address +318 is positions, +31c is bases; historic read observer labels bases/positions are transposed, not native data. Allocation request3 remains bases,4 positions."
+        }
+      ],
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "cases": [
+        {
+          "name": "equal",
+          "failureAt": 10,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-SUCCESS-74-3-10-equal.json",
+            "sha256": "3fe5b6149b15e1dbf5338e0cc6a30aafb3bc167c3cd4fb73cb72d896c64a05b4",
+            "bytes": 60099,
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-success-modern.mjs",
+              "sha256": "3f17d4b46552473ae6876b80161ae45edddf1277cde1737fce0e31eb4d879e9e"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+            "sortOffsets": "CAAAAAAAAAAQAAAA",
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "varying",
+          "failureAt": 10,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAEAAAAB0AAAAAAAAAAAAAAAAEAAAABAAAHQAAAAAAAAAgAAAAHicU1VmYGBgUAWT2soqDAwMUKY0iMkDkWMCkSxgkoMJJCkDk7QGAHE9A3w=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-SUCCESS-74-3-10-varying.json",
+            "sha256": "63d549fcdd050ccda0002585ca6e9e693fc6eb63560fca57e2f10d680542a19d",
+            "bytes": 60087,
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-success-modern.mjs",
+              "sha256": "3f17d4b46552473ae6876b80161ae45edddf1277cde1737fce0e31eb4d879e9e"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "f2ea4f7508fe1ea9a22943e65861da531953de4bd762694c2a268a908035a165",
+            "pc": 63,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "d923b16e3b3effbd16a515430ce1d2a3f0862946330dd9859acfaa1b0b219402",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": "AAAAAAAAAAABAAAAAQAAAAIAAAACAAAA",
+            "sortOffsets": "AAAAAAgAAAAQAAAA",
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "depth-missing",
+          "failureAt": 8,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-GUARD-TRACE-74-3-8.json",
+            "sha256": "0b68b692f20ffa08949d6b26fef790d5772969272eee49029f875d519cd027ad",
+            "bytes": 59746,
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-guard-trace-modern.mjs",
+              "sha256": "91635ec8459c4f23c834c65213db90c78e0bc030137c79df6a5ca2aa7ec1bd05"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": null,
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "index-missing",
+          "failureAt": 9,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-GUARD-TRACE-74-3-9.json",
+            "sha256": "2f776b98ba5beab949a37c7cc6bf333847aae4767f8c13e17736baf1734c283a",
+            "bytes": 60899,
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-guard-trace-modern.mjs",
+              "sha256": "91635ec8459c4f23c834c65213db90c78e0bc030137c79df6a5ca2aa7ec1bd05"
+            }
+          },
+          "classification": "original-null-buffer-protected-consumer",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": "AAAwQQAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "KCS and first depth pair execute before null-index store faults; controlled teardown after fault is not native recovery."
+        },
+        {
+          "name": "bases-missing",
+          "failureAt": 3,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-POSITION-OWNER-74-3-3.json",
+            "sha256": "0c1d04067dd9aa30aea3fd47385fe74bd3396591e85da7f60d40c451597a2839",
+            "bytes": 60605,
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-position-owner-modern.mjs",
+              "sha256": "4d62a8c6568d2ba8e38d38a56683dd48371bab94f096b0306d7242ed0baf15a4"
+            }
+          },
+          "classification": "original-null-buffer-protected-consumer",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "52a3e0804d93dc525ec3c67ef8ac5b01756ecf0513e36f3c19435e4c82cb5d29",
+              "11630a32b138c0f724531f9994b170f5633f8ba0efa7362a41d3fb5afc14b7b5",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              null,
+              "d9f26a2c202bdbcf9444c5fc4ba73a0caebc541578a893a246fb8e1b7be9154b",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "dc6dbd1f6a7e2c929a04a62fa1a8aa3934bbe58850e73ea646f0d12825ccce90"
+            ],
+            "depthPairs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "positions-missing",
+          "failureAt": 4,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-POSITION-OWNER-74-3-4.json",
+            "sha256": "5bda062e79955ac00f8302ef647431e81260cc73aa747de86e6d5680eef6fa9a",
+            "bytes": 60620,
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-position-owner-modern.mjs",
+              "sha256": "4d62a8c6568d2ba8e38d38a56683dd48371bab94f096b0306d7242ed0baf15a4"
+            }
+          },
+          "classification": "original-null-buffer-protected-consumer",
+          "expected": {
+            "localSha256": "eea747a60d3614a69bdb5c346c99b939f85aa65dcaac702f234dffdcbacbd028",
+            "pc": 29,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 4294967295,
+            "now": 0,
+            "buffers": [
+              "52a3e0804d93dc525ec3c67ef8ac5b01756ecf0513e36f3c19435e4c82cb5d29",
+              "11630a32b138c0f724531f9994b170f5633f8ba0efa7362a41d3fb5afc14b7b5",
+              null,
+              "2c947e17bf68db3fa061b1704b514887a7759cd9c9a22d0b45328cb543490880",
+              "d9f26a2c202bdbcf9444c5fc4ba73a0caebc541578a893a246fb8e1b7be9154b",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "dc6dbd1f6a7e2c929a04a62fa1a8aa3934bbe58850e73ea646f0d12825ccce90"
+            ],
+            "depthPairs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "external-quad-missing",
+          "failureAt": 1,
+          "requests": [340, 340, 52, 52, 52, 52, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "externalDraw": true
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-EXTERNAL-74-3-1.json",
+            "sha256": "ea5a3eac215853a743d6ea2c249d3170fd725aa942de222c222439e8d3f9b328",
+            "bytes": 57057,
+            "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-external-modern.mjs",
+              "sha256": "d24c97c873a618a68638819d2901592199b5542da51ca1e05ee8aa1c6d04a576"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              null,
+              "52a3e0804d93dc525ec3c67ef8ac5b01756ecf0513e36f3c19435e4c82cb5d29",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "4c10b5b44719fc2ec016c255b8322b2ce459a5579b8dae1a6533340eb3b8b771",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "809de4299be30e037d297e2efc02c1fbe9c00456d3f766469623705aed64e7cb"
+            ],
+            "depthPairs": null,
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "drawCases": [
+        {
+          "visibility": "visible",
+          "projection": {
+            "getter": 6776768,
+            "width": 64,
+            "height": 64
+          },
+          "viewReference": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-VIEW-76-visible.json",
+            "sha256": "bfdc7481f70253d8801da7fcc06c3c0d353d659d157ded86da63c5c8e22a6ace"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-VIEW-76-visible.json",
+            "sha256": "bfdc7481f70253d8801da7fcc06c3c0d353d659d157ded86da63c5c8e22a6ace",
+            "bytes": 67045,
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-draw-view-modern.mjs",
+              "sha256": "69e4b9805198966d942ce4df7233e1a6866dae576e5e8adc8951436b75dfc646"
+            },
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0"
+          },
+          "draws": [
+            {
+              "alpha": 256,
+              "result": 1,
+              "bufferReads": {
+                "visibility": 3,
+                "scales": 9,
+                "rotations": 9,
+                "bases": 9,
+                "quads": 336,
+                "positions": 48
+              },
+              "commands": [
+                {
+                  "type": "triangles",
+                  "triangles": [
+                    [
+                      {
+                        "x": 4.699697494506836,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 0
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 4.699697494506836,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      }
+                    ],
+                    [
+                      {
+                        "x": 4.699697494506836,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 1
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "type": "triangles",
+                  "triangles": [
+                    [
+                      {
+                        "x": 4.699697494506836,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 0
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 4.699697494506836,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      }
+                    ],
+                    [
+                      {
+                        "x": 4.699697494506836,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 1
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "type": "triangles",
+                  "triangles": [
+                    [
+                      {
+                        "x": 4.699697494506836,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 0
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 4.699697494506836,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      }
+                    ],
+                    [
+                      {
+                        "x": 4.699697494506836,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 0,
+                        "v": 1
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 6.721940994262695,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 0
+                      },
+                      {
+                        "x": 6.721940994262695,
+                        "y": 7.733062744140625,
+                        "z": 0.9998307824134827,
+                        "w": 0.0010111223673447967,
+                        "color": 4294967295,
+                        "u": 1,
+                        "v": 1
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "alpha": 0,
+              "result": 0,
+              "bufferReads": {},
+              "commands": []
+            }
+          ],
+          "observerLabelCorrection": "Buffer address +318 is positions, +31c is bases; historic read observer labels bases/positions are transposed, not native data. Allocation request3 remains bases,4 positions."
+        },
+        {
+          "visibility": "hidden",
+          "projection": {
+            "getter": 6776768,
+            "width": 64,
+            "height": 64
+          },
+          "viewReference": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-VIEW-76-visible.json",
+            "sha256": "bfdc7481f70253d8801da7fcc06c3c0d353d659d157ded86da63c5c8e22a6ace"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAFcAAACLAAAAAAAAAAAAAAAAEAAAABAAAIsAAAAAAAAArgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk9RWVgExGSDqwALqIAEOBgYGawCJoQcd",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-DRAW-OWNED-76-hidden.json",
+            "sha256": "335963c6e9d168c6830507a0fc9654472cecc9335d0f59835e4c74916543e14b",
+            "bytes": 61356,
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-draw-owned-modern.mjs",
+              "sha256": "0897674b7bf5432ed751caecd96f4697ea67828ddac20172552054b5de425dc5"
+            },
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0"
+          },
+          "draws": [
+            {
+              "alpha": 256,
+              "result": 1,
+              "bufferReads": {
+                "visibility": 3
+              },
+              "commands": []
+            },
+            {
+              "alpha": 0,
+              "result": 0,
+              "bufferReads": {},
+              "commands": []
+            }
+          ],
+          "observerLabelCorrection": "Buffer address +318 is positions, +31c is bases; historic read observer labels bases/positions are transposed, not native data. Allocation request3 remains bases,4 positions."
+        }
+      ],
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "cases": [
+        {
+          "name": "equal",
+          "failureAt": 10,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-SUCCESS-76-3-10-equal.json",
+            "sha256": "79b45dcb696b8f3b3941142f96ff09d8309f0b095d9b28f58bab9494dede3230",
+            "bytes": 60023,
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-success-modern.mjs",
+              "sha256": "3f17d4b46552473ae6876b80161ae45edddf1277cde1737fce0e31eb4d879e9e"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+            "sortOffsets": "CAAAAAAAAAAQAAAA",
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "varying",
+          "failureAt": 10,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAEAAAAB0AAAAAAAAAAAAAAAAEAAAABAAAHQAAAAAAAAAgAAAAHicU1VmYGBgUAWT2soqDAwMUKY0iMkDkWMCkSxgkoMJJCkDk7QGAHE9A3w=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-SUCCESS-76-3-10-varying.json",
+            "sha256": "c28eb6b14f525a27a4b68f08677b30d57e48d8e28039149c7b5f8da260af8dad",
+            "bytes": 60011,
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-success-modern.mjs",
+              "sha256": "3f17d4b46552473ae6876b80161ae45edddf1277cde1737fce0e31eb4d879e9e"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "f2ea4f7508fe1ea9a22943e65861da531953de4bd762694c2a268a908035a165",
+            "pc": 63,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "d923b16e3b3effbd16a515430ce1d2a3f0862946330dd9859acfaa1b0b219402",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": "AAAAAAAAAAABAAAAAQAAAAIAAAACAAAA",
+            "sortOffsets": "AAAAAAgAAAAQAAAA",
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "depth-missing",
+          "failureAt": 8,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-GUARD-TRACE-76-3-8.json",
+            "sha256": "a9d77d80c319b9d0dd81d57b66f9e69e00d6e1e51123c573d549aaa86a735136",
+            "bytes": 59670,
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-guard-trace-modern.mjs",
+              "sha256": "91635ec8459c4f23c834c65213db90c78e0bc030137c79df6a5ca2aa7ec1bd05"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": null,
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "index-missing",
+          "failureAt": 9,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-GUARD-TRACE-76-3-9.json",
+            "sha256": "753df5e6a4ee8874579ad04312fe8bb0f9ce7da6c2f49438c8ac6184fef7c78a",
+            "bytes": 60823,
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-guard-trace-modern.mjs",
+              "sha256": "91635ec8459c4f23c834c65213db90c78e0bc030137c79df6a5ca2aa7ec1bd05"
+            }
+          },
+          "classification": "original-null-buffer-protected-consumer",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+              "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+            ],
+            "depthPairs": "AAAwQQAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "KCS and first depth pair execute before null-index store faults; controlled teardown after fault is not native recovery."
+        },
+        {
+          "name": "bases-missing",
+          "failureAt": 3,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-POSITION-OWNER-76-3-3.json",
+            "sha256": "f7570e3cc01bf0d44f413fb999d429ea04074cae64d41bd06f78a12ab6837315",
+            "bytes": 60529,
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-position-owner-modern.mjs",
+              "sha256": "4d62a8c6568d2ba8e38d38a56683dd48371bab94f096b0306d7242ed0baf15a4"
+            }
+          },
+          "classification": "original-null-buffer-protected-consumer",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              "7a900eb059b699d21fcb1b3846fd024e26989f1b778d1bb975bc71f230ad49fc",
+              "f5a61a9396d978c8811af3d5fd48ff9065cf608e9270dd31541bb453db537df3",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              null,
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "7bb4a8181db5382df988885459a9db7dfc31600cac4e94c99f0d7f7b19b77bfd"
+            ],
+            "depthPairs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "positions-missing",
+          "failureAt": 4,
+          "requests": [340, 340, 52, 52, 52, 52, 16, 28, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-POSITION-OWNER-76-3-4.json",
+            "sha256": "0134825e075542aede6fd1c3e552d79a6ed3cf7108b26d87de814ce898f6c056",
+            "bytes": 60544,
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-position-owner-modern.mjs",
+              "sha256": "4d62a8c6568d2ba8e38d38a56683dd48371bab94f096b0306d7242ed0baf15a4"
+            }
+          },
+          "classification": "original-null-buffer-protected-consumer",
+          "expected": {
+            "localSha256": "eea747a60d3614a69bdb5c346c99b939f85aa65dcaac702f234dffdcbacbd028",
+            "pc": 29,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 4294967295,
+            "now": 0,
+            "buffers": [
+              "7a900eb059b699d21fcb1b3846fd024e26989f1b778d1bb975bc71f230ad49fc",
+              "f5a61a9396d978c8811af3d5fd48ff9065cf608e9270dd31541bb453db537df3",
+              null,
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "7bb4a8181db5382df988885459a9db7dfc31600cac4e94c99f0d7f7b19b77bfd"
+            ],
+            "depthPairs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        },
+        {
+          "name": "external-quad-missing",
+          "failureAt": 1,
+          "requests": [340, 340, 52, 52, 52, 52, 16],
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "externalDraw": true
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-REF-BUFFER-IDLE-EXTERNAL-76-3-1.json",
+            "sha256": "dfee978d5ee1331fc4803b68882c480b441ff6a3b2d0c64788807e49bd0d8ab0",
+            "bytes": 56986,
+            "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+            "producer": {
+              "path": ".local/phase11/modern-auxiliary-tables/probe-own-particle-ref-buffer-idle-external-modern.mjs",
+              "sha256": "d24c97c873a618a68638819d2901592199b5542da51ca1e05ee8aa1c6d04a576"
+            }
+          },
+          "classification": "functional",
+          "expected": {
+            "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa",
+            "pc": 58,
+            "sp": 4096,
+            "fp": 4096,
+            "active": 1,
+            "frame": 0,
+            "before": 0,
+            "now": 3,
+            "buffers": [
+              null,
+              "52a3e0804d93dc525ec3c67ef8ac5b01756ecf0513e36f3c19435e4c82cb5d29",
+              "f587cef01df253a323240c4244a2ccf68bf3f0ddd989f8dc1f0561dc342e7a5e",
+              "e0b30f4ee17b493008d5be20dcf8108898f8edfd6030624c5369fd264bf0b5a9",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "4934221e4df4425357dc6bf3daccd86e4236df5f633457c38a7bdf811a5a925a"
+            ],
+            "depthPairs": null,
+            "sortOffsets": null,
+            "clockStart": 1000,
+            "clockLast": 1000
+          },
+          "scope": "True Task vtable idle after original file/KCS/texture load and start. Unwritten allocated aux bytes do not acquire a value contract."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,777 @@
+// SPDX-License-Identifier: MPL-2.0
+import { readKCS } from './kcs.mjs';
+import { ParticleScriptInstance } from './ppi/script.mjs';
+import { JSPluginRuntime } from './ppi/js-runtime.mjs';
+import { ParticleRandom } from './ppi/random.mjs';
+import { linearInterpolate, roundInteger } from './ppi/numeric.mjs';
+import { scriptParticles, ppiParticles, particleGeometry } from './ppi/geometry.mjs';
+import { ParticlesGL } from './render/particles-gl.mjs';
+import { nativeABI } from './native/abi/index.mjs';
+import { NativeBufferMemory } from './native/buffer-memory.mjs';
+
+const normalize = (name) => name.replaceAll('\\', '/').toLowerCase();
+const white = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
+const sceneBankCount = 8;
+const drawEligible = (bank, drawPortPersistsAfterExit) =>
+  bank.started &&
+  (bank.instance?.active || (drawPortPersistsAfterExit && bank.family === 'script')) &&
+  bank.alpha !== 0 &&
+  bank.nativeDrawBound !== false &&
+  bank.nativeDrawEnabled !== false;
+const bankRegisters = (bank) =>
+  Object.defineProperty(bank, 'registers', {
+    get() {
+      return this.instance?.registers ?? null;
+    },
+  });
+export class ParticleScriptResourceMissing extends Error {
+  constructor(name) {
+    super(`Missing ptcl resource: ${name}`);
+    this.name = 'ParticleScriptResourceMissing';
+  }
+}
+export class Particles {
+  constructor(
+    stage,
+    {
+      game,
+      images,
+      registry,
+      profile,
+      random = new ParticleRandom(),
+      fps = 60,
+      attachment,
+      deferGraphAttachment = false,
+      scriptLoadsBeforeTexture = false,
+      readScript,
+      now,
+      clock,
+      epoch = 0,
+      onDebug = null,
+      atlas,
+      projectGeometry = particleGeometry,
+      scriptBounds,
+      refBufferMemory,
+    } = {},
+  ) {
+    this.stage = stage;
+    this.game = game;
+    this.images = images;
+    this.registry = registry;
+    this.profile = profile;
+    this.nativeRefBuffers = profile && nativeABI(profile).particle?.refBuffersFollowNativeHeap;
+    this.drawPortPersistsAfterExit =
+      profile && nativeABI(profile).particle?.drawPortPersistsAfterExit;
+    this.scriptStartPreservesState =
+      profile && nativeABI(profile).particle?.scriptStartPreservesState;
+    this.refBufferMemory = this.nativeRefBuffers
+      ? (refBufferMemory ?? new NativeBufferMemory())
+      : null;
+    this.random = random;
+    this.fps = fps;
+    this.attachment = attachment;
+    this.deferGraphAttachment = deferGraphAttachment;
+    this.scriptLoadsBeforeTexture = scriptLoadsBeforeTexture;
+    this.readScript = readScript;
+    this.onDebug = onDebug;
+    this.atlas = atlas;
+    this.projectGeometry = projectGeometry;
+    this.scriptBounds = scriptBounds;
+    this.clock = clock;
+    this.epoch = epoch;
+    this.now = clock ? () => clock.now() : now || (() => (this.frame * 1000) / this.fps);
+    this.banks = new Map();
+    this.resources = new Map();
+    this.unsupported = new Set();
+    this.events = [];
+    this.frame = stage.frame;
+    this.sequence = 0;
+  }
+  number(value, fallback = 0) {
+    if (value === undefined) return fallback;
+    const n = typeof value === 'number' ? value : this.stage.evaluate(value);
+    if (!Number.isFinite(n)) throw new Error(`Invalid particle number ${value}`);
+    return Math.trunc(n) | 0;
+  }
+  resource(category, name, extension) {
+    const missing = () => {
+      if (category === 'ptcl') throw new ParticleScriptResourceMissing(name);
+      throw new Error(`Missing ${category} resource: ${name}`);
+    };
+    if (typeof this.game.resolveCategory === 'function') {
+      const resolved = this.game.resolveCategory(name, category);
+      if (resolved === null) missing();
+      return resolved;
+    }
+
+    const file = /\.[a-z0-9]+$/i.test(name) ? name : `${name}.${extension}`;
+    const candidates = name.includes('/')
+      ? [file]
+      : [`${category}/${file}`, `${category}.int/${file}`, file];
+    const found = candidates.find((candidate) => this.game.has(candidate));
+    if (!found) missing();
+    return found;
+  }
+  get hasLooseLibraries() {
+    return Boolean(this.game.nativeResources && this.game.readLoose);
+  }
+  async readPlugin(name) {
+    if (!this.hasLooseLibraries) return this.game.require(name);
+    const path = name.replace(/^c:[\\/]catsystem2-web[\\/]/i, ''),
+      bytes = await this.game.readLoose(path);
+    if (bytes === null) throw new Error(`Missing loose particle library: ${name}`);
+    return bytes;
+  }
+  async scriptBytes(name) {
+    const bytes = this.readScript ? await this.readScript(name) : await this.game.require(name);
+    if (bytes === null) throw new ParticleScriptResourceMissing(name);
+    if (!(bytes instanceof Uint8Array)) throw new TypeError('Particle script requires file bytes');
+    return bytes;
+  }
+  async preloadData() {
+    if (this.dataReady) return;
+    const entry = this.game.nativeResources?.entries.find(
+      (entry) => normalize(entry.name) === 'ptcldat',
+    );
+    const prefixes = entry
+      ? [entry.archive, entry.directory]
+          .filter(Boolean)
+          .map((name) => normalize(name).replace(/\/$/, '') + '/')
+      : ['ptcldat/', 'ptcldat.int/'];
+    const keys = [...(this.game.qualifiedIndex?.keys() || [])].filter((key) =>
+      prefixes.some((prefix) => normalize(key).startsWith(prefix)),
+    );
+    let bytes = 0;
+    const loaded = new Map();
+    for (const key of keys) {
+      const hit = this.game.lookup?.(key) || key;
+      let data = loaded.get(hit);
+      if (!data) {
+        data = await this.game.require(key);
+        bytes += data.length;
+        if (bytes > 128 * 1024 * 1024) throw new Error('Particle resource budget exceeded');
+        loaded.set(hit, data);
+      }
+      this.resources.set(normalize(key), data);
+      if (!this.game.resolveCategory)
+        for (const prefix of prefixes)
+          if (normalize(key).startsWith(prefix))
+            this.resources.set(normalize(key).slice(prefix.length), data);
+    }
+    this.dataReady = true;
+  }
+  data(name) {
+    if (this.game.resolveCategory) {
+      const resolved = this.game.resolveCategory(name, 'ptcldat');
+      return resolved === null ? null : this.resources.get(normalize(resolved)) || null;
+    }
+    return this.resources.get(normalize(name)) || null;
+  }
+  async pluginRuntime() {
+    if (this.closed) throw new Error('Particle host is closed');
+    if (!this.runtime) {
+      this.runtimeLoading ||= JSPluginRuntime.open({
+        registry: this.registry,
+        random: this.random,
+        now: this.now,
+        clock: this.clock,
+        epoch: this.clock?.epoch ?? this.epoch,
+      }).then((runtime) => {
+        if (this.closed) {
+          runtime.close();
+          throw new Error('Particle host is closed');
+        }
+        return (this.runtime = runtime);
+      });
+      await this.runtimeLoading;
+    }
+    return this.runtime;
+  }
+  create(key) {
+    if (this.closed) throw new Error('Particle host is closed');
+    if (this.banks.has(key)) throw new Error(`Particle bank already exists: ${key}`);
+    const bank = bankRegisters({
+      key,
+      order: this.sequence++,
+      loaded: false,
+      started: false,
+      alpha: 255,
+      attachPlane: -1,
+      attachmentNamespace: 'graph',
+      speed: 1,
+      clockStart: null,
+    });
+    this.banks.set(key, bank);
+    this.metadata(bank);
+    return bank;
+  }
+  metadata(bank) {
+    this.stage.emitters[String(bank.key)] = {
+      family: bank.family,
+      program: bank.program,
+      texture: bank.texture,
+      count: bank.count,
+      priority: bank.priority,
+      active: Boolean(bank.started && bank.instance?.active),
+      alpha: bank.alpha,
+    };
+  }
+  refreshAttachment(bank) {
+    if (bank.attachPlane === -1) {
+      bank.attachment = null;
+      return -1;
+    }
+    const provider = this.attachment || this.stage.particleAttachment;
+    if (typeof provider !== 'function')
+      throw new Error(`Particle attachment ${bank.attachPlane} has no native graph mapping`);
+    const attachment = provider(bank.attachPlane, {
+      namespace: bank.attachmentNamespace,
+      bank: bank.key,
+    });
+    const permitsUnresolvedGraph =
+      bank.attachmentNamespace === 'graph' &&
+      (bank.family === 'plugin' || this.deferGraphAttachment);
+    if (!attachment && !permitsUnresolvedGraph)
+      throw new Error(`Particle attachment graph is unavailable: ${bank.attachPlane}`);
+    if (bank.attachmentNamespace === 'cst' && !Number.isInteger(attachment.id))
+      throw new Error('CST particle attachment requires its resolved native graph id');
+    bank.attachment = attachment;
+    return attachment?.id ?? bank.attachPlane;
+  }
+  async load(key, { nativeTextureName, nativeProgramName, nativeAtlasState, registers, ...spec }) {
+    if (!this.game || !this.images)
+      throw new Error('Particles require game resources and an image store');
+    const previous = this.banks.get(key)?.nativeAtlas ?? nativeAtlasState;
+    if (this.banks.has(key)) this.end(key, { stop: false });
+    const bank = this.create(key);
+    Object.assign(bank, {
+      ...spec,
+      key,
+      order: bank.order,
+      loaded: false,
+      started: false,
+      alpha: spec.alpha ?? 255,
+      clockStart: null,
+      attachPlane: spec.attachPlane ?? -1,
+      attachmentNamespace: spec.attachmentNamespace || 'graph',
+      speed: spec.speed ?? 1,
+    });
+    try {
+      await this.loadBank(
+        bank,
+        { ...spec, registers },
+        previous,
+        nativeTextureName,
+        nativeProgramName,
+      );
+    } catch (error) {
+      try {
+        if (this.banks.get(key) === bank) this.end(key, { stop: false });
+      } catch (cleanup) {
+        error.cleanup = cleanup;
+      }
+      throw error;
+    }
+    return bank;
+  }
+  async loadBank(bank, spec, previous, nativeTextureName, nativeProgramName) {
+    if (!['script', 'plugin'].includes(bank.family))
+      throw new Error(`Unknown particle executable family ${bank.family}`);
+    if (
+      !Number.isSafeInteger(bank.count) ||
+      bank.count < 0 ||
+      bank.count > (this.nativeRefBuffers && bank.family === 'script' ? 0xffffffff : 1000000)
+    )
+      throw new RangeError('Invalid particle count');
+    if (!Number.isFinite(bank.priority)) throw new Error('Invalid particle priority');
+    const category = bank.family === 'plugin' ? 'ptclpi' : 'ptcl';
+    bank.program =
+      nativeProgramName ??
+      (bank.family === 'plugin' && this.hasLooseLibraries
+        ? this.game.nativeResources.resolveLoose(bank.program, category)
+        : this.resource(category, bank.program, bank.family === 'plugin' ? 'ppi' : 'kcs'));
+    if (bank.program === null) throw new Error(`Missing ${category} mount for ${spec.program}`);
+    const preparedScript =
+      bank.family === 'script' && this.scriptLoadsBeforeTexture
+        ? await readKCS(await this.scriptBytes(bank.program))
+        : null;
+    if (this.atlas) {
+      const texture = nativeTextureName ?? bank.texture;
+      bank.nativeAtlas = await this.atlas.load(
+        {
+          texture,
+          priority: bank.priority,
+          externalDraw: bank.externalDraw,
+        },
+        previous,
+      );
+      if (bank.texture && !bank.externalDraw && !bank.nativeAtlas.pointer)
+        this.events.push({ type: 'missing-texture', name: bank.texture, bank: bank.key });
+    } else if (bank.texture) {
+      try {
+        bank.texture = this.resource('image', bank.texture, 'hg3');
+      } catch (error) {
+        if (!String(error.message).startsWith('Missing image resource:')) throw error;
+        this.events.push({ type: 'missing-texture', name: bank.texture, bank: bank.key });
+        bank.texture = null;
+      }
+    }
+    bank.texture ||= null;
+    await this.bindBankImage(bank);
+    const attachPlane = this.refreshAttachment(bank);
+    const common = {
+      name: bank.program,
+      count: bank.count,
+      width: bank.width,
+      height: bank.height,
+      screenWidth: this.stage.width,
+      screenHeight: this.stage.height,
+      fps: this.fps,
+      priority:
+        bank.family === 'script' && bank.nativeAtlas
+          ? bank.nativeAtlas.priority
+          : (bank.nativeAtlas?.priority ?? bank.priority),
+      near: bank.nativeAtlas?.near,
+      registers: spec.registers || [],
+      attachPlane,
+      attachment: () => bank.attachment,
+      random: this.random,
+      onDebug: this.onDebug,
+      autoStart: false,
+    };
+    const bytes = preparedScript
+      ? null
+      : await (bank.family === 'plugin'
+          ? this.readPlugin(bank.program)
+          : this.scriptBytes(bank.program));
+    if (this.atlas && bank.family === 'script') {
+      bank.nativeDrawEnabled = false;
+      bank.nativeDrawBound = false;
+    }
+    if (bank.family === 'plugin') {
+      await this.preloadData();
+      const runtime = await this.pluginRuntime();
+      bank.instance = await runtime.create(bytes, {
+        ...common,
+        readParticleData: (name) => this.data(name),
+      });
+    } else {
+      const script = preparedScript ?? (await readKCS(bytes));
+      script.name = bank.program;
+      bank.instance = new ParticleScriptInstance(script, {
+        ...common,
+        refBufferMemory: this.refBufferMemory,
+        nativeTaskBuffers: Boolean(this.atlas) && this.nativeRefBuffers,
+        externalDraw: bank.externalDraw,
+        profile: this.profile,
+        screenBounds: this.scriptBounds,
+        attachmentDevicePresent: this.stage.nativeGraphics
+          ? () => Boolean(this.stage.nativeGraphics.device.attachment)
+          : undefined,
+      });
+      bank.instance.stop();
+    }
+    if (this.closed || this.banks.get(bank.key) !== bank) {
+      bank.instance.close?.({ stop: false });
+      throw new Error('Particle load was closed or superseded');
+    }
+    bank.loaded = true;
+    bank.nativeRenderOrder = this.stage.nativeGraphics?.allocateRenderOrder?.();
+    this.metadata(bank);
+    if (spec.autoStart) this.start(bank.key);
+  }
+  async bindBankImage(bank) {
+    const atlas = bank.nativeAtlas;
+    if (atlas) {
+      bank.image = atlas.pointer ? this.atlas.frame(atlas.pointer) : white;
+      bank.width = atlas.width;
+      bank.height = atlas.height;
+    } else {
+      bank.image = bank.texture ? await this.images.frame(bank.texture) : white;
+      bank.width = bank.texture ? bank.image.width : 256;
+      bank.height = bank.texture ? bank.image.height : 256;
+    }
+  }
+  get(key) {
+    return this.banks.get(key) || null;
+  }
+  start(key) {
+    const bank = this.require(key);
+    if (!bank.loaded) throw new Error(`Particle bank ${key} has no loaded executable`);
+    bank.instance.attachPlane = this.refreshAttachment(bank);
+    bank.instance.start({
+      preserveState:
+        bank.family === 'script' && Boolean(this.atlas) && this.scriptStartPreservesState,
+    });
+    if (bank.nativeDrawBound !== undefined) bank.nativeDrawBound = true;
+    bank.started = true;
+    bank.clockStart = null;
+    bank.clockLast = null;
+    bank.clockValue = 0;
+    bank.retireAt = null;
+    this.metadata(bank);
+  }
+  stop(key) {
+    const bank = this.banks.get(key);
+    if (!bank) return;
+    if (bank.family === 'plugin' && bank.attachmentNamespace === 'graph' && bank.instance)
+      bank.instance.attachPlane = this.refreshAttachment(bank);
+    bank.instance?.stop();
+    if (bank.nativeDrawEnabled !== undefined) bank.nativeDrawEnabled = false;
+    if (bank.nativeDrawBound !== undefined) bank.nativeDrawBound = false;
+    bank.started = false;
+    bank.retireAt = null;
+    this.metadata(bank);
+  }
+  end(key, { stop = true } = {}) {
+    const bank = this.banks.get(key);
+    if (!bank) return;
+    if (stop) this.stop(key);
+    bank.instance?.close?.({ stop: false });
+    if (bank.instance) bank.instance.active = false;
+    if (bank.nativeAtlas?.pointer) this.atlas.release(bank.nativeAtlas.pointer);
+    this.banks.delete(key);
+    delete this.stage.emitters[String(key)];
+  }
+  require(key) {
+    const bank = this.banks.get(key);
+    if (!bank) throw new Error(`Particle bank is absent: ${key}`);
+    return bank;
+  }
+  set(key, values) {
+    const bank = this.require(key);
+    if (values.length > 32) throw new Error('Particle accepts at most 32 registers');
+    const registers = new Float32Array(32);
+    registers.set(values);
+    bank.instance.setRegisters(registers);
+  }
+  alpha(key, value = 255) {
+    const bank = this.require(key);
+    bank.alpha = value | 0;
+    this.metadata(bank);
+  }
+  attach(key, plane, namespace = 'graph') {
+    const bank = this.require(key);
+    bank.attachPlane = namespace === 'graph' && !plane ? -1 : plane | 0;
+    bank.attachmentNamespace = namespace;
+    if (bank.instance) bank.instance.attachPlane = this.refreshAttachment(bank);
+  }
+  busy(key) {
+    if (key === undefined || key === null)
+      return [...this.banks.values()].some((bank) => bank.started && bank.instance?.active);
+    return Boolean(this.banks.get(key)?.started && this.banks.get(key)?.instance?.active);
+  }
+  async message(key, message, payload) {
+    switch (message) {
+      case 0x13a:
+        return this.load(key, payload);
+      case 0x13b:
+        return this.start(key);
+      case 0x13c:
+        return this.stop(key);
+      case 0x13d:
+        return this.end(key, { stop: false });
+      case 0x13e:
+        return Number(this.busy(key));
+      case 0x13f:
+        return this.set(key, payload);
+      case 0x140:
+        return this.alpha(key, payload);
+      case 0x141:
+        return this.attach(key, payload);
+      default:
+        throw new Error(`Unknown particle task message 0x${message.toString(16)}`);
+    }
+  }
+  async command(verb, args) {
+    if (!['particle', 'particle2', 'particle3'].includes(verb))
+      throw new Error(`Unknown particle scene command ${verb}`);
+    const words = [...args],
+      hasBank = /^\d+$/.test(words[0] || ''),
+      bankNumber = hasBank ? Number(words.shift()) : null,
+      sub = words.shift();
+    if (bankNumber !== null && bankNumber >= sceneBankCount)
+      throw new Error(`CST particle bank must be between 0 and ${sceneBankCount - 1}`);
+    if (sub === 'stop') {
+      if (bankNumber !== null) this.end(bankNumber);
+      else {
+        const count = verb === 'particle' ? 4 : sceneBankCount;
+        for (let key = 0; key < count; key++) this.end(key);
+      }
+      return;
+    }
+    if (bankNumber === null || !sub) throw new Error(`Malformed ${verb} command`);
+    if (sub === 'set') {
+      if (this.banks.has(bankNumber))
+        this.set(
+          bankNumber,
+          words.slice(0, 32).map((value) => this.number(value)),
+        );
+      return;
+    }
+    if (sub === 'alpha') {
+      if (this.banks.has(bankNumber)) this.alpha(bankNumber, this.number(words[0], 255));
+      return;
+    }
+    if (sub === 'fade') {
+      const bank = this.banks.get(bankNumber);
+      if (!bank) return;
+      const frames = this.number(words[0], 30) >>> 0,
+        from = this.number(words[1]),
+        to = this.number(words[2], 255);
+      this.alpha(bankNumber, from);
+      bank.fade = { frames, from, to, start: null };
+      return;
+    }
+    const attached = verb !== 'particle';
+    if (words.length < (attached ? 4 : 3)) throw new Error(`Incomplete ${verb} load command`);
+    const texture = words.shift(),
+      count = this.number(words.shift()) >>> 0,
+      priority = this.number(words.shift()),
+      attachPlane = attached ? this.number(words.shift()) : -1;
+    if (this.banks.has(bankNumber)) this.end(bankNumber);
+    await this.load(bankNumber, {
+      family: verb === 'particle3' ? 'plugin' : 'script',
+      program: sub,
+      texture,
+      count,
+      priority,
+      attachPlane,
+      attachmentNamespace: 'cst',
+      registers: words.slice(0, 32).map((value) => this.number(value)),
+      autoStart: true,
+      autoRelease: true,
+    });
+  }
+  update(frame = this.stage.frame) {
+    if (!Number.isSafeInteger(frame) || frame < 0) throw new Error('Invalid particle update clock');
+    this.frame = frame;
+    for (const bank of [...this.banks.values()]) this.updateBank(bank.key, frame);
+  }
+  updateBank(key, frame) {
+    if (!Number.isSafeInteger(frame) || frame < 0) throw new Error('Invalid particle update clock');
+    this.frame = frame;
+    const bank = this.require(key);
+    if (bank.retireAt !== null && bank.retireAt !== undefined && frame >= bank.retireAt) {
+      this.end(bank.key);
+      return;
+    }
+    if (bank.fade) {
+      const fade = bank.fade;
+      if (fade.start === null) fade.start = frame;
+      else {
+        const elapsed = frame - fade.start;
+        bank.alpha =
+          elapsed >= fade.frames
+            ? fade.to
+            : roundInteger(linearInterpolate(fade.from, fade.to, 0, fade.frames, elapsed));
+        if (elapsed >= fade.frames) bank.fade = null;
+      }
+    }
+    if (bank.started && bank.instance.active) {
+      // The native graph port is enabled before KCS and auxiliary sorting.
+      // A later undefined consumer must still diagnose its missing bytes.
+      if (bank.nativeDrawEnabled !== undefined && !bank.externalDraw) bank.nativeDrawEnabled = true;
+      bank.instance.attachPlane = this.refreshAttachment(bank);
+      if (bank.clockStart === null) {
+        bank.clockStart = frame;
+        bank.clockLast = frame;
+        bank.clockValue = 0;
+      } else {
+        bank.clockValue = (bank.clockValue + Math.imul(frame - bank.clockLast, bank.speed)) >>> 0;
+        bank.clockLast = frame;
+      }
+      bank.instance.update(bank.clockValue);
+      if (bank.family === 'script') bank.instance.finishNativeTaskFrame();
+      if (!bank.instance.active && bank.autoRelease) bank.retireAt = frame + 1;
+    }
+    if (bank.started && !bank.instance.active && bank.autoRelease && bank.retireAt == null)
+      bank.retireAt = frame + 1;
+    this.metadata(bank);
+  }
+  async drawBatch(bank) {
+    const projection = this.stage.nativeGraphics?.projection();
+    const alpha = bank.alpha >= 255 ? 256 : bank.alpha,
+      particleOrder =
+        alpha !== 0 && bank.family === 'script' ? bank.instance.nativeDrawOrder() : undefined;
+    const particles =
+      alpha === 0
+        ? []
+        : bank.family === 'plugin'
+          ? ppiParticles(bank.instance)
+          : scriptParticles(bank.instance, particleOrder);
+    return {
+      geometry: await this.projectGeometry(particles, {
+        width: projection?.width ?? this.stage.width,
+        height: projection?.height ?? this.stage.height,
+        priority: bank.nativeAtlas ? bank.nativeAtlas.priority : bank.priority,
+        near: bank.nativeAtlas?.near,
+        alpha,
+        particleOrder,
+        zShifts: bank.instance.zShifts,
+        screenMatrix: projection?.screenMatrix ?? bank.screenMatrix,
+        screenShift: projection?.screenShift ?? bank.screenShift,
+      }),
+      image: bank.image,
+      options: {
+        context: this.stage.nativeGraphics?.d3dContext,
+        drawType: 0,
+        blendMode: bank.instance.blendMode,
+        renderStates: bank.instance.renderStates,
+        samplerStates: bank.instance.samplerStates,
+      },
+    };
+  }
+  async drawBank(key, gpu) {
+    const bank = this.require(key);
+    if (!drawEligible(bank, this.drawPortPersistsAfterExit)) return;
+    const batch = await this.drawBatch(bank);
+    gpu.drawGeometry(batch.geometry, batch.image, batch.options);
+  }
+  drawItems() {
+    return [...this.banks.values()]
+      .filter((bank) => drawEligible(bank, this.drawPortPersistsAfterExit) && !bank.externalDraw)
+      .map((bank) => ({
+        type: 'particle',
+        priority: bank.priority,
+        order: bank.order,
+        nativeRenderOrder: bank.nativeRenderOrder,
+        drawGPU: async (gpu) => this.drawBank(bank.key, gpu),
+        draw: async (context) => {
+          if (!drawEligible(bank, this.drawPortPersistsAfterExit)) return;
+          this.gpu ||= new ParticlesGL(this.stage.width, this.stage.height);
+          const batch = await this.drawBatch(bank),
+            canvas = this.gpu.render(batch.geometry, batch.image, context.canvas, batch.options);
+          context.save();
+          context.setTransform(1, 0, 0, 1, 0, 0);
+          context.globalAlpha = 1;
+          context.globalCompositeOperation = 'copy';
+          context.drawImage(canvas, 0, 0);
+          context.restore();
+        },
+      }));
+  }
+  snapshot() {
+    return {
+      frame: this.frame,
+      sequence: this.sequence,
+      random: this.random.snapshot(),
+      runtime: this.runtime?.snapshot() || null,
+      banks: [...this.banks.values()].map((bank) => ({
+        key: bank.key,
+        order: bank.order,
+        nativeRenderOrder: bank.nativeRenderOrder,
+        nativeDrawEnabled: bank.nativeDrawEnabled,
+        nativeDrawBound: bank.nativeDrawBound,
+        family: bank.family,
+        program: bank.program,
+        texture: bank.texture,
+        nativeAtlas: bank.nativeAtlas && { ...bank.nativeAtlas },
+        count: bank.count,
+        priority: bank.priority,
+        alpha: bank.alpha,
+        attachPlane: bank.attachPlane,
+        attachmentNamespace: bank.attachmentNamespace,
+        speed: bank.speed,
+        clockStart: bank.clockStart,
+        clockLast: bank.clockLast,
+        clockValue: bank.clockValue,
+        retireAt: bank.retireAt,
+        fade: structuredClone(bank.fade),
+        autoRelease: bank.autoRelease,
+        externalDraw: bank.externalDraw,
+        ...(bank.extraName === undefined ? {} : { extraName: bank.extraName }),
+        screenMatrix: bank.screenMatrix,
+        screenShift: bank.screenShift,
+        loaded: bank.loaded,
+        started: bank.started,
+        pluginID: bank.family === 'plugin' ? bank.instance.id : null,
+        script: bank.family === 'script' ? bank.instance.snapshot() : null,
+      })),
+    };
+  }
+  validateNativeDrawPortState(state) {
+    if (
+      this.atlas &&
+      state.banks.some(
+        (bank) => bank.family === 'script' && typeof bank.nativeDrawEnabled !== 'boolean',
+      )
+    )
+      throw new Error('Particle checkpoint requires its native graph-port enable state');
+    if (
+      this.atlas &&
+      state.banks.some(
+        (bank) => bank.family === 'script' && typeof bank.nativeDrawBound !== 'boolean',
+      )
+    )
+      throw new Error('Particle checkpoint requires its native graph callback binding');
+  }
+  async restore(state) {
+    this.validateNativeDrawPortState(state);
+    this.close();
+    this.closed = false;
+    this.banks = new Map();
+    this.stage.emitters = {};
+    this.frame = state.frame;
+    this.sequence = state.sequence;
+    // Restore JS module statics and private instance state before rebinding banks.
+    if (state.runtime) {
+      await this.preloadData();
+      this.runtime = await JSPluginRuntime.fromSnapshot(state.runtime, {
+        registry: this.registry,
+        random: this.random,
+        now: this.now,
+        clock: this.clock,
+        epoch: this.clock?.epoch ?? this.epoch,
+        instanceOptions: (saved) => ({
+          attachment: () =>
+            [...this.banks.values()].find((bank) => bank.pluginID === saved.id)?.attachment,
+          readParticleData: (name) => this.data(name),
+        }),
+      });
+    }
+    for (const saved of state.banks) {
+      const bank = bankRegisters({ ...saved });
+      this.banks.set(bank.key, bank);
+      await this.bindBankImage(bank);
+      if (bank.family === 'plugin') bank.instance = this.runtime.instances.get(saved.pluginID);
+      else {
+        const script = await readKCS(await this.scriptBytes(bank.program));
+        script.name = bank.program;
+        bank.instance = ParticleScriptInstance.fromSnapshot(script, saved.script, {
+          profile: this.profile,
+          count: bank.count,
+          width: bank.width,
+          height: bank.height,
+          screenWidth: this.stage.width,
+          screenHeight: this.stage.height,
+          priority: bank.nativeAtlas ? bank.nativeAtlas.priority : bank.priority,
+          near: bank.nativeAtlas?.near,
+          fps: this.fps,
+          random: this.random,
+          screenBounds: this.scriptBounds,
+          attachment: () => bank.attachment,
+          attachmentDevicePresent: this.stage.nativeGraphics
+            ? () => Boolean(this.stage.nativeGraphics.device.attachment)
+            : undefined,
+          refBufferMemory: this.refBufferMemory,
+          nativeTaskBuffers: Boolean(this.atlas) && this.nativeRefBuffers,
+          externalDraw: bank.externalDraw,
+        });
+      }
+      bank.instance.attachPlane = this.refreshAttachment(bank);
+      this.metadata(bank);
+    }
+    this.random.restore(state.random);
+  }
+  close() {
+    if (this.closed) return;
+    for (const key of [...this.banks.keys()]) this.end(key);
+    this.runtime?.close();
+    this.runtime = null;
+    this.runtimeLoading = null;
+    this.gpu?.close();
+    this.gpu = null;
+    this.closed = true;
+  }
+}

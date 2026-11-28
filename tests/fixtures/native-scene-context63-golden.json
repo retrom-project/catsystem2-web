@@ -1,0 +1,85 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "executableSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+  "scope": "Own original Script constructors, Top routing and 23 Scene wrappers. Authored compressed CST and history strings; allocator/CRT/log and scene file/category services are external boundaries. This is not a complete game run or physical-pointer ownership admission.",
+  "rawSceneQuery": 169,
+  "initialPointers": [0, 0],
+  "sceneAllocationBytes": [304, 8],
+  "entries": [
+    219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 239, 249,
+    322, 334, 335, 337
+  ],
+  "historyPayloadSHA256": "42ccf645632a8c564e1beedfe777198f41dcd7273ef79ddc909080eee9a67835",
+  "historyPayloadBytes": 280,
+  "typeQueries": [
+    [-1, 0, 2],
+    [0, -1, 3],
+    [0, 0, 240],
+    [0, 1, 241],
+    [1, 0, 33],
+    [1, 1, 32],
+    [2, 0, 4294967295],
+    [0, 3, 4294967295]
+  ],
+  "text": ["語り手", "最初の本文"],
+  "fileMarker": {
+    "name": "本文",
+    "value": 42
+  },
+  "path": [
+    {
+      "name": "Scene01.cst",
+      "value": 4
+    },
+    {
+      "name": "scene02.cst",
+      "value": 9
+    }
+  ],
+  "seen": 19,
+  "historyString": "保存の文",
+  "expanded": "A保存の文 B C$strx",
+  "crossExpanded": "A保存の文 B$str99 C$strx",
+  "directExpanded": "保存の文/",
+  "nativeControls": {
+    "219": [2],
+    "220": [1],
+    "221": [1],
+    "222": [1],
+    "223": [1],
+    "224": [1],
+    "225": [2],
+    "226": [2],
+    "227": [1],
+    "228": [1],
+    "229": [1],
+    "230": [1],
+    "231": [2],
+    "232": [2],
+    "233": [2],
+    "234": [1],
+    "235": [1],
+    "239": [1],
+    "249": [1],
+    "322": [1],
+    "334": [1],
+    "335": [1],
+    "337": [2]
+  },
+  "excluded": "An empty-reader text query and string capture with no caller bank are recorded separately in ignored evidence, not used to assign a portable value to invalid or uninitialized native storage.",
+  "historyDefinedBytes": 110,
+  "historyDefinedMaskHex": "01010101010101010101010101010101010101010000000000000000000000000000000000000000010101010101010101010101010101010101010101010101010101010000000000000000000000000000000000000000010101010101010101010101010101010101010101010101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010101010101010101010101010101010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010101010101010101010100000000000000000000000000000000000000000101010101010101",
+  "historyDefinedPayloadHex": "65000000280000005363656e6530312e637374000000000000000000000000000000000000000000130000000000000066000000e00000005363656e6530312e6373740000000000000000000000000000000000000000000400000002000000350000002f00000095db91b682cc95b60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000350000000500000095db91b682cc95b600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007363656e6530322e6373740000000000000000000000000000000000000000000900000000000000",
+  "historyPadding": "Only NUL-terminated source text, terminators, numeric keys, counts and values are defined by these original writes. Name/string bytes after NUL contain native stack contents, are masked here, and remain preserved when imported from a native file.",
+  "initialFileMarker": {
+    "name": "",
+    "value": 0
+  },
+  "emptyPath": {
+    "index": 4294967295,
+    "name": "",
+    "value": 4294967295
+  },
+  "constructorBoundary": "Own reader constructor over 0xAD-filled allocation initializes filename byte and value to zero; cursor/size words at +0x1c/+0x20/+0x24 retain the fill until a successful CST load.",
+  "authoredCSTSHA256": "17fde0d897bfc943732c2051b24aef5c1769db22bb93a4edc8d745226f158ad9"
+}

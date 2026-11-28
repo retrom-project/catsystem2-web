@@ -1,0 +1,755 @@
+{
+  "requestCases": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "count": 3,
+      "failureAt": 1,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUESTS-74-3-1.json",
+        "sha256": "50741be1fa297150e82d6a9f39946fc31e4b82302b678418fdb2b21e35d6b7ba",
+        "bytes": 41694
+      },
+      "bytes": [340, 340, 52, 52, 52, 52, 16, 28, 16]
+    },
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "count": 3,
+      "failureAt": 7,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-74-3-7.json",
+        "sha256": "d97bef0c034fba37915a3aa3bb51a26b66e20d2fe846b67fd0bd0848e7de57ff",
+        "bytes": 42939
+      },
+      "bytes": [340, 340, 52, 52, 52, 52, 16, 28, 16]
+    },
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "count": 1000001,
+      "failureAt": 0,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUESTS-74-1000001-0.json",
+        "sha256": "fc72a8fed3315b3c4e5541e2fa7fda2b60688d85db7d34331ad9ec6b7e96ff85",
+        "bytes": 40267
+      },
+      "bytes": [
+        112000116, 112000116, 16000020, 16000020, 16000020, 16000020, 4000008, 8000012, 4000008
+      ]
+    },
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "count": 38347922,
+      "failureAt": 0,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-74-38347922-0.json",
+        "sha256": "856527f764f2f0ab59622439a0c99c99a3cbe3b83918cbd61571f4d7b70342f4",
+        "bytes": 40662
+      },
+      "bytes": [
+        4294967268, 4294967268, 613566756, 613566756, 613566756, 613566756, 153391692, 306783380,
+        153391692
+      ]
+    },
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "count": 38347923,
+      "failureAt": 0,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-74-38347923-0.json",
+        "sha256": "49bff591c5f5c13aa51781d040fd6cd4e8ce498b5cc954ccae4f42a0bd4fa5d5",
+        "bytes": 40646
+      },
+      "bytes": [84, 84, 613566772, 613566772, 613566772, 613566772, 153391696, 306783388, 153391696]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "count": 3,
+      "failureAt": 1,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-76-3-1.json",
+        "sha256": "045916d45c6707293c20c8e219d18afd15e84780f26c2f0aeeade72721f83d8e",
+        "bytes": 42000
+      },
+      "bytes": [340, 340, 52, 52, 52, 52, 16, 28, 16]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "count": 3,
+      "failureAt": 7,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-76-3-7.json",
+        "sha256": "e181d3d822108809c9c36720f4f188ededf5850668aefef5c29fec8bd4229e77",
+        "bytes": 42864
+      },
+      "bytes": [340, 340, 52, 52, 52, 52, 16, 28, 16]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "count": 1000001,
+      "failureAt": 0,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-76-1000001-0.json",
+        "sha256": "e842b65191692485e9238db26775850d09d5aa7bc4cb4e770f5c08a621ce6c2f",
+        "bytes": 40575
+      },
+      "bytes": [
+        112000116, 112000116, 16000020, 16000020, 16000020, 16000020, 4000008, 8000012, 4000008
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "count": 38347922,
+      "failureAt": 0,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-76-38347922-0.json",
+        "sha256": "d90c08b017598292340658d2298b14fc46a5dc6658ec898837c5baeebeb81e0e",
+        "bytes": 40589
+      },
+      "bytes": [
+        4294967268, 4294967268, 613566756, 613566756, 613566756, 613566756, 153391692, 306783380,
+        153391692
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "count": 38347923,
+      "failureAt": 0,
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-COUNT-REQUEST-CALLSITES-76-38347923-0.json",
+        "sha256": "de84b6759a7abcdae85e9ae11f49f520968c0e676fe5be0d9ce4b7182f969052",
+        "bytes": 40573
+      },
+      "bytes": [84, 84, 613566772, 613566772, 613566772, 613566772, 153391696, 306783388, 153391696]
+    }
+  ],
+  "scope": "Two exact modern PE partial RefBuffer lifecycles. No capacity admission from original failure-only large-count requests, physicalGPU/fullgame or unknown-byte values inferred. Original32 direct VM/table calls include4 capture-only uninitialized reads; current real Main/KCS/cold are separately exercised.",
+  "references": [
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-74-3-1.json",
+      "sha256": "ddbe1ab4d4f97b52b0f96d5e3f80a5da742d255232e36a52bf59b4b05202ca10"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-74-3-7.json",
+      "sha256": "760c00017f4789b794406823d49ff19cdb868d6a4e2e18b39ce373b43015a134"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-76-3-1.json",
+      "sha256": "b26c8205cb345d2250529f3209d207f64795923c12bdab2a466a4d02513a229a"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-76-3-7.json",
+      "sha256": "7a4152561344abd9e98cf58da831b0b0f48d1114fb485df84876c7d5042b4a66"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/PARTICLE-COUNT-REQUEST-OBSERVATIONS-2E4D70A.json",
+      "sha256": "f1ebb1fddde819a597f0685c395d49bbabf70a1ed4c93bcda3db6858a1adc115"
+    }
+  ],
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "cases": [
+        {
+          "failureAt": 1,
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-74-3-1.json",
+            "sha256": "ddbe1ab4d4f97b52b0f96d5e3f80a5da742d255232e36a52bf59b4b05202ca10"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "partialData": {
+              "rawQuad": "ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2B9mrfU8Q4rSGWCn7zZ9hMwTWqHpA==",
+              "replacement": "CShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbeg==",
+              "nonzeroingHeapContents": 165
+            }
+          },
+          "requests": [
+            {
+              "bytes": 340,
+              "failed": true
+            },
+            {
+              "bytes": 340,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": false
+            },
+            {
+              "bytes": 28,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": false
+            }
+          ],
+          "calls": [
+            {
+              "id": 40,
+              "words": [],
+              "label": "count-query",
+              "classification": "defined-owned-byte-write-read",
+              "control": 1,
+              "out": 2,
+              "beforeLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a",
+              "afterLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "uninitialized-position-read",
+              "classification": "capture-only-uninitialized-source",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "56329eef0bbefb4e67ad6d5601adeaae016acddaf2ec0e2e3729a425401290db"
+            },
+            {
+              "id": 27,
+              "words": [4286653253, 2147483648, 1065353216],
+              "label": "write-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a",
+              "afterLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "read-written-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "67710a0f4bb3d43f4612df97866f960c73c1a67325f9e44cf6ea19e27ce3ea5c"
+            },
+            {
+              "id": 39,
+              "words": [1, 0],
+              "label": "write-visibility",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "74cd339927c5c67f5944de21d04f2a0455aea2ba0b51baede5e81f9bb14183a7",
+              "afterLocal": "74cd339927c5c67f5944de21d04f2a0455aea2ba0b51baede5e81f9bb14183a7"
+            }
+          ],
+          "scope": "Own actual v2 KCS-installed native file-loaded Task/VM and original four-argument table wrappers; allocated nonzeroing payloads chosen A5. Uninitialized reads are capture-only; defined partial writes, full-byte writes/reads and opaque unknown-region save/restore retain separate classifications."
+        },
+        {
+          "failureAt": 7,
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-74-3-7.json",
+            "sha256": "760c00017f4789b794406823d49ff19cdb868d6a4e2e18b39ce373b43015a134"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "partialData": {
+              "rawQuad": "ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2B9mrfU8Q4rSGWCn7zZ9hMwTWqHpA==",
+              "replacement": "CShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbeg==",
+              "nonzeroingHeapContents": 165
+            }
+          },
+          "requests": [
+            {
+              "bytes": 340,
+              "failed": false
+            },
+            {
+              "bytes": 340,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": true
+            },
+            {
+              "bytes": 28,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": false
+            }
+          ],
+          "calls": [
+            {
+              "id": 40,
+              "words": [],
+              "label": "count-query",
+              "classification": "defined-owned-byte-write-read",
+              "control": 1,
+              "out": 2,
+              "beforeLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a",
+              "afterLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "uninitialized-position-read",
+              "classification": "capture-only-uninitialized-source",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "56329eef0bbefb4e67ad6d5601adeaae016acddaf2ec0e2e3729a425401290db"
+            },
+            {
+              "id": 27,
+              "words": [4286653253, 2147483648, 1065353216],
+              "label": "write-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a",
+              "afterLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "read-written-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "67710a0f4bb3d43f4612df97866f960c73c1a67325f9e44cf6ea19e27ce3ea5c"
+            },
+            {
+              "id": 29,
+              "words": [1065353216, 0, 1073741824],
+              "label": "write-UV-subfields",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "4ad30fb1b42a631fb6dba4dfd89bf1e07cbe0152fbbce84df8ab22dab51a6e74",
+              "afterLocal": "4ad30fb1b42a631fb6dba4dfd89bf1e07cbe0152fbbce84df8ab22dab51a6e74"
+            },
+            {
+              "id": 31,
+              "words": [128],
+              "label": "write-full-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "3260fa80ea3c7c2cf33d55849bc7676c37e15b4d3b956977880c515e981be9d0",
+              "afterLocal": "3260fa80ea3c7c2cf33d55849bc7676c37e15b4d3b956977880c515e981be9d0"
+            },
+            {
+              "id": 30,
+              "words": [640],
+              "label": "read-written-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "642de3418375a6bbe42ebefc0bfe4fa50728c8011a65fae6e5c6a006a1c17e38",
+              "afterLocal": "a1cdc4c3e74dbb2385802a9827ad0e1a478fbe69bfa7f24386e51017627aa1aa"
+            },
+            {
+              "id": 45,
+              "words": [],
+              "label": "save-partial-known-quads",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "5d0a8f075bb3683e508d94aa13313fc77ab7fb9af9e07a50d4591ac9a38f84dd",
+              "afterLocal": "5d0a8f075bb3683e508d94aa13313fc77ab7fb9af9e07a50d4591ac9a38f84dd"
+            },
+            {
+              "id": 31,
+              "words": [128],
+              "label": "overwrite-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "8c42f77af8bd5bfaaa37c5da7e85ce728b75d403e7086ab977adb01b99e77927",
+              "afterLocal": "8c42f77af8bd5bfaaa37c5da7e85ce728b75d403e7086ab977adb01b99e77927"
+            },
+            {
+              "id": 44,
+              "words": [],
+              "label": "restore-partial-known-quads",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "a6d9ca3e75f0f2a6c5fd18874563dfb3ef78485b013bf92915635b2b7116bb28",
+              "afterLocal": "a6d9ca3e75f0f2a6c5fd18874563dfb3ef78485b013bf92915635b2b7116bb28"
+            },
+            {
+              "id": 30,
+              "words": [768],
+              "label": "read-restored-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "964b4333ea2ec6064987e6f64aa276fd13798a42155591649727648b1f1e5b73",
+              "afterLocal": "9f3de07f575ea7d4d511e04b7dbd91ad17bf1c7124e0948481c0e809f8f48c4c"
+            }
+          ],
+          "scope": "Own actual v2 KCS-installed native file-loaded Task/VM and original four-argument table wrappers; allocated nonzeroing payloads chosen A5. Uninitialized reads are capture-only; defined partial writes, full-byte writes/reads and opaque unknown-region save/restore retain separate classifications."
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "cases": [
+        {
+          "failureAt": 1,
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-76-3-1.json",
+            "sha256": "b26c8205cb345d2250529f3209d207f64795923c12bdab2a466a4d02513a229a"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "partialData": {
+              "rawQuad": "ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2B9mrfU8Q4rSGWCn7zZ9hMwTWqHpA==",
+              "replacement": "CShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbeg==",
+              "nonzeroingHeapContents": 165
+            }
+          },
+          "requests": [
+            {
+              "bytes": 340,
+              "failed": true
+            },
+            {
+              "bytes": 340,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": false
+            },
+            {
+              "bytes": 28,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": false
+            }
+          ],
+          "calls": [
+            {
+              "id": 40,
+              "words": [],
+              "label": "count-query",
+              "classification": "defined-owned-byte-write-read",
+              "control": 1,
+              "out": 2,
+              "beforeLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a",
+              "afterLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "uninitialized-position-read",
+              "classification": "capture-only-uninitialized-source",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "56329eef0bbefb4e67ad6d5601adeaae016acddaf2ec0e2e3729a425401290db"
+            },
+            {
+              "id": 27,
+              "words": [4286653253, 2147483648, 1065353216],
+              "label": "write-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a",
+              "afterLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "read-written-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "67710a0f4bb3d43f4612df97866f960c73c1a67325f9e44cf6ea19e27ce3ea5c"
+            },
+            {
+              "id": 39,
+              "words": [1, 0],
+              "label": "write-visibility",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "74cd339927c5c67f5944de21d04f2a0455aea2ba0b51baede5e81f9bb14183a7",
+              "afterLocal": "74cd339927c5c67f5944de21d04f2a0455aea2ba0b51baede5e81f9bb14183a7"
+            }
+          ],
+          "scope": "Own actual v2 KCS-installed native file-loaded Task/VM and original four-argument table wrappers; allocated nonzeroing payloads chosen A5. Uninitialized reads are capture-only; defined partial writes, full-byte writes/reads and opaque unknown-region save/restore retain separate classifications."
+        },
+        {
+          "failureAt": 7,
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-PARTIAL-BUFFER-DATA-V2-76-3-7.json",
+            "sha256": "7a4152561344abd9e98cf58da831b0b0f48d1114fb485df84876c7d5042b4a66"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAACAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "partialData": {
+              "rawQuad": "ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2B9mrfU8Q4rSGWCn7zZ9hMwTWqHpA==",
+              "replacement": "CShHZoWkw+IBID9efZy72vkYN1Z1lLPS8RAvTm2Mq8rpCCdGZYSjwuEAHz5dfJu62fgXNlV0k7LR8A8uTWyLqsnoByZFZIOiweD/Hj1ce5q52PcWNVRzkrHQ7w4tTGuKqcjnBiVEY4KhwN/+HTxbeg==",
+              "nonzeroingHeapContents": 165
+            }
+          },
+          "requests": [
+            {
+              "bytes": 340,
+              "failed": false
+            },
+            {
+              "bytes": 340,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 52,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": true
+            },
+            {
+              "bytes": 28,
+              "failed": false
+            },
+            {
+              "bytes": 16,
+              "failed": false
+            }
+          ],
+          "calls": [
+            {
+              "id": 40,
+              "words": [],
+              "label": "count-query",
+              "classification": "defined-owned-byte-write-read",
+              "control": 1,
+              "out": 2,
+              "beforeLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a",
+              "afterLocal": "1402b8784466281bdcd1ba9ac83ed73f1e33be16ea0708fd1577d949fd0e8c1a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "uninitialized-position-read",
+              "classification": "capture-only-uninitialized-source",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "56329eef0bbefb4e67ad6d5601adeaae016acddaf2ec0e2e3729a425401290db"
+            },
+            {
+              "id": 27,
+              "words": [4286653253, 2147483648, 1065353216],
+              "label": "write-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a",
+              "afterLocal": "c983c92fb676f81820fac82beb75d7eacd393b17aa12633bf60620519086101a"
+            },
+            {
+              "id": 28,
+              "words": [512, 516, 520],
+              "label": "read-written-position",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "1396c4314c12d4fa9f029df17b1bd7627660031a006b07b26a7fe7ca881cac40",
+              "afterLocal": "67710a0f4bb3d43f4612df97866f960c73c1a67325f9e44cf6ea19e27ce3ea5c"
+            },
+            {
+              "id": 29,
+              "words": [1065353216, 0, 1073741824],
+              "label": "write-UV-subfields",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "4ad30fb1b42a631fb6dba4dfd89bf1e07cbe0152fbbce84df8ab22dab51a6e74",
+              "afterLocal": "4ad30fb1b42a631fb6dba4dfd89bf1e07cbe0152fbbce84df8ab22dab51a6e74"
+            },
+            {
+              "id": 31,
+              "words": [128],
+              "label": "write-full-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "3260fa80ea3c7c2cf33d55849bc7676c37e15b4d3b956977880c515e981be9d0",
+              "afterLocal": "3260fa80ea3c7c2cf33d55849bc7676c37e15b4d3b956977880c515e981be9d0"
+            },
+            {
+              "id": 30,
+              "words": [640],
+              "label": "read-written-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "642de3418375a6bbe42ebefc0bfe4fa50728c8011a65fae6e5c6a006a1c17e38",
+              "afterLocal": "a1cdc4c3e74dbb2385802a9827ad0e1a478fbe69bfa7f24386e51017627aa1aa"
+            },
+            {
+              "id": 45,
+              "words": [],
+              "label": "save-partial-known-quads",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "5d0a8f075bb3683e508d94aa13313fc77ab7fb9af9e07a50d4591ac9a38f84dd",
+              "afterLocal": "5d0a8f075bb3683e508d94aa13313fc77ab7fb9af9e07a50d4591ac9a38f84dd"
+            },
+            {
+              "id": 31,
+              "words": [128],
+              "label": "overwrite-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "8c42f77af8bd5bfaaa37c5da7e85ce728b75d403e7086ab977adb01b99e77927",
+              "afterLocal": "8c42f77af8bd5bfaaa37c5da7e85ce728b75d403e7086ab977adb01b99e77927"
+            },
+            {
+              "id": 44,
+              "words": [],
+              "label": "restore-partial-known-quads",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "a6d9ca3e75f0f2a6c5fd18874563dfb3ef78485b013bf92915635b2b7116bb28",
+              "afterLocal": "a6d9ca3e75f0f2a6c5fd18874563dfb3ef78485b013bf92915635b2b7116bb28"
+            },
+            {
+              "id": 30,
+              "words": [768],
+              "label": "read-restored-quad",
+              "classification": "defined-owned-byte-write-read",
+              "control": 2,
+              "out": 3435973836,
+              "beforeLocal": "964b4333ea2ec6064987e6f64aa276fd13798a42155591649727648b1f1e5b73",
+              "afterLocal": "9f3de07f575ea7d4d511e04b7dbd91ad17bf1c7124e0948481c0e809f8f48c4c"
+            }
+          ],
+          "scope": "Own actual v2 KCS-installed native file-loaded Task/VM and original four-argument table wrappers; allocated nonzeroing payloads chosen A5. Uninitialized reads are capture-only; defined partial writes, full-byte writes/reads and opaque unknown-region save/restore retain separate classifications."
+        }
+      ]
+    }
+  ]
+}

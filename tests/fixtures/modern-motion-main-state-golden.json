@@ -1,0 +1,2612 @@
+{
+  "canonicalManagerWord": 252851201,
+  "scope": "Own74/76 real Top/factory Script plus standalone original Actor/VM Main dispatcher. Authored minimal inputs, explicit Win32/D3D9 providers, original text unchanged; no product or natural Script/Main143 admission. Whole local frame SHA normalizes only manager pointer words. Initial working bytes capture-only and omitted until explicit Main301.",
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-STATE-FINAL-74.json",
+        "sha256": "39bac23510c4112d36413f0dc8c521be443c9a4595e09725b254b11a53ac4ad2"
+      },
+      "rows": [
+        {
+          "label": "manager-294",
+          "id": 294,
+          "args": [],
+          "writes": [],
+          "declaredCount": 0,
+          "control": 1,
+          "result": "manager",
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+          "localSha256": "bf047f4627792e5ec438ad8d329626a7983390ef986b6f06542dd6ad65d3d66c"
+        },
+        {
+          "label": "initial-base",
+          "id": 300,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "bf047f4627792e5ec438ad8d329626a7983390ef986b6f06542dd6ad65d3d66c",
+          "localSha256": "9d0573fb852ce72063137c4216be59750b1b1478f650d0b35e46c8cb6bfa60f9",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": null,
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-working-raw",
+          "id": 301,
+          "args": ["manager", 128, 144, 160, 176, 240, 2802918024, 256, 272, 4045620583],
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2B9mrfU8Q4rSGWCn7zZ9hMwTWqHpMHe+xg1Um+MqcbjAB06V3SRrsvoBSI/XHmWs9DtCidEYX6buNXyDyxJZoOgvdr3FDFOa4ilwt/8GTZTcI2qx+QBHjtYdZKvzOkGI0Bdepe00e4LKEVif5y51vMQLUpnhKG+2/gVMk9siabD4P0aN1RxjqvI5QIfPFl2k7DN6gckQV57mLXS7wwpRmOAnbrX9BEuS2iFor/c+RYzUG2Kp8Th/hs4VXKPrMnmAyA9WneUsc7rCCVCX3yZttPwDSpHZIGeu9j1Ei9MaYajwN36FzQ="
+            }
+          ],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "localSha256": "e8c6bdad4caf8c6bcc26d6b53a9684ae6d0349b454238d8bc79996bff5076755",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "get-working-raw",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "e8c6bdad4caf8c6bcc26d6b53a9684ae6d0349b454238d8bc79996bff5076755",
+          "localSha256": "5d3ae21dca9f96581a201bf4d914be7f8fb198e1f635b5a3f90765eabb79c73d",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "base-still-independent",
+          "id": 300,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "5d3ae21dca9f96581a201bf4d914be7f8fb198e1f635b5a3f90765eabb79c73d",
+          "localSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "commit-working",
+          "id": 303,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "localSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "state": {
+            "base": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "base-after-commit",
+          "id": 300,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "localSha256": "5d3ae21dca9f96581a201bf4d914be7f8fb198e1f635b5a3f90765eabb79c73d",
+          "state": {
+            "base": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-base-raw",
+          "id": 299,
+          "args": ["manager", 128, 144, 160, 176, 240, 2802918024, 256, 272, 4045620583],
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "PVp3lLHO6wglQl98mbbT8A0qR2SBnrvY9RIvTGmGo8Dd+hc0UW6LqMXi/xw5VnOQrcrnBCE+W3iVss/sCSZDYH2at9TxDitIZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQF16l7TR7gsoRWJ/nLnW8xAtSmeEob7b+BUyT2yJpsPg/Ro3VHGOq8jlAh88WXaTsM3qByRBXnuYtdLvDClGY4Cdutf0ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2A="
+            }
+          ],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "9507ad466469b9549cc4df1753038f53eff5810f308b63a9e8c0ddcf3e04d70d",
+          "localSha256": "fdcd835a223259c2edb9abb7826e392f262081d410f525ac999faca35cfd7f5f",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "working-still-independent",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fdcd835a223259c2edb9abb7826e392f262081d410f525ac999faca35cfd7f5f",
+          "localSha256": "9507ad466469b9549cc4df1753038f53eff5810f308b63a9e8c0ddcf3e04d70d",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-update",
+          "id": 307,
+          "args": ["manager", 123, 0],
+          "writes": [],
+          "declaredCount": 3,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "9507ad466469b9549cc4df1753038f53eff5810f308b63a9e8c0ddcf3e04d70d",
+          "localSha256": "3ca645abfaaa759692315c7af7f43d3039895459b2e614bf367f6638163f8754",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "working-after-update",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "3ca645abfaaa759692315c7af7f43d3039895459b2e614bf367f6638163f8754",
+          "localSha256": "862564201ede9a297fe0064fb5c971002508936eb39412b262c8e241a15e2936",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-working-overlap",
+          "id": 301,
+          "args": ["manager", 128, 128, 132, 136, 132, 2147483648, 144, 148, 0],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "862564201ede9a297fe0064fb5c971002508936eb39412b262c8e241a15e2936",
+          "localSha256": "1ab2cd6b5132bc2d4727fc22a47a92047dd010cee1c0f4c9410462e7190e9b56",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "get-working-output-overlap",
+          "id": 302,
+          "args": ["manager", 768, 768, 768, 768, 768, 768, 768, 768, 768],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "1ab2cd6b5132bc2d4727fc22a47a92047dd010cee1c0f4c9410462e7190e9b56",
+          "localSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "commit-working-overlap",
+          "id": 303,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "localSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "get-base-output-overlap",
+          "id": 300,
+          "args": ["manager", 800, 800, 800, 800, 800, 800, 800, 800, 800],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "localSha256": "8d0c4f4483e587650087fd99a5b8b32d4393712e2f61e0a2d3222ffbf45e07de",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-base-raw-again",
+          "id": 299,
+          "args": ["manager", 128, 144, 160, 176, 240, 2802918024, 256, 272, 4045620583],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "8d0c4f4483e587650087fd99a5b8b32d4393712e2f61e0a2d3222ffbf45e07de",
+          "localSha256": "f8b972fd3a9fcc5abfdd54433254e4493bc11c1d7821c711cd614a5eb1edf8eb",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-finish",
+          "id": 440,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "f8b972fd3a9fcc5abfdd54433254e4493bc11c1d7821c711cd614a5eb1edf8eb",
+          "localSha256": "80fb5cccda066578f50ae5c13ed2c2b0a2f1f9d2152c8729751e5538a3d1720b",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "working-after-finish",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 536870912],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "80fb5cccda066578f50ae5c13ed2c2b0a2f1f9d2152c8729751e5538a3d1720b",
+          "localSha256": "a62fb750ac4ecbaa4cdbc704166c20c924c8b4684e8e5608eaa852fa16b7aaee",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-speed-negative-zero",
+          "id": 308,
+          "args": ["manager", 2147483648],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "a62fb750ac4ecbaa4cdbc704166c20c924c8b4684e8e5608eaa852fa16b7aaee",
+          "localSha256": "7fc52add4d6dacea5355b6247dcdc1c7f634522d0a82e4fa66b6b324ceae1f53",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2147483648,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-speed-qnan",
+          "id": 308,
+          "args": ["manager", 2143363909],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "7fc52add4d6dacea5355b6247dcdc1c7f634522d0a82e4fa66b6b324ceae1f53",
+          "localSha256": "f7e31c8ceb8334e45f6422666a665648b5d88ca5c610d4d23f885b812a434501",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-flags",
+          "id": 586,
+          "args": ["manager", 2452903544],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "f7e31c8ceb8334e45f6422666a665648b5d88ca5c610d4d23f885b812a434501",
+          "localSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-clear",
+          "id": 296,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "localSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-remove",
+          "id": 297,
+          "args": ["manager", 999],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "localSha256": "4418353155d74003d15e8cdeb1c2a2d4c3a1d2b753cdb3eb010cdd83425c69a2",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-remove-group",
+          "id": 298,
+          "args": ["manager", 7],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "4418353155d74003d15e8cdeb1c2a2d4c3a1d2b753cdb3eb010cdd83425c69a2",
+          "localSha256": "aa4f5d10fa951b2d64ae38427e255819c17b5b80d36f287cc62a9ec089abce00",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-set-start",
+          "id": 305,
+          "args": ["manager", 0, 4294967295],
+          "writes": [],
+          "declaredCount": 3,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "aa4f5d10fa951b2d64ae38427e255819c17b5b80d36f287cc62a9ec089abce00",
+          "localSha256": "9d4dc2b7fe56a31e1ae5e722438e17adcbd42a888cf26d0caf0deeb53e29f55c",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-set-registers",
+          "id": 306,
+          "args": ["manager", 999, 536870912, 257],
+          "writes": [],
+          "declaredCount": 4,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "9d4dc2b7fe56a31e1ae5e722438e17adcbd42a888cf26d0caf0deeb53e29f55c",
+          "localSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-is-active",
+          "id": 309,
+          "args": ["manager", 999],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "localSha256": "4514f099466246b2f1856403946b6f68d17dbb5cd22a4cae3e9a867439c517d8",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-is-group-active",
+          "id": 310,
+          "args": ["manager", 7],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "4514f099466246b2f1856403946b6f68d17dbb5cd22a4cae3e9a867439c517d8",
+          "localSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-is-any-active",
+          "id": 311,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "localSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-skip",
+          "id": 312,
+          "args": ["manager", 999],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "localSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-skip-group",
+          "id": 313,
+          "args": ["manager", 7],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "localSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-skip-all",
+          "id": 314,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "localSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-296",
+          "id": 296,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-297",
+          "id": 297,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-298",
+          "id": 298,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-299",
+          "id": 299,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-300",
+          "id": 300,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-301",
+          "id": 301,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-302",
+          "id": 302,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-303",
+          "id": 303,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-305",
+          "id": 305,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-306",
+          "id": 306,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-307",
+          "id": 307,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-308",
+          "id": 308,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-309",
+          "id": 309,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-310",
+          "id": 310,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-311",
+          "id": 311,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-312",
+          "id": 312,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-313",
+          "id": 313,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-314",
+          "id": 314,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-440",
+          "id": 440,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-586",
+          "id": 586,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "manager-295",
+          "id": 295,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "93f9af49d79a56a5676b2d5df70cf35dccd4d9b68da5f71571a0e14902917c5d"
+        }
+      ],
+      "speedWords": {
+        "original": {
+          "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-SPEED-WORDS-74.json",
+          "sha256": "0bd274dcbaaecc50690d2ad4a593f4dd7aac595e80453938add22c6c2cdbd058"
+        },
+        "rows": [
+          {
+            "word": 0,
+            "stored": 0,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2147483648,
+            "stored": 2147483648,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 1069547520,
+            "stored": 1069547520,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2139095040,
+            "stored": 2139095040,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 4286578688,
+            "stored": 4286578688,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2143363909,
+            "stored": 2143363909,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2139169605,
+            "stored": 2139169605,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 4286653253,
+            "stored": 4286653253,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          }
+        ]
+      }
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-STATE-FINAL-76.json",
+        "sha256": "4c2a389cd6bdfec4d413a25ecfa4d67cb4b564a86cd64c4438188243f34969e0"
+      },
+      "rows": [
+        {
+          "label": "manager-294",
+          "id": 294,
+          "args": [],
+          "writes": [],
+          "declaredCount": 0,
+          "control": 1,
+          "result": "manager",
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+          "localSha256": "bf047f4627792e5ec438ad8d329626a7983390ef986b6f06542dd6ad65d3d66c"
+        },
+        {
+          "label": "initial-base",
+          "id": 300,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "bf047f4627792e5ec438ad8d329626a7983390ef986b6f06542dd6ad65d3d66c",
+          "localSha256": "9d0573fb852ce72063137c4216be59750b1b1478f650d0b35e46c8cb6bfa60f9",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": null,
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-working-raw",
+          "id": 301,
+          "args": ["manager", 128, 144, 160, 176, 240, 2802918024, 256, 272, 4045620583],
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2B9mrfU8Q4rSGWCn7zZ9hMwTWqHpMHe+xg1Um+MqcbjAB06V3SRrsvoBSI/XHmWs9DtCidEYX6buNXyDyxJZoOgvdr3FDFOa4ilwt/8GTZTcI2qx+QBHjtYdZKvzOkGI0Bdepe00e4LKEVif5y51vMQLUpnhKG+2/gVMk9siabD4P0aN1RxjqvI5QIfPFl2k7DN6gckQV57mLXS7wwpRmOAnbrX9BEuS2iFor/c+RYzUG2Kp8Th/hs4VXKPrMnmAyA9WneUsc7rCCVCX3yZttPwDSpHZIGeu9j1Ei9MaYajwN36FzQ="
+            }
+          ],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "localSha256": "e8c6bdad4caf8c6bcc26d6b53a9684ae6d0349b454238d8bc79996bff5076755",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "get-working-raw",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "e8c6bdad4caf8c6bcc26d6b53a9684ae6d0349b454238d8bc79996bff5076755",
+          "localSha256": "5d3ae21dca9f96581a201bf4d914be7f8fb198e1f635b5a3f90765eabb79c73d",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "base-still-independent",
+          "id": 300,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "5d3ae21dca9f96581a201bf4d914be7f8fb198e1f635b5a3f90765eabb79c73d",
+          "localSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "state": {
+            "base": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "commit-working",
+          "id": 303,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "localSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "state": {
+            "base": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "base-after-commit",
+          "id": 300,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "47404dafddc5146dd6011642a1aa9467b55f40148ef22e99a9a83258868dccae",
+          "localSha256": "5d3ae21dca9f96581a201bf4d914be7f8fb198e1f635b5a3f90765eabb79c73d",
+          "state": {
+            "base": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-base-raw",
+          "id": 299,
+          "args": ["manager", 128, 144, 160, 176, 240, 2802918024, 256, 272, 4045620583],
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "PVp3lLHO6wglQl98mbbT8A0qR2SBnrvY9RIvTGmGo8Dd+hc0UW6LqMXi/xw5VnOQrcrnBCE+W3iVss/sCSZDYH2at9TxDitIZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQF16l7TR7gsoRWJ/nLnW8xAtSmeEob7b+BUyT2yJpsPg/Ro3VHGOq8jlAh88WXaTsM3qByRBXnuYtdLvDClGY4Cdutf0ES5LaIWiv9z5FjNQbYqnxOH+GzhVco+syeYDID1ad5SxzusIJUJffJm20/ANKkdkgZ672PUSL0xphqPA3foXNFFui6jF4v8cOVZzkK3K5wQhPlt4lbLP7AkmQ2A="
+            }
+          ],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "9507ad466469b9549cc4df1753038f53eff5810f308b63a9e8c0ddcf3e04d70d",
+          "localSha256": "fdcd835a223259c2edb9abb7826e392f262081d410f525ac999faca35cfd7f5f",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "working-still-independent",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fdcd835a223259c2edb9abb7826e392f262081d410f525ac999faca35cfd7f5f",
+          "localSha256": "9507ad466469b9549cc4df1753038f53eff5810f308b63a9e8c0ddcf3e04d70d",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "UW6LqMXi/xw5VnOQIT5beJWyz+wJJkNg8Q4rSGWCn7zZ9hMwwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riKXC3/wZNlNwjarH5AEeO1h1kq/M6QYjQIgiEafR7gsoRWJ/nLnW8xChvtv4FTJPbImmw+BnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-update",
+          "id": 307,
+          "args": ["manager", 123, 0],
+          "writes": [],
+          "declaredCount": 3,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "9507ad466469b9549cc4df1753038f53eff5810f308b63a9e8c0ddcf3e04d70d",
+          "localSha256": "3ca645abfaaa759692315c7af7f43d3039895459b2e614bf367f6638163f8754",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "working-after-update",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 688],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "3ca645abfaaa759692315c7af7f43d3039895459b2e614bf367f6638163f8754",
+          "localSha256": "862564201ede9a297fe0064fb5c971002508936eb39412b262c8e241a15e2936",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-working-overlap",
+          "id": 301,
+          "args": ["manager", 128, 128, 132, 136, 132, 2147483648, 144, 148, 0],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "862564201ede9a297fe0064fb5c971002508936eb39412b262c8e241a15e2936",
+          "localSha256": "1ab2cd6b5132bc2d4727fc22a47a92047dd010cee1c0f4c9410462e7190e9b56",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "get-working-output-overlap",
+          "id": 302,
+          "args": ["manager", 768, 768, 768, 768, 768, 768, 768, 768, 768],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "1ab2cd6b5132bc2d4727fc22a47a92047dd010cee1c0f4c9410462e7190e9b56",
+          "localSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "commit-working-overlap",
+          "id": 303,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "localSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "get-base-output-overlap",
+          "id": 300,
+          "args": ["manager", 800, 800, 800, 800, 800, 800, 800, 800, 800],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "23cf16dcb5cce0b213f7d330fbdae8bc518719ed19392be634b1d7ec994d7277",
+          "localSha256": "8d0c4f4483e587650087fd99a5b8b32d4393712e2f61e0a2d3222ffbf45e07de",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-base-raw-again",
+          "id": 299,
+          "args": ["manager", 128, 144, 160, 176, 240, 2802918024, 256, 272, 4045620583],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "8d0c4f4483e587650087fd99a5b8b32d4393712e2f61e0a2d3222ffbf45e07de",
+          "localSha256": "f8b972fd3a9fcc5abfdd54433254e4493bc11c1d7821c711cd614a5eb1edf8eb",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8fZq31PEOK0hlgp+88Q4rSGWCn7zZ9hMwZYKfvNn2EzBNaoekwd77GDVSb4ypxuMAHTpXdJGuy+gFIj9ceZaz0O0KJ0Rhfpu41fIPLElmg6C92vcUMU5riPEOK0hlgp+82fYTMAAAAIBNaoekwd77GDVSb4zB3vsYNVJvjKnG4wAAAAAA",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-finish",
+          "id": 440,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "f8b972fd3a9fcc5abfdd54433254e4493bc11c1d7821c711cd614a5eb1edf8eb",
+          "localSha256": "80fb5cccda066578f50ae5c13ed2c2b0a2f1f9d2152c8729751e5538a3d1720b",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "working-after-finish",
+          "id": 302,
+          "args": ["manager", 512, 528, 544, 560, 624, 640, 656, 672, 536870912],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "80fb5cccda066578f50ae5c13ed2c2b0a2f1f9d2152c8729751e5538a3d1720b",
+          "localSha256": "a62fb750ac4ecbaa4cdbc704166c20c924c8b4684e8e5608eaa852fa16b7aaee",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 1065353216,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-speed-negative-zero",
+          "id": 308,
+          "args": ["manager", 2147483648],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "a62fb750ac4ecbaa4cdbc704166c20c924c8b4684e8e5608eaa852fa16b7aaee",
+          "localSha256": "7fc52add4d6dacea5355b6247dcdc1c7f634522d0a82e4fa66b6b324ceae1f53",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2147483648,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-speed-qnan",
+          "id": 308,
+          "args": ["manager", 2143363909],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "7fc52add4d6dacea5355b6247dcdc1c7f634522d0a82e4fa66b6b324ceae1f53",
+          "localSha256": "f7e31c8ceb8334e45f6422666a665648b5d88ca5c610d4d23f885b812a434501",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 0,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "set-flags",
+          "id": 586,
+          "args": ["manager", 2452903544],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "f7e31c8ceb8334e45f6422666a665648b5d88ca5c610d4d23f885b812a434501",
+          "localSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-clear",
+          "id": 296,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "localSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-remove",
+          "id": 297,
+          "args": ["manager", 999],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "589c08f665cad03800b0055e5bed746b67503195e55557a6d2d62ac7686baa5e",
+          "localSha256": "4418353155d74003d15e8cdeb1c2a2d4c3a1d2b753cdb3eb010cdd83425c69a2",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-remove-group",
+          "id": 298,
+          "args": ["manager", 7],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "4418353155d74003d15e8cdeb1c2a2d4c3a1d2b753cdb3eb010cdd83425c69a2",
+          "localSha256": "aa4f5d10fa951b2d64ae38427e255819c17b5b80d36f287cc62a9ec089abce00",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-set-start",
+          "id": 305,
+          "args": ["manager", 0, 4294967295],
+          "writes": [],
+          "declaredCount": 3,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "aa4f5d10fa951b2d64ae38427e255819c17b5b80d36f287cc62a9ec089abce00",
+          "localSha256": "9d4dc2b7fe56a31e1ae5e722438e17adcbd42a888cf26d0caf0deeb53e29f55c",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-set-registers",
+          "id": 306,
+          "args": ["manager", 999, 536870912, 257],
+          "writes": [],
+          "declaredCount": 4,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "9d4dc2b7fe56a31e1ae5e722438e17adcbd42a888cf26d0caf0deeb53e29f55c",
+          "localSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-is-active",
+          "id": 309,
+          "args": ["manager", 999],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "localSha256": "4514f099466246b2f1856403946b6f68d17dbb5cd22a4cae3e9a867439c517d8",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-is-group-active",
+          "id": 310,
+          "args": ["manager", 7],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "4514f099466246b2f1856403946b6f68d17dbb5cd22a4cae3e9a867439c517d8",
+          "localSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-is-any-active",
+          "id": 311,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "localSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-skip",
+          "id": 312,
+          "args": ["manager", 999],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "85f2e74b8ef212527dc2ad308b011e1eaff6193575aee801ad12cc5fa39bb104",
+          "localSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-skip-group",
+          "id": 313,
+          "args": ["manager", 7],
+          "writes": [],
+          "declaredCount": 2,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fd24efc35c1da2fcf5c74e1fb73578e4605258a403d781464086eabc13da1f02",
+          "localSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "empty-skip-all",
+          "id": 314,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "localSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-296",
+          "id": 296,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "46e2f67cabd49a1ae0a3b0dedbdf7d89deda06396b003a9381faef28e941cf45",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-297",
+          "id": 297,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-298",
+          "id": 298,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-299",
+          "id": 299,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-300",
+          "id": 300,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-301",
+          "id": 301,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-302",
+          "id": 302,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-303",
+          "id": 303,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-305",
+          "id": 305,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-306",
+          "id": 306,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-307",
+          "id": 307,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-308",
+          "id": 308,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-309",
+          "id": 309,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-310",
+          "id": 310,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-311",
+          "id": 311,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-312",
+          "id": 312,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-313",
+          "id": 313,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-314",
+          "id": 314,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-440",
+          "id": 440,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 1,
+          "result": 0,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "null-586",
+          "id": 586,
+          "args": [
+            0, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912, 536870912,
+            536870912, 536870912
+          ],
+          "writes": [],
+          "declaredCount": 10,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "state": {
+            "base": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "working": "fZq31PEOK0hlgp+8TWqHpMHe+xg1Um+MHTpXdJGuy+gFIj9c7QonRGF+m7jV8g8sSWaDoL3a9xQxTmuIpcLf/Bk2U3CNqsfkAR47WHWSr8zpBiNAXXqXtNHuCyhFYn+cudbzEC1KZ4Shvtv4FTJPbIgiEaf9GjdUcY6ryOUCHzzN6gckQV57mLXS7wxnRSPx",
+            "speed": 2143363909,
+            "flags": 2452903544,
+            "lastProcessed": 0,
+            "nextHandle": 1
+          }
+        },
+        {
+          "label": "manager-295",
+          "id": 295,
+          "args": ["manager"],
+          "writes": [],
+          "declaredCount": 1,
+          "control": 2,
+          "result": null,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "beforeLocalSha256": "fb140cba468884e7b01e0c9e283c192bc844da52c227f80335dcbb2054b084c6",
+          "localSha256": "93f9af49d79a56a5676b2d5df70cf35dccd4d9b68da5f71571a0e14902917c5d"
+        }
+      ],
+      "speedWords": {
+        "original": {
+          "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-SPEED-WORDS-76.json",
+          "sha256": "d7ab6476dc5b4c514f7d1b87b7fc6a34cb9c132cf84962ad7aaf65323f65c442"
+        },
+        "rows": [
+          {
+            "word": 0,
+            "stored": 0,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2147483648,
+            "stored": 2147483648,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 1069547520,
+            "stored": 1069547520,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2139095040,
+            "stored": 2139095040,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 4286578688,
+            "stored": 4286578688,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2143363909,
+            "stored": 2143363909,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 2139169605,
+            "stored": 2139169605,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          },
+          {
+            "word": 4286653253,
+            "stored": 4286653253,
+            "control": 2,
+            "pc": 11,
+            "sp": 4100,
+            "fp": 4096
+          }
+        ]
+      }
+    }
+  ]
+}

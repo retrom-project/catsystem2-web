@@ -1,0 +1,49 @@
+{
+  "source": "Independently authored TAB input from tests/fes-string-table.test.mjs. Original constructor, file reader and getter through existing FES/engine-files oracle; no new patches.",
+  "profiles": ["nekopara-vol3-engine-2.6.1.76", "sdk-4.01-engine-2.6.1.74"],
+  "rowCount": 4,
+  "queries": [
+    {
+      "row": 7,
+      "column": 0,
+      "result": 1,
+      "bytes": [97, 108, 112, 104, 97]
+    },
+    {
+      "row": 7,
+      "column": 1,
+      "result": 1,
+      "bytes": [72, 101, 108, 108, 111, 44, 32, 113, 117, 111, 116, 101, 100]
+    },
+    {
+      "row": -3,
+      "column": 0,
+      "result": 1,
+      "bytes": [110, 101, 103, 97, 116, 105, 118, 101]
+    },
+    {
+      "row": 16,
+      "column": 0,
+      "result": 1,
+      "bytes": [104, 101, 120]
+    },
+    {
+      "row": 0,
+      "column": 0,
+      "result": 1,
+      "bytes": [255, 254]
+    },
+    {
+      "row": 7,
+      "column": 2,
+      "result": 0,
+      "bytes": [117, 110, 116, 111, 117, 99, 104, 101, 100]
+    },
+    {
+      "row": 99,
+      "column": 0,
+      "result": 0,
+      "bytes": [117, 110, 116, 111, 117, 99, 104, 101, 100]
+    }
+  ]
+}

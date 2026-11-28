@@ -1,0 +1,59 @@
+// SPDX-License-Identifier: MPL-2.0
+// FES definition entries contain a u32 type and a 32-byte name.
+export const FES_OBJECT_TYPES = Object.freeze({
+  CIMAGE: 1,
+  IMAGE: 2,
+  CPLANE: 3,
+  PLANE: 4,
+  VIEW: 5,
+  BUTTON: 6,
+  DRAW: 7,
+  WIPE: 8,
+  SOUND: 9,
+  SNDTABLE: 10,
+  PANEL: 11,
+  SAVEPANEL: 12,
+  SCROLL: 13,
+  SCROLL2: 14,
+  SLIDER: 15,
+  BGTABLE: 16,
+  BGTABLE2: 17,
+  CHTABLE: 18,
+  CHTABLE2: 19,
+  CHTABLE3: 20,
+  STRING: 21,
+  IMGWND: 22,
+  PARTICLE: 23,
+  LOGSTRING: 24,
+  DIFIMAGE: 25,
+  RDRAW: 26,
+  RWIPE: 27,
+  NUMIMG: 28,
+  NVSTRING: 29,
+  WBREAK: 30,
+  RWMOS: 31,
+  RFMOS: 32,
+  STRTABLE: 34,
+  FILELIST: 35,
+  M2PLANE: 33,
+  EFKPLANE: 36,
+  STRING8: 37,
+  LOGSTRING8: 38,
+});
+
+// Factory indexes 33..35 intentionally differ from runtime object type codes.
+export const FES_OBJECT_DEFINITION_ORDER = Object.freeze([
+  'BASE',
+  ...Object.keys(FES_OBJECT_TYPES),
+]);
+
+// Normal DEFINE compares the existing narrow names in the C locale. Keep the
+// factory catalogue authoritative; the declaration retains raw diagnostic text.
+const asciiLower = (value) =>
+    value.replace(/[A-Z]/g, (letter) => String.fromCharCode(letter.charCodeAt(0) + 32)),
+  definitionNames = new Map(
+    ['BASE', ...Object.keys(FES_OBJECT_TYPES)].map((name) => [asciiLower(name), name]),
+  );
+export function canonicalFESDefinitionType(type) {
+  return definitionNames.get(asciiLower(type));
+}

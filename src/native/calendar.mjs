@@ -1,0 +1,48 @@
+// SPDX-License-Identifier: MPL-2.0
+// Main slot 312 computes weekdays with integer arithmetic, including invalid dates.
+import { nativeABI } from './abi/index.mjs';
+import { nativeReply } from '../kcs/vm.mjs';
+const truncate32 = (value) =>
+  Number.isFinite(value) && value >= -2147483648 && value < 2147483648
+    ? Math.trunc(value)
+    : -2147483648;
+export function nativeWeekday(year, month, day) {
+  year |= 0;
+  month |= 0;
+  day |= 0;
+  const y = month > 2 ? year : (year - 1) | 0,
+    m = month > 2 ? (month + 1) | 0 : (month + 13) | 0,
+    value =
+      (Math.trunc(y / 400) +
+        truncate32(y * 365.25) -
+        truncate32(m * -30.6) -
+        Math.trunc(y / 100) +
+        day -
+        429) |
+      0;
+  return (1 - 7 * Math.trunc(value / 7) + value) % 7 | 0;
+}
+function centuryWeekday(year, month, day) {
+  const beforeMarch = month <= 2,
+    y = (year - (beforeMarch ? 1 : 0)) | 0,
+    m = (month + (beforeMarch ? 13 : 1)) | 0,
+    century = Math.trunc(y / 100),
+    yearInCentury = y - century * 100,
+    monthTerm = Math.trunc(Math.imul(m, 13) / 5),
+    days =
+      (yearInCentury +
+        Math.trunc(yearInCentury / 4) +
+        monthTerm +
+        2 * (3 - century) +
+        Math.trunc(century / 4) +
+        day) |
+      0;
+  return days % 7;
+}
+export function nativeCalendar(id, args, profile) {
+  if (id !== 0x312) return undefined;
+  if (args.length !== 3) throw new Error('Native weekday expects year, month and day');
+  const algorithm = profile && nativeABI(profile).calendar?.weekdayAlgorithm;
+  const weekday = algorithm === 'century-integer' ? centuryWeekday : nativeWeekday;
+  return nativeReply(1, weekday(...args.map((word) => word | 0)));
+}

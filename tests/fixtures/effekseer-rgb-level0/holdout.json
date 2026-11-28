@@ -1,0 +1,54 @@
+{
+  "license": "CC0-1.0",
+  "scope": "One independent frozen-implementation RGB CPU holdout. Original RGB only; sampled alpha is static format22 semantics, not a GPU observation.",
+  "file": "../effekseer/public-1.23/LaserMain02.png",
+  "sourceSHA256": "e24c27453e96396cbda9fb6fb39b38ef8b55f4d60949732d2431e7b6bfe3c4f2",
+  "sourceBytes": 2192,
+  "descriptor": {
+    "width": 64,
+    "height": 256,
+    "format": 22,
+    "pool": 1,
+    "usage": 0,
+    "levels": 1,
+    "pitch": 256
+  },
+  "nativeRGBBytes": 49152,
+  "nativeRGBSHA256": "2fe632077ba85bef3301a1891af3d8f922aa19b1feb086d7e30a825374b0f04b",
+  "sampledAlpha": {
+    "value": 255,
+    "count": 16384,
+    "nativeAlphaObservations": 0,
+    "nativeGPUObserved": false
+  },
+  "provenance": {
+    "originalInputCalls": 1,
+    "attempts": 1,
+    "additionalOriginalCalls": 0,
+    "frozenRunnerSHA256": "4a4bba95f0d2085a8cf9a377f184b6cbf3cbe697f2f5cb9cf293da1f352c5dbc",
+    "precallFreezeSHA256": "c7a618514ca366cbb5137e73edcb8a841cc209194fb5a32c73e96d8d5afa7fbf",
+    "frozenProductSources": [
+      {
+        "path": "src/effekseer/resources.mjs",
+        "bytes": 13735,
+        "sha256": "a5d5a4f6f30e3c5a12cc5702bd962954311df7aec61ff57885a3771a20e86198"
+      },
+      {
+        "path": "src/effekseer/texture-decoder.mjs",
+        "bytes": 2489,
+        "sha256": "3ae10a66e69251ae21b3e057da677ca74e3be4ee8c489ba79b723653a098cc65"
+      },
+      {
+        "path": "src/effekseer/texture-level0.mjs",
+        "bytes": 7025,
+        "sha256": "ce684f44d22f62a6b4fc57395522ed639512daa1029bf23be53b3f0bcee20e95"
+      },
+      {
+        "path": "src/formats/png.mjs",
+        "bytes": 7814,
+        "sha256": "cbfb18281206bdfb294559ed867e0f0bc5901f4f24b9107fbb2985a96f9106b6"
+      }
+    ],
+    "comparison": "Zero tolerance on every actual original R/G/B byte; unused X is not included in expected samples or this digest."
+  }
+}

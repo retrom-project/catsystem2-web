@@ -1,0 +1,275 @@
+# Retained drawing commands
+
+SDK63/67 keep the native raster gate separate from output enablement and pixel
+dirty state. Actual factory-created Top/Draw children are checked through Base
+logic/draw traversal: a zero raster gate skips source update and raster work;
+an enabled gate can update the software bitmap while output is disabled.
+
+For these two builds, a nonzero pending-output word copies the whole initialized
+bitmap into the View, even when only part of it was rasterized. Limiting that
+copy to the dirty region would preserve stale texture pixels outside the region.
+The pending word is consumed after output; it and the independent raster gate
+survive current checkpoints. Other builds keep their existing output policy.
+The own-build collector tests compare software pixels, COM texture bytes and
+vertices across replacement and deletion, with eight cold continuations per
+build. Their virtual COM Present acknowledges memory operations only; it does
+not establish physical GPU, Stage or capture behavior.
+
+Main 2C3 and 2C4 pass a JS retained-source handle to Draw. The
+arguments are the target task, entry index, opaque handle, two position words,
+two base words, rotation, two scale words, alpha, visibility and transform
+mode. Position, base, rotation and scale retain their float bits. Alpha
+clamps as an unsigned word. The complete 60-byte packet uses source word 2
+and zeroes the other source words and the auxiliary word. Both wrappers
+return control 2.
+
+| Fixed profile           | 2C3 / message  | 2C4 / message  | Original Draw receiver |
+| ----------------------- | -------------- | -------------- | ---------------------- |
+| NEKOPARA Vol.3 2.6.1.76 | 0x644090 / 280 | 0x644B60 / 282 | 0x5F3F50               |
+| SDK 4.01 2.6.1.74       | 0x51C740 / 275 | 0x51D1A0 / 277 | 0x4CE6C0               |
+
+The JS wrappers carry the handle unchanged. A tag 2 render-source record
+provides that handle. The Draw manager retains it once on insertion. For
+an existing key, the original update helper changes the stored record's
+transform, alpha and visibility and ignores the supplied replacement
+handle. A zero handle leaves the entry alone. The manager and its resource
+identities restore through JS handle codecs.
+
+Whole-manager destruction decrements each reference. The explicit
+single-entry removal command calls the record destructor and frees it
+immediately, including when its reference count exceeds one. It leaves the
+caller array's words as they were. A caller using both APIs releases its
+array reference before single-entry removal.
+[Native render-source arrays](native-render-sources.md).
+
+Main `26E` and `26F` bind an `image-data` resource to a drawing entry through
+messages 280 and 282. The original wrapper fills the complete 60-byte packet:
+the second source word contains the opaque `image-data` handle, transforms
+retain their raw floating-point bits, alpha clamps as an unsigned DWORD, and
+all unused fields are initialized. These resources are separate from decoded
+`bitmap` handles and 64-byte `image-owner` collections.
+
+Main `270` formats its filename through the caller VM, resolves the
+ANM filename through the mounted JS image-file service, then sends
+message 293. Main `271` sends the raw enable word through message 295.
+Main `370` packages an index and value into eight bytes (SDK message 307,
+game message 312). The JS retained source applies the word to its
+ANM register bank and nested retained animations. An unsigned index above
+63 leaves the bank unchanged.
+
+Main `36F` binds a Draw entry to a sound bank (SDK message 306, game 311).
+Its logic tick queries the current Top's sound task and sets ANM variable 0
+according to the unsigned level comparison. The default threshold is 1000;
+main `371` updates it for an existing link (SDK message 308, game 313).
+Reassigning a link preserves its threshold and enables the new bank without
+disabling the previous one. Passing `0xFFFFFFFF` disables the current bank,
+clears variable 0 and removes the link. The Draw destructor only releases
+its link table. All nine wrappers route zero targets through the caller's
+Top namespace. Missing targets
+retain the original routing result and control code 2.
+
+All nine wrappers, retained resources, ANM and CPU composition execute in JS.
+The original address table and wrapper verifier are oracle evidence. FES
+retains an explicit phase7 producer projection. Its descriptor import preserves
+live source identity, frame references, visibility, clipping and animation
+writeback. JS image-owner inputs compose in JS and survive release of their
+independent PE consumer projection.
+
+`scripts/verify-native-draw-commands.mjs` passes 14,035 comparisons across 2,475
+complete calls per frozen PE. It checks all nine wrappers, every packet byte,
+raw retained pointers and opaque buffer translation, signed and unsigned limits,
+float bits, formatting and ANM resolution from data, shared and extended-block
+addresses, complete VM state, reference counts and output canaries. Device
+initialization is an explicit boundary in this transport probe.
+
+The render-source World tests call the JS Draw entry points for both ABI
+profiles and compare resource state after insertion and updates. They
+exercise both destruction paths and compare the actual Draw pixels and
+independent references after restoring into a fresh World. They write an ANM
+register through its drawing key and check that the same live bank
+continues independently after restore. The sound-link cases feed controlled
+levels through the normal sound task, then check its capture words and the
+live ANM variable in both browser profiles.
+[`verify-native-draw-sound.mjs`](../scripts/verify-native-draw-sound.mjs)
+compares the original Draw receiver and logic frame over 121 calls per
+profile, including all sound packets and the unsigned registration order.
+
+The public SDK World test uses complete native view/device initialization,
+decodes an authored HG2 resource, binds and updates its actual pixels, loads an
+authored ANM through the JS filename helper, and changes its animation gate. It releases the raw source, restores into a fresh World,
+continues control and removes the retained object with independent ownership.
+Whole-game playback and GPU effect pixels have their own acceptance checks.
+
+Main `156` (`draw.forceOutput`) takes one native Draw task ID and sends
+canonical message 292 with zero `w`, `l` and transport flags. It also sends a
+zero target through the caller's Top namespace. Both own wrappers return
+control 2 without writing a VM result; the SDK slot is independently admitted.
+The Draw receiver marks itself dirty even without a renderer. With a renderer,
+it invalidates the complete drawing area and forces the surface into VRAM even
+when ordinary output is disabled, then clears its pending flag. The existing
+Draw bitmap, retained-source and close owners remain the authority. Other
+unreviewed SDK drawing slots remain disabled.
+
+The shared RNG and all 18 ANM opcodes are compared against both retained
+oracles. Integer, MASK, BTYPE and affine CPU drawing use the 43 frozen cases
+with exact CPU and VRAM bytes. Additional RGB24, format-dispatch and nonfinite
+integer-coordinate cases compare directly with both original managers.
+
+Main `1C7` (`draw.copyBaseImage`) takes a native Draw task ID and a bitmap
+handle. Its own SDK `51CE90` and Game `644850` wrappers send SDK message291 /
+canonical message296 with zero `w` and flags, preserving the bitmap word.
+A zero target still enters the caller's Top namespace. Both wrappers return
+control2 without writing the VM result; their initialized transport-output
+scratch is separate from the VM stack. The SDK slot is independently admitted.
+
+For an initialized Draw surface and a valid owned bitmap, the existing Draw
+and NativeImages owners make a private deep copy, bind key0 and show the real
+base Plane. Passing bitmap0 removes key0 and hides that Plane while retaining
+the private copy. Entry clearing can reinsert the copy; replacement releases
+the previous private bitmap, and Draw close releases its own resources.
+The bitmap handle belongs to the image service, separately from native task
+IDs and caller World IDs. This admission adds no pointer aliases, crop packet
+variant or malformed-resource fallback.
+
+The dual-profile GCALL tests retain literal bitmap pixels after source mutation
+and release, check zero/missing target transport, raw high words, the unchanged
+VM result/stack, real base visibility, replacement and close. Full checkpoint
+codec restore into a fresh World agrees before a warm frame and replays no
+native command or RNG. These focused tests do not claim the SDK tutorial case
+or an unobserved target's native task kind has passed.
+
+Main 153 (draw.setClip) takes the native Draw target, raw entry selector
+and signed32 x/y/width/height. SDK51CEE0 and Game6448A0 each write the
+complete16-byte RECT [x,y,x+width,y+height], with DWORD addition wrapping,
+then send canonical289 with the raw selector as w and transport flags0.
+Target0 is sent; control2 leaves the VM result unwritten. SDK339 is admitted
+independently of the existing Game slot.
+
+The existing Draw entry is found before reading the rectangle. A repeated
+raw RECT equal to the stored clip changes neither clip nor dirty bounds.
+Otherwise, old bounds are invalidated and an empty or inverted signed RECT
+restores [0,0,rendererWidth,rendererHeight]; visible new bounds are then
+invalidated. Equality is checked before empty normalization: an empty RECT
+still follows the invalidation path when the current stored range is full.
+A direct message with a null RECT follows the native setter branch without
+the manager's before/after invalidation. Required RECT words must be defined
+before any state change; a missing entry reads none. The existing retained
+source, bitmap, snapshot and close owners remain responsible for their data.
+
+## Draw bitmap query and ordinary output
+
+Main261 is `draw.bitmap`, not a retained-item count. Its single DWORD is the
+native task ID. Both recovered wrappers send even for target zero, using the
+current caller's native sender, w=0 and transport flags=0. SDK51CAF0 sends raw280;
+Game644440 sends canonical285. The responding Draw reads its renderer's owned
+bitmap wrapper, stores it through L and returns0; the wrapper copies that stored
+word to the VM and returns control1. The ordinary implementation returns the
+existing borrowed bitmap handle as a u32. Querying does not allocate, retain,
+render, dirty or transfer ownership. The separate item-count message is288.
+
+The wrapper's L aliases its original self argument slot, initially a C++ object
+address. The separate transport-Q word is discarded. A missing response therefore
+cannot be replaced by zero or a World/native ID. Ordinary Main261 uses the shared
+NativeGraphicsPacket unwritten-word authority and strict nativeEngineWord read:
+only an actual L store can become a VM result. A responding Draw's explicit zero
+is valid; it is distinct from an unwritten output. An unresponsive zero target,
+missing target or released owner fails explicitly because its physical self
+address is outside this ordinary handle domain. Draw285's existing bitmap store
+and lifetime remain the authority.
+
+Main340 is `draw.render`, not a push operation. Its one-DWORD native target is
+sent without a zero-target shortcut, with w/l/flags=0 (SDK51C9E0 raw285,
+Game644330 canonical290). Control2 writes no VM result. Draw marks its dirty flag
+before checking the renderer and invokes the existing ordinary compositor, with
+its enabled output, pending state and dirty regions. This can update offscreen
+pixels while output is disabled; it does not force the full-surface output used
+by Main342/canonical292. Neither command changes Draw285/288/290/292, bitmap
+ownership, the compositor or its release order.
+
+Only SDK74 Main261/340 are newly admitted; Game76 already admits both. The other
+unknown slots and unregistered profiles remain guarded. Existing route-audit
+names `draw.bitmap` and `draw.render` already match these consumers. The selected
+SDK sscript has seven bitmap-query sites and no item-count GCALL264; its actual
+Main261 site609773 is followed, after existing bitmap operations and a helper
+returns, by Main340 at610188. This static prerequisite is not a claim that a
+previous failed gallery run reached that second call.
+
+Owned dual-ABI GCALL coverage checks raw sender/target domains, returned bitmap
+pixels and unchanged bitmap records, a real zero store, ordinary enabled/disabled
+output, VM sentinels, complete cold DTO equality before any warm frame, isolation
+and owner release, and strict missing responses. Cold restoration may load the
+owned KCS code and probe the explicitly absent M2 configuration; it executes no
+native commands or RNG draws. These short checks do not replace the original
+SDK gallery, music and replay acceptance.
+
+## Per-version Draw enable storage
+
+The ordinary Draw receiver keeps the enabled word as an unsigned DWORD.
+Its pending word follows the reviewed
+`graphics.drawEnablePendingPolicy` records the supplied word in SDK 2.6.1.74
+and Game 2.6.1.76. Engines 2.6.1.63 and 2.6.1.67 each record 1 for a
+transition from zero to nonzero and 0 for any other transition. Construction
+starts with enabled 1 and pending 0.
+Rendering consumes pending by clearing it to 0; renderer decisions continue
+to use zero or nonzero values.
+
+In 2.6.1.63, Main 256, 260 and 262 use the owned Draw factory and raw
+messages 267, 271 and 274 to initialize its renderer, set signed offsets and
+write the enabled word. Each GCALL returns control 2 without a result word.
+
+## SDK 4.01 retained bitmap update, count, layer and rectangle
+
+| Main | Wrapper  | Raw Draw | Arguments                                                                                      | Control | Native result                             |
+| ---- | -------- | -------- | ---------------------------------------------------------------------------------------------- | ------- | ----------------------------------------- |
+| 259  | 0x51CFE0 | 277      | target, key, bitmap, x, y, base x, base y, rotation, scale x, scale y, alpha, visibility, mode | 2       | Unwritten                                 |
+| 264  | 0x51CBA0 | 283      | target                                                                                         | 2       | The receiver's count or the initial zero  |
+| 462  | 0x51CBE0 | 293      | target, key                                                                                    | 1       | Stored layer or the initial all-ones word |
+| 463  | 0x51CFA0 | 294      | target, key, layer                                                                             | 2       | Unwritten                                 |
+| 862  | 0x51CA20 | 305      | target, left, top, right, bottom                                                               | 2       | Unwritten                                 |
+
+The SDK's Draw receiver inserts a missing bitmap entry and replaces the image
+reference of an existing sender-keyed entry. The complete short update packet
+preserves the transform DWORDs and clamps alpha as unsigned. The Draw entry
+owns a reference to the bitmap backing. A missing renderer or a zero backing
+leaves the entry untouched. The layer setter and getter share the same key
+and operate on the full DWORD. The wrapper for the layer query initializes
+its result to all ones before routing, including when the task or key is absent.
+
+Main264 counts retained entries and copies the native scratch. Control 2
+continues without pushing that scratch word to the guest KCS stack. The prepared
+2.6.1.76 build uses the same count helper shape with its own raw message 288.
+A live SDK Draw without a renderer cannot execute its count or layer methods.
+The ordinary host rejects that receiver state before using its storage.
+
+The rectangle uses four signed endpoints and recomposites its clipped bounds
+immediately. It marks the task dirty even before a renderer exists. Short
+original CPU cases execute the owned Draw and bitmap constructors, sender
+wrappers, entry map and pixel compositor. World cases exercise the same
+ownership, integer endpoints and visible pixel bounds through the KCS opcode.
+
+## Encoded sources, layers and clipped invalidation
+
+A Main703 retained source owns layer0 before any Draw key references it.
+Main707/708 keep that layer instead of deriving it from the key's upper word.
+Main462 reads the shared source field; each renderer still keeps its own
+ordering key. Bitmap and encoded-source entries created by the renderer start
+with their key's layer. The same behavior applies to the five fixed builds;
+the former legacy-only stored-layer switch has been removed.
+
+Scalar entry invalidation intersects the stored entry clip before it reaches
+the renderer. A replaced bitmap can therefore leave previously drawn
+zero-alpha RGB outside that clip untouched. This does not change the renderer's
+clear/paint algorithm or the lifetime of a borrowed output. The ordinary
+modern comparison covers bitmap colour/geometry/copy/transform consumers,
+encoded and multiframe source replacement, clipped visibility, source-array
+release, later pixels, base-image copying, clear and retirement. Independent
+cold continuations include source-free use after the array owner releases.
+A separate unchanged translucent middle entry checks that separated updates
+do not blend it over its previous pixels. These are bounded CPU/COM-memory
+results; they do not establish physical texture sampling or every format.
+
+The common clipped-invalidation correction applies to scalar entries. The
+existing .63/.67 accumulated-affine clipping rule is preserved from the parent
+implementation: the current evidence does not establish an original affine
+change. Its regression control protects that retained behavior without using
+a current/parent comparison as native proof.

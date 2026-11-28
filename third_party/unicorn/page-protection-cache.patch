@@ -1,0 +1,16 @@
+--- a/uc.c
++++ b/uc.c
+@@ -1799,6 +1799,13 @@
+         addr += len;
+     }
+ 
++    // Cached translations otherwise retain access after EXEC/READ is revoked.
++    // This also covers a protection change requested from a host API hook.
++    // Invalidate only the affected code range; flush the software TLB so the
++    // next memory operation observes the new region permissions.
++    uc->uc_invalidate_tb(uc, address, size);
++    uc->tcg_flush_tlb(uc);
++
+     // if EXEC permission is removed, then quit TB and continue at the same
+     // place
+     if (remove_exec) {

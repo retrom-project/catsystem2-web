@@ -1,0 +1,403 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "scope": "Only the first3 complete Root rows precede uninitialized Draw-output consumption. Later wake/rebind prefix and old tail are capture-only: missing Main260 offset and explicit bitmap initialization. The qualified successor has its own complete evidence.",
+  "inputs": {
+    "program": "S0NTAAIAAAAAAAAANAAAAH4FAACyBQAAAAAAAAAAAAAAEAAAABAAALIFAAAAAAAA/AoAAHichZS7SgNBFIZnNxEVBCMrYmGxeMw0i1jYqUWiUSNEERKwNaggKCq6oGWKgBbeinQ2KQxY+AQW3m18BgsLn8FSdP7ZSU7GiM3ycebc5j9nNkmxxBJJSgghkiSEEJJSjDOMs4xzjBcZF8C3N1+vkkqMy4yPGB8zPmdcAVdyKqdwwJ+KffBOcWVDUgq8FvqLkjLgzeLWmqSsw/oEb+8r+zJ41c/sSloFF/eVzzp4ZXsrlFTSOQ9CX1IZPDOdF5KOmE/V+AxLugTvhcVQ0pW2o+41OJ0r/Oh5D56fy+clvYPnFmaFpA9wrVarSRJug+OMOxh3MU4w7mXcz3gAnB7aC03+3dGRSZNf66PyB5gyG36A8TZtQEzP2FGHvY4Q1KENCO9ThjgMrvp6eoNS8J5UqboaC+TpNepBnRPXpIrMetY+Ik/dKJIfBnTWiNHNjrmmvNdY3YDGbb8J4xdQ2twvSd0scNnuGGvu6WWP178BOtGt0SCLL9nxeBqefiBVHN7VxdNmJA/owTJTO8xPjnWHZyO1eV5JmF+cJgma/MrWjVEgwFZGIbriPfp7NBWjdxodOog5NJL+ymdEP3Ste7zbWY//Vx0/Ea/AFs+1VI+0K7TWrtPWTms8JVrMP1Ljwq3rdd5axgrzrmcyLTBD9u9a9NamDLPmbPwboCG0SQ==",
+    "source": "#DEFINE\r\nBASE marker\r\n#START\r\nresult 11\r\nnext WAIT\r\n#WAIT\r\n#ALT\r\nresult 23\r\nnext WAIT\r\n",
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48aW50MDQ+PG5hbWU+ZmVzPC9uYW1lPjxpbnQ+ZmVzLmludDwvaW50PjxleHQ+ZmVzPC9leHQ+PGRpcj5mZXMtbG9vc2U8L2Rpcj48L2ludDA0PjwvSU5UPjwvZG9jdW1lbnQ+"
+  },
+  "rows": [
+    {
+      "frame": 0,
+      "label": "real typed Plane and no-op notifications retain their original control and state",
+      "pc": 768,
+      "words": [3405691582, 3405691582, 3405691582, 3405691582, 3405691582, 3405691582],
+      "expanded": [
+        65, 148, 76, 47, 66, 0, 0, 66, 0, 0, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "roles": [
+        [64, 4],
+        [68, 3],
+        [72, 5],
+        [76, 0],
+        [80, 0],
+        [84, 0]
+      ]
+    },
+    {
+      "frame": 1,
+      "label": "real Draw owner and loaded FES attach before first start",
+      "pc": 1010,
+      "words": [4294967295, 37, 3405691582, 3405691582, 3405691582, 3405691582],
+      "expanded": [
+        65, 148, 76, 47, 66, 0, 0, 66, 0, 0, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "roles": [
+        [64, 4],
+        [68, 3],
+        [72, 5],
+        [76, 6],
+        [80, 8],
+        [84, 0]
+      ]
+    },
+    {
+      "frame": 2,
+      "label": "start, normal label jump and sleeping gate",
+      "pc": 1090,
+      "words": [4294967295, 37, 1, 3405691582, 3405691582, 3405691582],
+      "expanded": [
+        65, 148, 76, 47, 66, 0, 0, 66, 0, 0, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "roles": [
+        [64, 4],
+        [68, 3],
+        [72, 5],
+        [76, 6],
+        [80, 8],
+        [84, 0]
+      ]
+    }
+  ],
+  "ledger": [
+    {
+      "frame": -1,
+      "id": 66,
+      "caller": 537075296,
+      "args": [12, 3, 256],
+      "out": 2146430964,
+      "expectedSP": 2146430932,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 4
+    },
+    {
+      "frame": -1,
+      "id": 209,
+      "caller": 537095296,
+      "args": [512],
+      "out": 2146430964,
+      "expectedSP": 2146430932,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": -1,
+      "id": 143,
+      "caller": 537095296,
+      "args": [4, 256, 0],
+      "out": 2146430964,
+      "expectedSP": 2146430932,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 68,
+      "caller": 537095296,
+      "args": [],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 4
+    },
+    {
+      "frame": 0,
+      "id": 76,
+      "caller": 537095296,
+      "args": [],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 3
+    },
+    {
+      "frame": 0,
+      "id": 276,
+      "caller": 537095296,
+      "args": [3, 256],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 278,
+      "caller": 537095296,
+      "args": [512],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 66,
+      "caller": 537095296,
+      "args": [2, 4, 320],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 5
+    },
+    {
+      "frame": 0,
+      "id": 653,
+      "caller": 537095296,
+      "args": [5, 17],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 654,
+      "caller": 537095296,
+      "args": [5, 256, 288],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 655,
+      "caller": 537095296,
+      "args": [5, 256],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 570,
+      "caller": 537095296,
+      "args": [4],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 571,
+      "caller": 537095296,
+      "args": [4, 0],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 572,
+      "caller": 537095296,
+      "args": [4],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 0,
+      "id": 65,
+      "caller": 537095296,
+      "args": [],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 4
+    },
+    {
+      "frame": 1,
+      "id": 66,
+      "caller": 537095296,
+      "args": [15, 4, 352],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 6
+    },
+    {
+      "frame": 1,
+      "id": 256,
+      "caller": 537095296,
+      "args": [6, 4, 4],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 1,
+      "id": 66,
+      "caller": 537095296,
+      "args": [34, 4, 384],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 8
+    },
+    {
+      "frame": 1,
+      "id": 447,
+      "caller": 537095296,
+      "args": [8, 416],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 1,
+      "id": 449,
+      "caller": 537095296,
+      "args": [8, 6],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 1,
+      "id": 451,
+      "caller": 537095296,
+      "args": [8, 7],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 1,
+      "id": 452,
+      "caller": 537095296,
+      "args": [4],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 4294967295
+    },
+    {
+      "frame": 1,
+      "id": 453,
+      "caller": 537095296,
+      "args": [37],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 1,
+      "id": 452,
+      "caller": 537095296,
+      "args": [4],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 37
+    },
+    {
+      "frame": 1,
+      "id": 65,
+      "caller": 537095296,
+      "args": [],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 4
+    },
+    {
+      "frame": 2,
+      "id": 448,
+      "caller": 537095296,
+      "args": [8],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 2,
+      "id": 450,
+      "caller": 537095296,
+      "args": [8, 448],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": true,
+      "closed": true,
+      "control": 1,
+      "value": 1
+    },
+    {
+      "frame": 2,
+      "id": 647,
+      "caller": 537095296,
+      "args": [8, 1],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 2
+    },
+    {
+      "frame": 2,
+      "id": 65,
+      "caller": 537095296,
+      "args": [],
+      "out": 2146430748,
+      "expectedSP": 2146430716,
+      "written": false,
+      "closed": true,
+      "control": 4
+    }
+  ],
+  "allClosed": true,
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-task-message-context-20261128/ORIGINAL-TM2.json",
+    "sha256": "c1cb6ab77121927fd412406998899a8d605494bad11b3ed69764fabb2a4de20e",
+    "complete": false,
+    "allClosed": true,
+    "actual": null
+  }
+}

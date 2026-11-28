@@ -1,0 +1,4104 @@
+{
+  "scope": "Old3 complete original GCALL through own Generic0 and Particle-v1/v2 zero. Original formatter/logger, actual CRT initialization and full data/guest/owner records are hash-linked in ignored evidence. Window transport is captured; no actual OS debug window claim. Existing five-build Main1/Main14 and formatter vectors are reused, not rerun.",
+  "originalSha256": "77b3de89176c3235f19c568595e4cd1ac72348e4dd2cf361304d35350f026558",
+  "builds": [
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "harness": {
+        "file": "physical-logger-gcall-23",
+        "sha256": "d99fcf2c2d085c33be03b407b641f3b13d6b5fdae479e85a9aa2af8436361425"
+      },
+      "entries": [
+        {
+          "table": 6802616,
+          "address": 5857808,
+          "size": 53,
+          "bodySha256": "0081c63630e7d60facbada9028c8d1241625fe50d603406181aff3cb0b260c7c",
+          "scratch": 7989976,
+          "callees": [5292064, 5294704, 4937648]
+        },
+        {
+          "table": 7565792,
+          "address": 4768560,
+          "size": 53,
+          "bodySha256": "c14a60cf19b3411c6f02a28c73315cbf3591691df8e61bcec883a108f7682463",
+          "scratch": 7855496,
+          "callees": [5292064, 5294704, 4937648]
+        },
+        {
+          "table": 7565976,
+          "address": 4768560,
+          "size": 53,
+          "bodySha256": "c14a60cf19b3411c6f02a28c73315cbf3591691df8e61bcec883a108f7682463",
+          "scratch": 7855496,
+          "callees": [5292064, 5294704, 4937648]
+        }
+      ],
+      "cases": [
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "c1fdcc0a90fcf89a70ddda87dbc0ee50b93e0d2ea9ef39b14b006457484cc2a3"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "683981256c1d395f61ccbf0b6d116def1a2e21e46a56b5be4739473df6efc7e9"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "f13345d59ead2947f5c433492803a128c3375edf7d0f9922a0951350c3246679"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "24e9fbbf473b8eeb7217995e1ee71d602a92fb5ea78b84aa1cb16febe78000ac"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "13b19347be78899cd9eae3da7ef440a37fb2ba29546353b5320224fe5f371380"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "3cc2fe768f400d57b3763eceef3b53791f48f9d68534b4415084ce4cb234c1e4"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "d6a731b8c9bcde79f09826a592103513cdd38b6b42aed4ceac52bc645af9e9da"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "8ddc9fe9fddbd8679ff3a580d1580d57bee86a0c7e59b8f9fa2154fb106cbc49"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "2542d5cb189bd4b682b7a577b329acc027dbc50a5ae05a237af87e95a0219775"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "20764cd78efc56f808a0b9824dea91f100042466518c205cf2085711731d98f9"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "cc2038b7f094b295c4a9a551e7a5b2d2c35657a950cb6379c2ed787f8800d570"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "44fba94b5f1f1e5ad040893d59e5cbb79404d44e436e2ed8d479386342418a0b"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "0853cfd79fca0c326733babeaf983fdb59c053aba3fde5aca1e05569a3ee3771"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "9089a97e5988d0d77f60a75ca6346ed81f6bc389414ce5cf0c508f1fe457450a"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "8ddc9fe9fddbd8679ff3a580d1580d57bee86a0c7e59b8f9fa2154fb106cbc49"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "2542d5cb189bd4b682b7a577b329acc027dbc50a5ae05a237af87e95a0219775"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "20764cd78efc56f808a0b9824dea91f100042466518c205cf2085711731d98f9"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "cc2038b7f094b295c4a9a551e7a5b2d2c35657a950cb6379c2ed787f8800d570"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "44fba94b5f1f1e5ad040893d59e5cbb79404d44e436e2ed8d479386342418a0b"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "0853cfd79fca0c326733babeaf983fdb59c053aba3fde5aca1e05569a3ee3771"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "945b5924c34393423761f4566a2d31c4651b71e564a8be0e3795b24ff1e3893f",
+          "originalDataAfterSha256": "9089a97e5988d0d77f60a75ca6346ed81f6bc389414ce5cf0c508f1fe457450a"
+        }
+      ]
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "harness": {
+        "file": "physical-logger-gcall-63",
+        "sha256": "8a333fa548d1dded253bdfd11f1ee1afa95b65aba15ba407d4399e7e078ef59d"
+      },
+      "entries": [
+        {
+          "table": 8188720,
+          "address": 5618464,
+          "size": 42,
+          "bodySha256": "eb487933742452804d43be0c7b18eb2813a96824b5729afa15ed50cff4d7e036",
+          "scratch": 8653704,
+          "callees": [6467376, 5314128]
+        },
+        {
+          "table": 7409368,
+          "address": 4822896,
+          "size": 42,
+          "bodySha256": "38a9e563fa348a28b2cf72cfa148f0f9210d39b852f005372e46ba1b5c935132",
+          "scratch": 8513504,
+          "callees": [6467376, 5314128]
+        },
+        {
+          "table": 7409552,
+          "address": 4822896,
+          "size": 42,
+          "bodySha256": "38a9e563fa348a28b2cf72cfa148f0f9210d39b852f005372e46ba1b5c935132",
+          "scratch": 8513504,
+          "callees": [6467376, 5314128]
+        }
+      ],
+      "cases": [
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "361987bc08dcd59fe52336bd15451f7133ade127ddabb0d7953689b3252cf2b8"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "b49f656543866f0bedb19e16f43ae4c92e040ea30593b989afb545cb7c7bfc20"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "02b1a0e20d3a90a1bf124c5d6593d31b1a184e6f8471e00d323ed3557855394f"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "d63c3b3bc659411f1fbb9717f9f81c3b6c05b91bb3ff0d5840127abaf3741ee9"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "b544144dc88f9b5b3a11e066d8bb2e629f154afed7d3e93fa2e21b602271a4ca"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "c1079723652b4b4063981cb2f2fb0a52b23be58b6be2d0e373aaffccf89375e9"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "9570dfcaa743bca4e38c9eafa884eba990787297de2a5d161f6358d34f03625e"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "7be23e7b2be6e103a009e6bab529c804a6f41854444acb7fd6ac8e8e106abd15"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "4d99869fd1714a9e42f29e6e5b27102bdcf97b153671b77536b550806c49ba79"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "0a1ee1ab4d3bf15a0dfa137aa7798940e1a7acca188c257a4978432cb27a4da5"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "a7710bc5d4b401ab964d99d407b9d9998a97c4eec951e70e11d7adbdad44c00a"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "b1a45f4a4dd930726acafec582ee615f57165edb2fb616182c8e6efb819f7e78"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "d708f97ac66c4e21524db4f44b729a0daff2b73e8033dd25445f09c32f748ce0"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "43c4f28ee28dee8ca10efbaba8082104e03a949e5eb1be297d7d5c19f842247e"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "7be23e7b2be6e103a009e6bab529c804a6f41854444acb7fd6ac8e8e106abd15"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "4d99869fd1714a9e42f29e6e5b27102bdcf97b153671b77536b550806c49ba79"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "0a1ee1ab4d3bf15a0dfa137aa7798940e1a7acca188c257a4978432cb27a4da5"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "a7710bc5d4b401ab964d99d407b9d9998a97c4eec951e70e11d7adbdad44c00a"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "b1a45f4a4dd930726acafec582ee615f57165edb2fb616182c8e6efb819f7e78"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "d708f97ac66c4e21524db4f44b729a0daff2b73e8033dd25445f09c32f748ce0"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "e1412d07c01c8a5702aae0b67a01b22428f81358bf3a75ae0343de5d1eca55e8",
+          "originalDataAfterSha256": "43c4f28ee28dee8ca10efbaba8082104e03a949e5eb1be297d7d5c19f842247e"
+        }
+      ]
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "harness": {
+        "file": "physical-logger-gcall-67",
+        "sha256": "8277561f2fa1dd09f9b220922d44d85bd657f30097ffe0fd83bf548fb06d1e8a"
+      },
+      "entries": [
+        {
+          "table": 8201168,
+          "address": 5625776,
+          "size": 42,
+          "bodySha256": "3a5712dbc45aee450d72c7ec90a5ab545aa311e3d29c81472820ea66e6d73695",
+          "scratch": 8665992,
+          "callees": [6475488, 5318576]
+        },
+        {
+          "table": 7417560,
+          "address": 4823648,
+          "size": 42,
+          "bodySha256": "c3def9e3609edad6401b3c97c6c0261830c3ba88533302916bc3f9de25ebabca",
+          "scratch": 8525792,
+          "callees": [6475488, 5318576]
+        },
+        {
+          "table": 7417744,
+          "address": 4823648,
+          "size": 42,
+          "bodySha256": "c3def9e3609edad6401b3c97c6c0261830c3ba88533302916bc3f9de25ebabca",
+          "scratch": 8525792,
+          "callees": [6475488, 5318576]
+        }
+      ],
+      "cases": [
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "ae32e080d8c26a8a6d1c4a99e9ba98309dab2424950fe871328a4d32e865acfa"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "40c8347d5bad2b784ddadd9dc8cda7f4c47918fb6131891c60d3bf54738e624e"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "e73a7993dfb62f9941d264ec5ae5acf6837eaf649f77d403499ad1b5aa0a8eaa"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "4cfec11b4be693c337d67857239873eedb6224884af6925fb13353c069d7d39a"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "505ea260c01f5bd2007eded93fe05052f7356c9d81696cc7c95fec68b96e18e1"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "fd685c30e4af8d6e9f818ebc6ef80dab5eeffbe4a603e32058ab8c6827cdd3ee"
+        },
+        {
+          "table": "generic",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "7155256ff782f38b31b2ae3ca201a55247d4dacb7e1f624f70c4c16c7b5b7b34"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "dcf6ac4cd5709af9ef1656ad6b11f1251203fc056f9fa94597b475ee40b5c092"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "6ae15647a7b15693d15d8d32a3f43dd67c201c74609436e8a5d844de9219b01f"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "89d1604673f42686d921b6a4a96e79db4cb8e6a6e87fc6814b744144b5eccafe"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "a5d927f663fa4158315a5d7e6b806be8d15e312cee782174b002034903aa3017"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "be01ae1288adc01cedc331aaad2cc81df1bc08f6ffe647c14f7b57a189d8a84d"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "b0d3c95481d39f0043e54323412b731e1a0049576f101a80009354ea70df8cf2"
+        },
+        {
+          "table": "particle-v1",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "2f5883d22f36a9db05dc17d829fece54688aabd856e487eaeb6e01065a4c569f"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "plain",
+            "source": "plain auxiliary log",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "logBytes": "cGxhaW4gYXV4aWxpYXJ5IGxvZw==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 19
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "377bcdd4e702b7ab3233d0a14e2d06b9587dc82a131b738e2fedc173c24753aa"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "dcf6ac4cd5709af9ef1656ad6b11f1251203fc056f9fa94597b475ee40b5c092"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "cp932",
+            "source": "\u732b\u306e\u88dc\u52a9\u8868",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "lEyCzJXij5WVXA==",
+          "logBytes": "lEyCzJXij5WVXA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 10
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "89c60447787c2ccb4407020ca75fc92825111ebcc8d4d9628286fc6904317a35"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "6ae15647a7b15693d15d8d32a3f43dd67c201c74609436e8a5d844de9219b01f"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "literal-percent",
+            "source": "a%%%%b",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "YSUlYg==",
+          "logBytes": "YSVi",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 3
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "85e2d7db8b304f51d887fca005b0a897ab3d08bd43f33edc5dcadd03f8cfb6da"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "89d1604673f42686d921b6a4a96e79db4cb8e6a6e87fc6814b744144b5eccafe"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "float",
+            "source": "n=%+.17f[G512]",
+            "word": 1066192077
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "logBytes": "bj0rMS4xMDAwMDAwMjM4NDE4NTc5MA==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 22
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "7076b4a67ac17f57edbe303b824ceb0d977e09dbe2b3314e4743042b62edaa25"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "a5d927f663fa4158315a5d7e6b806be8d15e312cee782174b002034903aa3017"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "tail-argv",
+            "source": "tail%d[G512]",
+            "frame": "tail",
+            "word": 42
+          },
+          "declared": [128, 3735928559, 2139095041],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "dGFpbDQy",
+          "logBytes": "dGFpbDQy",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 6
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "be14edd18a5096965608e9b416b1431d167d53ed708df7f8e38da70654843457"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "be01ae1288adc01cedc331aaad2cc81df1bc08f6ffe647c14f7b57a189d8a84d"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "zero-width-mapped-argv",
+            "source": "mapped%d[G512]",
+            "frame": "mapped",
+            "word": 42
+          },
+          "declared": [],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "bWFwcGVkNDI=",
+          "logBytes": "bWFwcGVkNDI=",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 8
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "2fa144178e0822a7d64c8853d780b6af0cfbe50c7bc5a8e5300ed8a64e233417"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "b0d3c95481d39f0043e54323412b731e1a0049576f101a80009354ea70df8cf2"
+        },
+        {
+          "table": "particle-v2",
+          "rawId": 0,
+          "sharedSemanticId": 0,
+          "input": {
+            "name": "terminated-499",
+            "source": "%499d[G512]",
+            "word": 42
+          },
+          "declared": [128],
+          "argvBase": 4100,
+          "fp": 4096,
+          "control": 2,
+          "result": 3435973836,
+          "dispatcherResult": 0,
+          "sp": 4100,
+          "firstBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "logBytes": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+          "transport": {
+            "calls": 1,
+            "hwnd": 4276945187,
+            "message": 1025,
+            "wParam": 0,
+            "bytes": 499
+          },
+          "lastError": 2351226,
+          "errno": 1835887981,
+          "x87Control": 127,
+          "mxcsr": 8064,
+          "allocator": [0, 0, 0, 0, 0],
+          "continuationCanary": 921397157,
+          "guestBefore": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "guestAfter": {
+            "local": {
+              "bytes": 8192,
+              "sha256": "3949b17174418c984ccd3847e89a8c4f9ebc8564bc3d9a8a7ca0c3dfb0cd53fe"
+            },
+            "shared": {
+              "bytes": 1192,
+              "sha256": "6bed2e98c9d09a9ad81b7adb16801e8e480a53d57a3e5a31e0728a326440fa94"
+            },
+            "block": {
+              "bytes": 32768,
+              "sha256": "e755c415eba1d77c6a3b6de6b486ae16f1a2270d794fc12a1773e18e1ff94b94"
+            }
+          },
+          "nativeOwnerUnchanged": true,
+          "originalDataBeforeSha256": "5e48a18985f032a21e4e04d7246ab2b57fdafb56356a60b883694e2a76b70e24",
+          "originalDataAfterSha256": "2f5883d22f36a9db05dc17d829fece54688aabd856e487eaeb6e01065a4c569f"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,365 @@
+{
+  "scope": "Own real graph-port register/enable/disable/delete and actual initialized aux writes through12 phases per build; no disabled callback invocation, original GPU picture or product timing claim. Unknown raw aux bytes remain only in original captures.",
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-DRAW-PORT-74.json",
+        "sha256": "8b6829456a53c5d593b86cbac34e75df5a6a5a0ed60ed58d4dd474d3c6e8f2a6",
+        "peSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f"
+      },
+      "input": {
+        "width": 2,
+        "height": 1,
+        "count": 3,
+        "programName": "authored.kcs",
+        "textureName": "authored.hg3",
+        "priorityWord": 0,
+        "reloadPriorityWord": 0,
+        "reloadTextureName": "authored.hg3",
+        "rgba": "DTxrAMn4J0A=",
+        "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+        "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+      },
+      "phases": [
+        {
+          "label": "load-first",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 0,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        },
+        {
+          "label": "start-first",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 1,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        },
+        {
+          "label": "idle-first",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "restart-while-active",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "stop",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 0,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "start-after-stop",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "idle-after-restart",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "reload-while-active",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 1,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        },
+        {
+          "label": "idle-after-reload",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "start-after-reload",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "idle-after-reload-start",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "release",
+          "portPresent": false,
+          "enabled": null,
+          "active": 0,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-DRAW-PORT-76.json",
+        "sha256": "9f2e1711806419c1b8d5c931750bfeca53eb929eaa68c631b1ba9aaa915dabbc",
+        "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0"
+      },
+      "input": {
+        "width": 2,
+        "height": 1,
+        "count": 3,
+        "programName": "authored.kcs",
+        "textureName": "authored.hg3",
+        "priorityWord": 0,
+        "reloadPriorityWord": 0,
+        "reloadTextureName": "authored.hg3",
+        "rgba": "DTxrAMn4J0A=",
+        "script": "S0NTAAIAAAACAAAANAAAADsAAABvAAAAAAAAAAAAAAAAEAAAABAAAG8AAAAAAAAAdgAAAHicU1VmYFjgoKrMwPAATBo4aitLMzAwKPMwMDCoKjMwgUgWMMnBxMCgrSwDk7QGANfwBaA=",
+        "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+      },
+      "phases": [
+        {
+          "label": "load-first",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 0,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        },
+        {
+          "label": "start-first",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 1,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        },
+        {
+          "label": "idle-first",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "restart-while-active",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "stop",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 0,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "start-after-stop",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "idle-after-restart",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "reload-while-active",
+          "portPresent": true,
+          "enabled": 0,
+          "active": 1,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        },
+        {
+          "label": "idle-after-reload",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "start-after-reload",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": null
+        },
+        {
+          "label": "idle-after-reload-start",
+          "portPresent": true,
+          "enabled": 1,
+          "active": 1,
+          "known": {
+            "depthPairs": [[0, 24]],
+            "sortIndices": [[0, 12]]
+          },
+          "depthPairs": "AAAwQQAAAAAAADBBAQAAAAAAMEECAAAA",
+          "sortOffsets": [8, 0, 16],
+          "localSha256": "fff97821c3426cbc9848634fd034087a9ced791736024bd3d1277d56b17debfa"
+        },
+        {
+          "label": "release",
+          "portPresent": false,
+          "enabled": null,
+          "active": 0,
+          "known": {
+            "depthPairs": [],
+            "sortIndices": []
+          },
+          "depthPairs": null,
+          "sortOffsets": null,
+          "localSha256": null
+        }
+      ]
+    }
+  ]
+}

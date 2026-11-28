@@ -1,0 +1,2302 @@
+{
+  "scope": "Own modern parsed Script/actualkind1Top→bitmap/HG3/encoded/multiframe→typedDraw COM-memory CPU output→source release/clear/retirement. No physical texture sampling. Explicit finite resource/geometry shapes.",
+  "program": "S0NTAAIAAAAAAAAANAAAACoOAABeDgAAAAAAAAAAAAAAEAAAABAAAF4OAAAAAAAAVBwAAHicnVbNaxNBFJ+drP2AgoUUqdJD4ZmhMLWI7aFgwbUGXDCHgBGK9NDYhLbaJm3S71MFDx48KPgHeLDg0UMPHkSrVuyhaJH+OeLqvsnsvMxuTO1l+PHemze/eV8zGchOXrudgd3d3V0BjDOmsUtwF8E9BPcS3EdwP8EDBA8SfJngIYKHCb5K8BjB4wRPEOwRnCXYJzhHcJ7gAsFTBE8TPENwCfHCUnFOAHNDXK5fWRTgIq5W62UBXYiny5VZAT1KXiqXBPQiHpmfGxXQh5gxxgT0K5taaUGAh7hSrG0JyCIefLCwKsBHvFRcHhSQQ5ytFTcE5Imfgmu47RBuTwi3p4pbvbom4Bni2mx5RMBzxPNzo0zAS+Jnn/g5IH4OiZ8j4ucYcbGy9JfPicuYhCxjrEFwmIXK8+GaVthDk8nQpAdNPBQzFFdDsYviLO4JVwnrRuyjtYtrCpXLobILlTnck2M6QHo15hnIX+0NJKyFm/qjIzKNjgh7QcKGJifhpr6KtqMnrzrRJbCAGyZOtEpYSzb5HQSB9rKebEIJPdQmWqn6tAeVj2ylatY+VNbbU6wZkzFuYr7lRDEft3ZK2HYaMY/YMhZI3N8k9nb2dySs2NZ30Mlj21rFY9O2ruB6H9eS4hZmpddOkI9kX3FNU8Brgt9w0zZvCd7jOq0C3nFNQ8B7nlxL3AQw7f9DK6EeUhsiJemQNWXM27hZtd2cjU3VsdyYQGUwIBI2dVjb9NBpCcey06Z9bLcJ7ePHyjfWPn5ULhJOTC35ZM8It8Q8WiVss6if4pw/cUtJqVyylYMY1g9ONKAmCMNO1SGYBfWGqddLvVt53Bq+rzCgRr2pR3Qg4SKP/Kp3TM3QI9O4U3YS1KzFm0MHKpmZHl4s/G6SUkKHiapnrhLVzM4Ns9p1QrUBCaBy7ISOxyLHEgr6LlpwzlwuT8RdzXaKkYTvJvL4ulO68CsIAgk/nKRZT+0Utc7mUMSoaWsnyZq6iveThLtO9BpR+sd2nJXzC7xJ3IKKhBemPqatCzZKZclEs2DXR7qgE+YhZa9dOg9j6azwpnTajj3vdHWyF3NcNY4L6qTEZCTMqf+tyJSpSPUs1lh0Us4W+LZgyhZY+WpKifq/sZSZRB95NNrwQ5p2U4jR1Ywa4qnQ8LPJNP5WG0p1ha9ESSLUzajh2Xv2i53kbrv15nmrU9kpK+Bn7NSDtqcu2qfix1bCMm/VyM0NQvKwz60+7CZMVlr6a+5G7rTq2vjkSatvzjd7yz17HMbOYmfbKOGWLtLrfwBUKI73",
+  "files": {
+    "images-loose\\encoded.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGO4ynCa9UPSIwAOXAPaeJwT5AAAACwAGg==",
+    "images-loose\\static.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKA==",
+    "images-loose\\source.hg3": "SEctMwwAAAAAAwAAnQAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKAAAAAACAAAAc3RkaW5mbwA4AAAAKAAAAAMAAAACAAAAIAAAAAAAAAAAAAAAAwAAAAIAAAAAAAAAAAAAAAAAAABpbWcwMDAwAAAAAABNAAAAAAAAAAIAAAAgAAAAFwAAABUAAAANAAAAeJyTPnBAM1VV6t8vpnP87I8Pmr/UcHY4cMABAHrhCnZ4nGPkYGCuMTwgzlyzkyEeABDPAyg=",
+    "images-loose\\source.anm": "QU5NAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "phases": [
+    {
+      "label": "normal real bitmap producers and typed Draw"
+    },
+    {
+      "label": "metadata and packed colour changes are consumed by later bitmap operations"
+    },
+    {
+      "label": "existing destination copy, clipped scale, blend and list composite"
+    },
+    {
+      "label": "rotation mirror resize and ordinary attribute/geometry consumers"
+    },
+    {
+      "label": "Draw consumes bitmap references and software raster"
+    },
+    {
+      "label": "display clip refresh and dirty changes reach subsequent raster"
+    },
+    {
+      "label": "encoded replacement survives caller resource and bitmap release"
+    },
+    {
+      "label": "real multiframe source array metadata borrow and retained replacement"
+    },
+    {
+      "label": "array release preserves bound source and later raster"
+    },
+    {
+      "label": "base-image copy, clear and normal retirement"
+    }
+  ],
+  "versions": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "evidence": {
+        "raw": "ORIGINAL-G2BD6-74.json",
+        "sha256": "9c3749c23c666983783250a86d0765c65c127573c31d2df01707f3af9c267dff",
+        "executableSHA256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f"
+      },
+      "rows": [
+        {
+          "index": 0,
+          "label": "normal real bitmap producers and typed Draw",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/"
+              }
+            }
+          ],
+          "outputs": [
+            2, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 1,
+          "label": "metadata and packed colour changes are consumed by later bitmap operations",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 1,
+                  "offsetY": 1,
+                  "alphaHint": 2,
+                  "baseX": -2,
+                  "baseY": 3,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 4278190080,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "/+T/YPfP8C8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 2,
+          "label": "existing destination copy, clipped scale, blend and list composite",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 1,
+                  "offsetY": 1,
+                  "alphaHint": 2,
+                  "baseX": -2,
+                  "baseY": 3,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 4278190080,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "/+T/YPfP8C8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "AQID/wcKDOkoMjx/KDI8fwECA/8OEhbUKDI8fygyPH8BAgP/FBofvygyPH8oMjx/"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 3,
+          "label": "rotation mirror resize and ordinary attribute/geometry consumers",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 1,
+                  "offsetY": 1,
+                  "alphaHint": 2,
+                  "baseX": -2,
+                  "baseY": 3,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 4278190080,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "/+T/YPfP8C8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 3,
+                "height": 3,
+                "pitch": 12,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 2,
+                  "baseY": 2,
+                  "clip": [0, 0, 3, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 16,
+                "readByteLength": 36,
+                "rgba": "AQIDQAECAzABAgMQAQIDvwABAo8AAQIwAQID/wABAr8AAQJA"
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "AQID/wcKDOkoMjx/KDI8fwECA/8OEhbUKDI8fygyPH8BAgP/FBofvygyPH8oMjx/"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 4,
+          "label": "Draw consumes bitmap references and software raster",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwABAgP/BwoM6SgyPH8oMjx/KDI8AAAAAAAAAAAAAQIDAAECA/8OEhbUKDI8fygyPH8oMjwAAAAAAAAAAAABAgMAAQID/xQaH78oMjx/KDI8fygyPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 5,
+          "label": "display clip refresh and dirty changes reach subsequent raster",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAQIDAAECA/8OEhbUKDI8fygyPAAoMjwAAAAAAAAAAAABAgMAAQID/xQaH78oMjx/KDI8ACgyPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 6,
+          "label": "encoded replacement survives caller resource and bitmap release",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAQIDQAECAzABAgMQAAAAAAAAAAAAAAAAAAAAAAAAAAABAgO/AAECjwABAjABAgO0KDI8WigyPAAAAAAAAAAAAAECA/8AAQK/AAECQAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 7,
+          "label": "real multiframe source array metadata borrow and retained replacement",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAQIDQAECAzAeSH3TO2GVaVNxpwBTcacAAAAAAAAAAAABAgO/AAECj2GFrtkKDRLDanye4SgyPAAAAAAAAAAAAAECA/8AAQK/AAECQAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 1, 1, 0, 0
+          ],
+          "sourceRecords": [
+            2, 537261264, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "sourceMetadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 0]
+        },
+        {
+          "index": 8,
+          "label": "array release preserves bound source and later raster",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAAAAAB9JfwAfSX/SO2GVaVNxpwBTcacAAAAAAAAAAAAAAAAAZYu1AGWLtdIKDRLDanye4SgyPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 1, 1, 0, 0
+          ],
+          "sourceRecords": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ],
+          "sourceMetadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 0]
+        },
+        {
+          "index": 9,
+          "label": "base-image copy, clear and normal retirement",
+          "bitmaps": [],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 1, 1, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        }
+      ],
+      "calls": [
+        {
+          "phase": 0,
+          "id": 68,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 66,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 111,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 118,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 112,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 117,
+          "control": 2
+        },
+        {
+          "phase": 0,
+          "id": 119,
+          "control": 2
+        },
+        {
+          "phase": 0,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 1,
+          "id": 372,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 373,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 374,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 362,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 363,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 371,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 370,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 377,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 378,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 564,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 369,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 641,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 376,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 121,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 2,
+          "id": 115,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 116,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 367,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 120,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 116,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 3,
+          "id": 372,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 373,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 374,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 468,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 558,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 122,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 705,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 538,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 446,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 536,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 537,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 460,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 4,
+          "id": 256,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 260,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 262,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 257,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 261,
+          "control": 1
+        },
+        {
+          "phase": 4,
+          "id": 264,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 462,
+          "control": 1
+        },
+        {
+          "phase": 4,
+          "id": 463,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 5,
+          "id": 263,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 263,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 339,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 464,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 534,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 657,
+          "control": 1
+        },
+        {
+          "phase": 5,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 6,
+          "id": 365,
+          "control": 1
+        },
+        {
+          "phase": 6,
+          "id": 622,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 623,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 366,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 259,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 7,
+          "id": 703,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 706,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 709,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 707,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 462,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 708,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 462,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 624,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 8,
+          "id": 704,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 625,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 258,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 9,
+          "id": 455,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 341,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 455,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 341,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 67,
+          "control": 2
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "evidence": {
+        "raw": "ORIGINAL-G2BD6-76.json",
+        "sha256": "4a57a71a2ed7824b3f6765eac54732ab28eb4ad3e8d9c53b7acced020039a896",
+        "executableSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0"
+      },
+      "rows": [
+        {
+          "index": 0,
+          "label": "normal real bitmap producers and typed Draw",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/"
+              }
+            }
+          ],
+          "outputs": [
+            2, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 1,
+          "label": "metadata and packed colour changes are consumed by later bitmap operations",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 1,
+                  "offsetY": 1,
+                  "alphaHint": 2,
+                  "baseX": -2,
+                  "baseY": 3,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 4278190080,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "/+T/YPfP8C8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/EDBQ/xAwUP8QMFD/"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 2,
+          "label": "existing destination copy, clipped scale, blend and list composite",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 1,
+                  "offsetY": 1,
+                  "alphaHint": 2,
+                  "baseX": -2,
+                  "baseY": 3,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 4278190080,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "/+T/YPfP8C8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 2,
+                  "canvasHeight": 1,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "AQID/ygyPH8="
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "AQID/wcKDOkoMjx/KDI8fwECA/8OEhbUKDI8fygyPH8BAgP/FBofvygyPH8oMjx/"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 3,
+          "label": "rotation mirror resize and ordinary attribute/geometry consumers",
+          "bitmaps": [
+            {
+              "slot": 68,
+              "bitmap": {
+                "width": 2,
+                "height": 1,
+                "pitch": 8,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 1,
+                  "offsetY": 1,
+                  "alphaHint": 2,
+                  "baseX": -2,
+                  "baseY": 3,
+                  "clip": [0, 0, 2, 1],
+                  "mask": 4278190080,
+                  "blendType": 0
+                },
+                "cachedByteLength": 8,
+                "readByteLength": 8,
+                "rgba": "/+T/YPfP8C8="
+              }
+            },
+            {
+              "slot": 72,
+              "bitmap": {
+                "width": 3,
+                "height": 3,
+                "pitch": 12,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 4,
+                  "canvasHeight": 3,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 1,
+                  "baseX": 2,
+                  "baseY": 2,
+                  "clip": [0, 0, 3, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 16,
+                "readByteLength": 36,
+                "rgba": "AQIDQAECAzABAgMQAQIDvwABAo8AAQIwAQID/wABAr8AAQJA"
+              }
+            },
+            {
+              "slot": 76,
+              "bitmap": {
+                "width": 4,
+                "height": 3,
+                "pitch": 16,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 4, 3],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 48,
+                "readByteLength": 48,
+                "rgba": "AQID/wcKDOkoMjx/KDI8fwECA/8OEhbUKDI8fygyPH8BAgP/FBofvygyPH8oMjx/"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 2779096485, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 4,
+          "label": "Draw consumes bitmap references and software raster",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwABAgP/BwoM6SgyPH8oMjx/KDI8AAAAAAAAAAAAAQIDAAECA/8OEhbUKDI8fygyPH8oMjwAAAAAAAAAAAABAgMAAQID/xQaH78oMjx/KDI8fygyPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 5,
+          "label": "display clip refresh and dirty changes reach subsequent raster",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAQIDAAECA/8OEhbUKDI8fygyPAAoMjwAAAAAAAAAAAABAgMAAQID/xQaH78oMjx/KDI8ACgyPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 6,
+          "label": "encoded replacement survives caller resource and bitmap release",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAQIDQAECAzABAgMQAAAAAAAAAAAAAAAAAAAAAAAAAAABAgO/AAECjwABAjABAgO0KDI8WigyPAAAAAAAAAAAAAECA/8AAQK/AAECQAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 2779096485, 2779096485, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        },
+        {
+          "index": 7,
+          "label": "real multiframe source array metadata borrow and retained replacement",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAQIDQAECAzAeSH3TO2GVaVNxpwBTcacAAAAAAAAAAAABAgO/AAECj2GFrtkKDRLDanye4SgyPAAAAAAAAAAAAAECA/8AAQK/AAECQAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 1, 1, 0, 0
+          ],
+          "sourceRecords": [
+            2, 537361728, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "sourceMetadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 0]
+        },
+        {
+          "index": 8,
+          "label": "array release preserves bound source and later raster",
+          "bitmaps": [
+            {
+              "slot": 80,
+              "bitmap": {
+                "width": 8,
+                "height": 6,
+                "pitch": 32,
+                "bpp": 4,
+                "metadata": {
+                  "canvasWidth": 0,
+                  "canvasHeight": 0,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "alphaHint": 0,
+                  "baseX": 0,
+                  "baseY": 0,
+                  "clip": [0, 0, 8, 6],
+                  "mask": 0,
+                  "blendType": 0
+                },
+                "cachedByteLength": 192,
+                "readByteLength": 192,
+                "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAwAAAAAAAAAAAAAAAAAAAAAAKDI8AAAAAAAAAAAAAAAAAB9JfwAfSX/SO2GVaVNxpwBTcacAAAAAAAAAAAAAAAAAZYu1AGWLtdIKDRLDanye4SgyPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              }
+            }
+          ],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 1, 1, 0, 0
+          ],
+          "sourceRecords": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ],
+          "sourceMetadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 0]
+        },
+        {
+          "index": 9,
+          "label": "base-image copy, clear and normal retirement",
+          "bitmaps": [],
+          "outputs": [
+            4, 3, 1, 1, 4294967294, 3, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 1, 255, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 0,
+            1, 7, 1, 1, 0, 0
+          ],
+          "sourceRecords": null,
+          "sourceMetadata": null
+        }
+      ],
+      "calls": [
+        {
+          "phase": 0,
+          "id": 68,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 66,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 111,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 118,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 112,
+          "control": 1
+        },
+        {
+          "phase": 0,
+          "id": 117,
+          "control": 2
+        },
+        {
+          "phase": 0,
+          "id": 119,
+          "control": 2
+        },
+        {
+          "phase": 0,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 1,
+          "id": 372,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 373,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 374,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 362,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 363,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 371,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 370,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 377,
+          "control": 1
+        },
+        {
+          "phase": 1,
+          "id": 378,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 564,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 369,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 641,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 376,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 121,
+          "control": 2
+        },
+        {
+          "phase": 1,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 2,
+          "id": 115,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 116,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 367,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 120,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 116,
+          "control": 2
+        },
+        {
+          "phase": 2,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 3,
+          "id": 372,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 373,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 374,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 468,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 558,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 122,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 705,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 538,
+          "control": 2
+        },
+        {
+          "phase": 3,
+          "id": 446,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 536,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 537,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 460,
+          "control": 1
+        },
+        {
+          "phase": 3,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 4,
+          "id": 256,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 260,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 262,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 257,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 261,
+          "control": 1
+        },
+        {
+          "phase": 4,
+          "id": 264,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 462,
+          "control": 1
+        },
+        {
+          "phase": 4,
+          "id": 463,
+          "control": 2
+        },
+        {
+          "phase": 4,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 5,
+          "id": 263,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 263,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 339,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 464,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 534,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 5,
+          "id": 657,
+          "control": 1
+        },
+        {
+          "phase": 5,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 6,
+          "id": 365,
+          "control": 1
+        },
+        {
+          "phase": 6,
+          "id": 622,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 623,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 366,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 259,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 114,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 6,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 7,
+          "id": 703,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 706,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 709,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 707,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 462,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 708,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 462,
+          "control": 1
+        },
+        {
+          "phase": 7,
+          "id": 624,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 7,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 8,
+          "id": 704,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 625,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 258,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 8,
+          "id": 65,
+          "control": 4
+        },
+        {
+          "phase": 9,
+          "id": 455,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 341,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 455,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 341,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 340,
+          "control": 2
+        },
+        {
+          "phase": 9,
+          "id": 67,
+          "control": 2
+        }
+      ]
+    }
+  ],
+  "dirtyRegionControl": {
+    "program": "S0NTAAIAAAAAAAAANAAAAHwDAACwAwAAAAAAAAAAAAAAEAAAABAAALADAAAAAAAA+AYAAHicrVI9awJBFHznXSSFkMImpTDsazaNks4im2TBFBYiBtKGeKggJlyUkM7/kT/jT/GfJOy77LGnp4XYDMO82XkfrMLQdnoK41m2ZJiESOG7laUMK/xt+bpgPAmfzNMWoy/8/WuRMgbCs8/pjDES/kFEjJeESMMSEUiEG3LFK4fNnBuxPDhLQyxGioK4FKyTs1D0b/FFKlAjqSpq1J2ch0QFahlOZJbZVNPuBIZ2hZ9Ve62xco+ugxZR1VNTjvG4vvP4GwTnQ0ZuyNsguFYKNuZswXEpeHOuYI2RE5JAuPACYyDCvf8D1dfLu50yS3x8ye3JS8YHl9zbRuN59wB7F3mkQrAiZF7o/gE7dVOs",
+    "evidence": {
+      "raw": "ORIGINAL-G2DIRTY2-74.json",
+      "sha256": "442b1776459fcda0cd3303231029a9236ee96d698b1f7198b6cbec4dc8e7e8aa",
+      "scope": "Own74 actualrenderer8x6,bpp4,split1,onebucket: originaldirtyrect0,2,8,3; middleentry unchanged atalpha128. Exact76 same scalar renderer/constructor context joined to its full G2 original chain; legacy alpha/consumer bridge only, transparentRGBdifferences remain."
+    },
+    "rgba": [
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMXWbgDF1mwAxdZsAMXWbgDF1mwAxdZsAMXWbgDF1mwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMXWbADF1m4AxdZsAMXWbgDF1mwAAAAAAMXWbADF1m4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    ],
+    "phases": [
+      {
+        "label": "three separated translucent bitmap entries",
+        "calls": [
+          {
+            "id": 68,
+            "args": [],
+            "out": 44
+          },
+          {
+            "id": 66,
+            "args": [15, [19, 44], 1088],
+            "out": 64
+          },
+          {
+            "id": 256,
+            "args": [[19, 64], 8, 6],
+            "out": null
+          },
+          {
+            "id": 260,
+            "args": [[19, 64], 0, 0],
+            "out": null
+          },
+          {
+            "id": 262,
+            "args": [[19, 64], 0],
+            "out": null
+          },
+          {
+            "id": 112,
+            "args": [1, 1],
+            "out": 68
+          },
+          {
+            "id": 117,
+            "args": [[19, 68], 0, 0, 1, 1, 2150725019],
+            "out": null
+          },
+          {
+            "id": 257,
+            "args": [
+              [19, 64],
+              1,
+              [19, 68],
+              0,
+              1073741824,
+              0,
+              0,
+              0,
+              1065353216,
+              1065353216,
+              255,
+              1,
+              0
+            ],
+            "out": null
+          },
+          {
+            "id": 257,
+            "args": [
+              [19, 64],
+              2,
+              [19, 68],
+              1077936128,
+              1073741824,
+              0,
+              0,
+              0,
+              1065353216,
+              1065353216,
+              255,
+              1,
+              0
+            ],
+            "out": null
+          },
+          {
+            "id": 257,
+            "args": [
+              [19, 64],
+              3,
+              [19, 68],
+              1086324736,
+              1073741824,
+              0,
+              0,
+              0,
+              1065353216,
+              1065353216,
+              255,
+              1,
+              0
+            ],
+            "out": null
+          },
+          {
+            "id": 340,
+            "args": [[19, 64]],
+            "out": null
+          },
+          {
+            "id": 261,
+            "args": [[19, 64]],
+            "out": 80
+          }
+        ]
+      },
+      {
+        "label": "two separated dirty updates preserve the unchanged middle entry",
+        "calls": [
+          {
+            "id": 259,
+            "args": [
+              [19, 64],
+              1,
+              [19, 68],
+              1065353216,
+              1073741824,
+              0,
+              0,
+              0,
+              1065353216,
+              1065353216,
+              255,
+              1,
+              0
+            ],
+            "out": null
+          },
+          {
+            "id": 259,
+            "args": [
+              [19, 64],
+              3,
+              [19, 68],
+              1088421888,
+              1073741824,
+              0,
+              0,
+              0,
+              1065353216,
+              1065353216,
+              255,
+              1,
+              0
+            ],
+            "out": null
+          },
+          {
+            "id": 340,
+            "args": [[19, 64]],
+            "out": null
+          }
+        ]
+      },
+      {
+        "label": "normal clear and retirement",
+        "calls": [
+          {
+            "id": 341,
+            "args": [[19, 64]],
+            "out": null
+          },
+          {
+            "id": 340,
+            "args": [[19, 64]],
+            "out": null
+          },
+          {
+            "id": 67,
+            "args": [[19, 64]],
+            "out": null
+          },
+          {
+            "id": 114,
+            "args": [[19, 68]],
+            "out": null
+          }
+        ]
+      }
+    ]
+  }
+}

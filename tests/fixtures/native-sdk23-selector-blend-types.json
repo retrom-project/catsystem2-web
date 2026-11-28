@@ -1,0 +1,199 @@
+{
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "producerSha256": "786821c0212fbdda4e357e7af227e4ef252f31bb45798a2abafd5d53f37e8988",
+  "helperSha256": "0b4fb98b0b02e4fcefe0e17e364db59c0add90ca2075358f87b8c4d0bef82294",
+  "resources": [
+    {
+      "name": "a_1.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEoAAAAAAAAAAgAAACEAAAAYAAAAEQAAAA0AAAB4nJM+cGDlU1XuX8+YzvEZ3PujdEW8pv7//v32AJ4mDOZ4nGPkYGCuMTwgDiYAEG8DGA==",
+      "sha256": "f77a0477938dbefddc93eb2b7d284b38556cf38ecc56498ecbc0964fb599a6a3"
+    },
+    {
+      "name": "a_02.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAXQAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKGNwdHlwZQAAAAAAAAQAAAABAAAA",
+      "sha256": "0e916a7db48dee7c4f62b495cdff10049fc29ebf618bd0682cb03474c9f8fa6a"
+    },
+    {
+      "name": "b_1.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEoAAAAAAAAAAgAAACEAAAAYAAAAEQAAAA0AAAB4nJM+cGDlU1XuX8+YzvEZ3PujdEW8pv7//v32AJ4mDOZ4nGPkYGCuMTwgDiYAEG8DGA==",
+      "sha256": "f77a0477938dbefddc93eb2b7d284b38556cf38ecc56498ecbc0964fb599a6a3"
+    },
+    {
+      "name": "b_02.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAXQAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKGNwdHlwZQAAAAAAAAQAAAACAAAA",
+      "sha256": "6106d6edd019b4fb881bcb899461e3d9e59318c77c708d5e4fc4d4b6251241e0"
+    },
+    {
+      "name": "c_1.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEoAAAAAAAAAAgAAACEAAAAYAAAAEQAAAA0AAAB4nJM+cGDlU1XuX8+YzvEZ3PujdEW8pv7//v32AJ4mDOZ4nGPkYGCuMTwgDiYAEG8DGA==",
+      "sha256": "f77a0477938dbefddc93eb2b7d284b38556cf38ecc56498ecbc0964fb599a6a3"
+    },
+    {
+      "name": "c_02.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAXQAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKGNwdHlwZQAAAAAAAAQAAAADAAAA",
+      "sha256": "29b1a23c3df93a0e75821d399c60e0775e1206a872661705a4bf53dab5eef9c6"
+    },
+    {
+      "name": "d_1.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEoAAAAAAAAAAgAAACEAAAAYAAAAEQAAAA0AAAB4nJM+cGDlU1XuX8+YzvEZ3PujdEW8pv7//v32AJ4mDOZ4nGPkYGCuMTwgDiYAEG8DGA==",
+      "sha256": "f77a0477938dbefddc93eb2b7d284b38556cf38ecc56498ecbc0964fb599a6a3"
+    },
+    {
+      "name": "d_02.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAXQAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKGNwdHlwZQAAAAAAAAQAAAAEAAAA",
+      "sha256": "02f9542ccf2ed1b2c5a5e1881803e0c8c899f2b6584f48d835e8954160e04ee2"
+    },
+    {
+      "name": "e_1.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEoAAAAAAAAAAgAAACEAAAAYAAAAEQAAAA0AAAB4nJM+cGDlU1XuX8+YzvEZ3PujdEW8pv7//v32AJ4mDOZ4nGPkYGCuMTwgDiYAEG8DGA==",
+      "sha256": "f77a0477938dbefddc93eb2b7d284b38556cf38ecc56498ecbc0964fb599a6a3"
+    },
+    {
+      "name": "e_02.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAXQAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKGNwdHlwZQAAAAAAAAQAAAAFAAAA",
+      "sha256": "5838f4813e9bc821e513fcfc5191e0626f926d2d23f1dc6d22cff686d202b489"
+    },
+    {
+      "name": "f_1.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEoAAAAAAAAAAgAAACEAAAAYAAAAEQAAAA0AAAB4nJM+cGDlU1XuX8+YzvEZ3PujdEW8pv7//v32AJ4mDOZ4nGPkYGCuMTwgDiYAEG8DGA==",
+      "sha256": "f77a0477938dbefddc93eb2b7d284b38556cf38ecc56498ecbc0964fb599a6a3"
+    },
+    {
+      "name": "f_02.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAYAAAAAAAAAAAAAAADAAAAAgAAAAEAAAAAAAAAAAAAAGltZzAwMDAAVAAAAEQAAAAAAAAAAgAAABcAAAAPAAAAFQAAAA0AAAB4nONeksq5fT33OebPEnc0ubQALycFpHicY+Q4wFYTfMCctYb9DzMAGo0EHWNwdHlwZQAAAAAAAAQAAAADAAAA",
+      "sha256": "e58c638c72bed735a01c41dcd64511d413bb402148351206e46b3b1702b58da0"
+    }
+  ],
+  "queries": ["a,1,2.hg3", "b,1,2.hg3", "c,1,2.hg3", "d,1,2.hg3", "e,1,2.hg3", "f,1,2.hg3"],
+  "scope": "Valid authored HG3 ordinary Main460 two-selector composite. Five cptype RGBA modes and defined no-dispatch cptype RGB source, all with normal explicit release and unchanged Script automatic list. Real platform/view/file/Script construction, original text intact and no GPU/OS desktop action.",
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/draw16-20261127/ORIGINAL-SELECTOR-BLEND-TYPES.json",
+  "originalReceiptSha256": "014d436f8a6ee634105bf4671f2f8351cc498ae126d568c0819ef4338b25f887",
+  "rows": [
+    {
+      "id": 460,
+      "args": [512],
+      "name": "a,1,2.hg3",
+      "resultAddress": 48,
+      "result": 537130864,
+      "list": 0,
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "9vb2/6Ojo8EAAAAAiKXE/5aAYP+WrN7/",
+        "dataReferences": 1
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 48]],
+      "name": "a,1,2.hg3",
+      "resultAddress": null,
+      "result": null,
+      "list": 0
+    },
+    {
+      "id": 460,
+      "args": [640],
+      "name": "b,1,2.hg3",
+      "resultAddress": 48,
+      "result": 537130864,
+      "list": 0,
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "GjE7/2BkZMEAAAAAWXaS/2hQLf+WrN7/",
+        "dataReferences": 1
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 48]],
+      "name": "b,1,2.hg3",
+      "resultAddress": null,
+      "result": null,
+      "list": 0
+    },
+    {
+      "id": 460,
+      "args": [768],
+      "name": "c,1,2.hg3",
+      "resultAddress": 48,
+      "result": 537130864,
+      "list": 0,
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "28S6/5SQkMEAAAAAepa5/4hyV/+WrN7/",
+        "dataReferences": 1
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 48]],
+      "name": "c,1,2.hg3",
+      "resultAddress": null,
+      "result": null,
+      "list": 0
+    },
+    {
+      "id": 460,
+      "args": [896],
+      "name": "d,1,2.hg3",
+      "resultAddress": 48,
+      "result": 537130864,
+      "list": 0,
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "uox2/4R7d8EAAAAAaoWe/3deNv+WrN7/",
+        "dataReferences": 1
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 48]],
+      "name": "d,1,2.hg3",
+      "resultAddress": null,
+      "result": null,
+      "list": 0
+    },
+    {
+      "id": 460,
+      "args": [1024],
+      "name": "e,1,2.hg3",
+      "resultAddress": 48,
+      "result": 537130864,
+      "list": 0,
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "yeTu/5ufocEAAAAAhaPD/5R/YP+WrN7/",
+        "dataReferences": 1
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 48]],
+      "name": "e,1,2.hg3",
+      "resultAddress": null,
+      "result": null,
+      "list": 0
+    },
+    {
+      "id": 460,
+      "args": [1152],
+      "name": "f,1,2.hg3",
+      "resultAddress": 48,
+      "result": 537130864,
+      "list": 0,
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "2K54/7yWYoAAAAAAkmxCQHhaMP8AAAAA",
+        "dataReferences": 1
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 48]],
+      "name": "f,1,2.hg3",
+      "resultAddress": null,
+      "result": null,
+      "list": 0
+    }
+  ]
+}

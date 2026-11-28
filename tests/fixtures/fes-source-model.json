@@ -1,0 +1,202 @@
+{
+  "source": "Independent original source-method captures; 74 preprocessing has complete bounded-function equivalence, while literal emission was captured directly in both engines.",
+  "normalization": [
+    {
+      "label": "quoted-spaces-tabs",
+      "input": "#START\nobj str \"a  b\t c\"\n",
+      "lines": ["#START", "obj str \"a b c\""]
+    },
+    {
+      "label": "quoted-line-comment",
+      "input": "#START\nobj str \"http://example\"\n",
+      "lines": ["#START", "obj str \"http:"]
+    },
+    {
+      "label": "quoted-block-comment",
+      "input": "#START\nobj str \"a/*x*/b\"\n",
+      "lines": ["#START", "obj str \"ab\""]
+    },
+    {
+      "label": "parenthesis-spaces",
+      "input": "#START\nobj pos (1 + (2 * 3)) 7\nobj str (:a  b)\n",
+      "lines": ["#START", "obj pos (1+(2*3)) 7", "obj str (:ab)"]
+    },
+    {
+      "label": "quoted-parenthesis",
+      "input": "#START\nobj str \"a ( b ) c\"\n",
+      "lines": ["#START", "obj str \"a (b) c\""]
+    },
+    {
+      "label": "bare-block-adjacency",
+      "input": "#START\nobj str a/*x*/b\n",
+      "lines": ["#START", "obj str ab"]
+    },
+    {
+      "label": "mixed-line-endings",
+      "input": "#START\robj enable 1\r\nobj disp 0\n",
+      "lines": ["#START", "obj enable 1", "obj disp 0"]
+    },
+    {
+      "label": "negative-depth",
+      "input": "#START\nobj str ) ( a b ) c\n",
+      "lines": ["#START", "obj str ) ( a b ) c"]
+    },
+    {
+      "label": "negative-depth-nested",
+      "input": "#START\nobj str ) (( a b )) c\n",
+      "lines": ["#START", "obj str ) ((ab)) c"]
+    },
+    {
+      "label": "if-leading-no-space",
+      "input": "#START\nif(1) obj enable 1\n",
+      "lines": ["#START", "if (1)", "obj enable 1", "endif"]
+    },
+    {
+      "label": "if-in-quoted-phrase-first-only",
+      "input": "#START\nobj str \"prefix if(1) if(2)\"\n",
+      "lines": ["#START", "obj str \"prefix if (1) if(2)\""]
+    },
+    {
+      "label": "if-at-quoted-string-start",
+      "input": "#START\nobj str \"if(1) tail\"\n",
+      "lines": ["#START", "obj str \"if(1) tail\""]
+    },
+    {
+      "label": "inline-nested-no-spaces",
+      "input": "#START\nif(1) if(0) obj enable 1\n",
+      "lines": ["#START", "if (1)", "if(0) obj", "enable 1", "endif", "endif"]
+    },
+    {
+      "label": "inline-nested-spaces",
+      "input": "#START\nif (1) if (0) obj enable 1\n",
+      "lines": ["#START", "if (1)", "if (0)", "obj enable 1", "endif", "endif"]
+    },
+    {
+      "label": "nested-condition-groups",
+      "input": "#START\nif ((1+2) && (3==3)) obj enable 1\n",
+      "lines": ["#START", "if ((1+2)&&(3==3))", "obj enable 1", "endif"]
+    },
+    {
+      "label": "inline-else",
+      "input": "#START\nelse obj enable 0\n",
+      "lines": ["#START", "else", "obj enable 0", "endif"]
+    },
+    {
+      "label": "inline-if-else-same-line",
+      "input": "#START\nif(1) obj enable 1 else obj disp 0\n",
+      "lines": ["#START", "if (1)", "obj enable 1 else obj disp 0", "endif"]
+    },
+    {
+      "label": "else-if-tail",
+      "input": "#START\nif (0)\nobj enable 1\nelse if (1) obj disp 0\nendif\n",
+      "lines": [
+        "#START",
+        "if (0)",
+        "obj enable 1",
+        "else",
+        "if (1)",
+        "obj disp 0",
+        "endif",
+        "endif",
+        "endif"
+      ]
+    },
+    {
+      "label": "unquoted-braces",
+      "input": "#START\nif (1) { obj enable 1 }\n",
+      "lines": ["#START", "if (1)", "{ obj enable 1 }", "endif"]
+    },
+    {
+      "label": "quoted-braces-and-else",
+      "input": "#START\nif (1) obj str \"{a} else {b}\"\n",
+      "lines": ["#START", "if (1)", "obj str \"{a} else {b}\"", "endif"]
+    },
+    {
+      "label": "uppercase-if-spaced",
+      "input": "#START\nIF (1) obj enable 1\n",
+      "lines": ["#START", "IF (1)", "obj enable 1", "endif"]
+    }
+  ],
+  "macros": [
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd A \"A\" AB",
+      "output": "cmd B \"A\" AB"
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd \"a\\\"b A\" A",
+      "output": "cmd \"a\\\"b A\" B"
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd 0x000a 1.00 0012 A",
+      "output": "cmd 0x000a 1.00 0012 B"
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd NAME ALIAS \"NAME\" NAME2",
+      "output": "cmd ALIAS other \"NAME\" NAME2"
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd 10 0010 0x000a +0 -0 1.00 +1.0 1e+2 0X0A NAME",
+      "output": "cmd 10 0010 0x000a +0 -0 1.00 +1.0 1e+2 0X0A ALIAS"
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd 'A' '\\n' '\\x41' '\\'' NAME",
+      "output": "cmd 'A' '\\n' '\\x41' '\\'' ALIAS"
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd \"NAME\" NAME",
+      "output": "cmd \"NAME\" ALIAS"
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "input": "cmd \"a\\\\b\\n\\t\" NAME",
+      "output": "cmd \"a\\\\b\\n\\t\" ALIAS"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd A \"A\" AB",
+      "output": "cmd B \"A\" AB"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd \"a\\\"b A\" A",
+      "output": "cmd \"a\"b A\" B"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd 0x000a 1.00 0012 A",
+      "output": "cmd 0x000a 1.00 0012 B"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd NAME ALIAS \"NAME\" NAME2",
+      "output": "cmd ALIAS other \"NAME\" NAME2"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd 10 0010 0x000a +0 -0 1.00 +1.0 1e+2 0X0A NAME",
+      "output": "cmd 10 0010 0x000a +0 -0 1.00 +1.0 1e+2 0X0A ALIAS"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd 'A' '\\n' '\\x41' '\\'' NAME",
+      "output": "cmd ''A'' ''\\n'' ''\\x41'' ''\\''' ALIAS"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd \"NAME\" NAME",
+      "output": "cmd \"NAME\" ALIAS"
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "input": "cmd \"a\\\\b\\n\\t\" NAME",
+      "output": "cmd \"a\\\\b\\n\\t\" ALIAS"
+    }
+  ]
+}

@@ -1,0 +1,2922 @@
+{
+  "scope": "Authored narrow-format fixtures. Expected raw VM formatter bytes are independently equal in five own physical builds. Generic logger secondary formatting and its host gate/500-byte sink are separate contracts. Original native bytes and full memory/control observations remain in hash-linked ignored receipts; these fixtures contain no PE code.",
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "executableSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "original": {
+        "path": "ORIGINAL-PHYSICAL-FORMAT-74.json",
+        "sha256": "807dd9909c2881af4c1498fd2e1093a1d4fb29ddff36c6df7535444d179a6b9c",
+        "bytes": 12153091
+      },
+      "fieldOriginal": {
+        "path": "ORIGINAL-FORMAT-FIELDS-74.json",
+        "sha256": "907ee380cea1a02ec27188d890f0b4e785f5ef03e807ad4f58968e8eab4a2f18",
+        "bytes": 983256
+      }
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "executableSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "original": {
+        "path": "ORIGINAL-PHYSICAL-FORMAT-76.json",
+        "sha256": "adfdaf4c369901fc727f2477a3079f56f29f98652b1c1a500170e6e8e86683ca",
+        "bytes": 12153096
+      },
+      "fieldOriginal": {
+        "path": "ORIGINAL-FORMAT-FIELDS-76.json",
+        "sha256": "14d9b6f7c22f70a06c7a53d4c9e50df5b3b353999ec02c56de56402fc3d4c628",
+        "bytes": 983261
+      }
+    },
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "original": {
+        "path": "ORIGINAL-PHYSICAL-FORMAT-23.json",
+        "sha256": "5188dc7ff807df99ee24c9865142be15abb3052d5ef9cae4c6fea19999beb05d",
+        "bytes": 12153866
+      },
+      "fieldOriginal": {
+        "path": "ORIGINAL-FORMAT-FIELDS-23.json",
+        "sha256": "4573ebf1655fd4f04123c4141418b1a3ec5188e383c97d1d98a31b57d77cf297",
+        "bytes": 983258
+      }
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "original": {
+        "path": "ORIGINAL-PHYSICAL-FORMAT-63.json",
+        "sha256": "911917d0db87f4f04beab5050e79941169c4fb2195c2ef16801a25058beecf7d",
+        "bytes": 12153869
+      },
+      "fieldOriginal": {
+        "path": "ORIGINAL-FORMAT-FIELDS-63.json",
+        "sha256": "8ac398b2ec6a4d12d9282e751dddc17487b44ed26475f9018348c3466aa8997e",
+        "bytes": 983261
+      }
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "original": {
+        "path": "ORIGINAL-PHYSICAL-FORMAT-67.json",
+        "sha256": "b99018ce8934d14b2aad085d7c7a0c4648967f2293c7ba69a0edd2d012959a6c",
+        "bytes": 12153790
+      },
+      "fieldOriginal": {
+        "path": "ORIGINAL-FORMAT-FIELDS-67.json",
+        "sha256": "2d6e2eb15d313e02b0dee2368544a6832eba291206adf9365dc8994f0489656e",
+        "bytes": 983256
+      }
+    }
+  ],
+  "cases": [
+    {
+      "name": "empty",
+      "source": "",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "",
+      "expectedBytes": 0
+    },
+    {
+      "name": "plain",
+      "source": "aGVsbG8gbmF0aXZl",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "aGVsbG8gbmF0aXZl",
+      "expectedBytes": 12
+    },
+    {
+      "name": "cp932",
+      "source": "k/qWe4zqgsaRU4pw",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "k/qWe4zqgsaRU4pw",
+      "expectedBytes": 12
+    },
+    {
+      "name": "literal-percent-twice",
+      "source": "YSUlJSVi",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSUlYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "signed",
+      "source": "YSVkW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xOTg1MjI5MzI5Yg==",
+      "expectedBytes": 13
+    },
+    {
+      "name": "signed-plus-zero",
+      "source": "YSUrMDEyZFtHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4294967254,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0wMDAwMDAwMDA0MmI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "integer-precision",
+      "source": "YSUxMi44aVtHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAwMDAwMDA0MmI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "unsigned",
+      "source": "YSV1W0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4294967295,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTQyOTQ5NjcyOTVi",
+      "expectedBytes": 12
+    },
+    {
+      "name": "octal",
+      "source": "YSUjb1tHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4294967295,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAzNzc3Nzc3Nzc3N2I=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "octal-zero",
+      "source": "YSUjLjBvW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTBi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "hex",
+      "source": "YSUjMDEyWFtHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTBYMDA4OUFCQ0RFRmI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "pointer",
+      "source": "YSVwW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 305441741,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEyMzRBQkNEYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "char",
+      "source": "YSVjW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 65,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YUFi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "short",
+      "source": "YSVoZFtHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 305463295,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "long",
+      "source": "YSVsZFtHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xOTg1MjI5MzI5Yg==",
+      "expectedBytes": 13
+    },
+    {
+      "name": "upperF",
+      "source": "YSUrMTIuM0ZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1067450368,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YWI=",
+      "expectedBytes": 2
+    },
+    {
+      "name": "float-positive",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1067450368,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLjI1MDAwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-negative",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 3214934016,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLjI1MDAwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-positive-zero",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSswLjAwMDAwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-negative-zero",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2147483648,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0wLjAwMDAwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-max-finite",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSszNDAyODIzNDY2Mzg1Mjg4NjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAuMDAwMDAwYg==",
+      "expectedBytes": 49
+    },
+    {
+      "name": "float-min-subnormal",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSswLjAwMDAwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-infinity",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNJTkYwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-negative-infinity",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkYwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-quiet-nan",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNRTkFOMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-negative-quiet-nan",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290847557,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNRTkFOMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "float-signaling-nan",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139169605,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNRTkFOMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "precision-0-1075838976",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1075838976,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTNi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "precision-0-1069547520",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1069547520,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTJi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "precision-1-1067450368",
+      "source": "YSUuMWZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1067450368,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuM2I=",
+      "expectedBytes": 5
+    },
+    {
+      "name": "precision-6-1067320913",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1067320913,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMjM0NTY4Yg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "precision-17-1066192077",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1066192077,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMTAwMDAwMDIzODQxODU3OTBi",
+      "expectedBytes": 21
+    },
+    {
+      "name": "precision-50-1",
+      "source": "YSUuNTBmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAxNDAxMzBi",
+      "expectedBytes": 54
+    },
+    {
+      "name": "precision-101-1066192077",
+      "source": "YSUuMTAxZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1066192077,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMTAwMDAwMDIzODQxODU3OTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBi",
+      "expectedBytes": 105
+    },
+    {
+      "name": "precision-200-2139095039",
+      "source": "YSUuMjAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTM0MDI4MjM0NjYzODUyODg2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 242
+    },
+    {
+      "name": "precision-499-0",
+      "source": "YSUuNDk5ZltHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 503
+    },
+    {
+      "name": "precision-1000-2139095039",
+      "source": "YSUuMTAwMGZbRzUxMl1i",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTM0MDI4MjM0NjYzODUyODg2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 554
+    },
+    {
+      "name": "long-float",
+      "source": "YSVsZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTM0MDI4MjM0NjYzODUyODg2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMC4wMDAwMDBi",
+      "expectedBytes": 48
+    },
+    {
+      "name": "nonfinite-padding",
+      "source": "YSUrMDIwLjNmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0wMDAwMDAwMDAwMDAwMDEuI0lPYg==",
+      "expectedBytes": 22
+    },
+    {
+      "name": "string-recursive",
+      "source": "YSUxMC43c1tHMTAyNF1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 123456,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "diVkW0c1MTJdAA=="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgIHYxMjM0NTZi",
+      "expectedBytes": 12
+    },
+    {
+      "name": "string-byte-cut",
+      "source": "YSU3LjFzW0cxMDI0XWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "k/qWewA="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAgIJNi",
+      "expectedBytes": 9
+    },
+    {
+      "name": "string-shared",
+      "source": "YSVzW0gzMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 2147483680,
+          "bytes": "c2hhcmVkAA=="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YXNoYXJlZGI=",
+      "expectedBytes": 8
+    },
+    {
+      "name": "string-local-frame",
+      "source": "YSVzW0wxMDI0XWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 5120,
+          "bytes": "ZnJhbWUA"
+        }
+      ],
+      "fp": 256,
+      "scope": "defined",
+      "expected": "YWZyYW1lYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "wrapped-selector",
+      "source": "YSVkW0c0Mjk0OTY3ODA4XWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTQyYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "recursive-depth-32",
+      "source": "c3RhcnQlc1tHNjAwMF1maW5pc2g=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 6000,
+          "bytes": "JXNbRzYwMTZdAA=="
+        },
+        {
+          "address": 6016,
+          "bytes": "JXNbRzYwMzJdAA=="
+        },
+        {
+          "address": 6032,
+          "bytes": "JXNbRzYwNDhdAA=="
+        },
+        {
+          "address": 6048,
+          "bytes": "JXNbRzYwNjRdAA=="
+        },
+        {
+          "address": 6064,
+          "bytes": "JXNbRzYwODBdAA=="
+        },
+        {
+          "address": 6080,
+          "bytes": "JXNbRzYwOTZdAA=="
+        },
+        {
+          "address": 6096,
+          "bytes": "JXNbRzYxMTJdAA=="
+        },
+        {
+          "address": 6112,
+          "bytes": "JXNbRzYxMjhdAA=="
+        },
+        {
+          "address": 6128,
+          "bytes": "JXNbRzYxNDRdAA=="
+        },
+        {
+          "address": 6144,
+          "bytes": "JXNbRzYxNjBdAA=="
+        },
+        {
+          "address": 6160,
+          "bytes": "JXNbRzYxNzZdAA=="
+        },
+        {
+          "address": 6176,
+          "bytes": "JXNbRzYxOTJdAA=="
+        },
+        {
+          "address": 6192,
+          "bytes": "JXNbRzYyMDhdAA=="
+        },
+        {
+          "address": 6208,
+          "bytes": "JXNbRzYyMjRdAA=="
+        },
+        {
+          "address": 6224,
+          "bytes": "JXNbRzYyNDBdAA=="
+        },
+        {
+          "address": 6240,
+          "bytes": "JXNbRzYyNTZdAA=="
+        },
+        {
+          "address": 6256,
+          "bytes": "JXNbRzYyNzJdAA=="
+        },
+        {
+          "address": 6272,
+          "bytes": "JXNbRzYyODhdAA=="
+        },
+        {
+          "address": 6288,
+          "bytes": "JXNbRzYzMDRdAA=="
+        },
+        {
+          "address": 6304,
+          "bytes": "JXNbRzYzMjBdAA=="
+        },
+        {
+          "address": 6320,
+          "bytes": "JXNbRzYzMzZdAA=="
+        },
+        {
+          "address": 6336,
+          "bytes": "JXNbRzYzNTJdAA=="
+        },
+        {
+          "address": 6352,
+          "bytes": "JXNbRzYzNjhdAA=="
+        },
+        {
+          "address": 6368,
+          "bytes": "JXNbRzYzODRdAA=="
+        },
+        {
+          "address": 6384,
+          "bytes": "JXNbRzY0MDBdAA=="
+        },
+        {
+          "address": 6400,
+          "bytes": "JXNbRzY0MTZdAA=="
+        },
+        {
+          "address": 6416,
+          "bytes": "JXNbRzY0MzJdAA=="
+        },
+        {
+          "address": 6432,
+          "bytes": "JXNbRzY0NDhdAA=="
+        },
+        {
+          "address": 6448,
+          "bytes": "JXNbRzY0NjRdAA=="
+        },
+        {
+          "address": 6464,
+          "bytes": "JXNbRzY0ODBdAA=="
+        },
+        {
+          "address": 6480,
+          "bytes": "JXNbRzY0OTZdAA=="
+        },
+        {
+          "address": 6496,
+          "bytes": "ZW5kAA=="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "c3RhcnRlbmRmaW5pc2g=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "recursive-depth-33",
+      "source": "c3RhcnQlc1tHNjAwMF1maW5pc2g=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 6000,
+          "bytes": "JXNbRzYwMTZdAA=="
+        },
+        {
+          "address": 6016,
+          "bytes": "JXNbRzYwMzJdAA=="
+        },
+        {
+          "address": 6032,
+          "bytes": "JXNbRzYwNDhdAA=="
+        },
+        {
+          "address": 6048,
+          "bytes": "JXNbRzYwNjRdAA=="
+        },
+        {
+          "address": 6064,
+          "bytes": "JXNbRzYwODBdAA=="
+        },
+        {
+          "address": 6080,
+          "bytes": "JXNbRzYwOTZdAA=="
+        },
+        {
+          "address": 6096,
+          "bytes": "JXNbRzYxMTJdAA=="
+        },
+        {
+          "address": 6112,
+          "bytes": "JXNbRzYxMjhdAA=="
+        },
+        {
+          "address": 6128,
+          "bytes": "JXNbRzYxNDRdAA=="
+        },
+        {
+          "address": 6144,
+          "bytes": "JXNbRzYxNjBdAA=="
+        },
+        {
+          "address": 6160,
+          "bytes": "JXNbRzYxNzZdAA=="
+        },
+        {
+          "address": 6176,
+          "bytes": "JXNbRzYxOTJdAA=="
+        },
+        {
+          "address": 6192,
+          "bytes": "JXNbRzYyMDhdAA=="
+        },
+        {
+          "address": 6208,
+          "bytes": "JXNbRzYyMjRdAA=="
+        },
+        {
+          "address": 6224,
+          "bytes": "JXNbRzYyNDBdAA=="
+        },
+        {
+          "address": 6240,
+          "bytes": "JXNbRzYyNTZdAA=="
+        },
+        {
+          "address": 6256,
+          "bytes": "JXNbRzYyNzJdAA=="
+        },
+        {
+          "address": 6272,
+          "bytes": "JXNbRzYyODhdAA=="
+        },
+        {
+          "address": 6288,
+          "bytes": "JXNbRzYzMDRdAA=="
+        },
+        {
+          "address": 6304,
+          "bytes": "JXNbRzYzMjBdAA=="
+        },
+        {
+          "address": 6320,
+          "bytes": "JXNbRzYzMzZdAA=="
+        },
+        {
+          "address": 6336,
+          "bytes": "JXNbRzYzNTJdAA=="
+        },
+        {
+          "address": 6352,
+          "bytes": "JXNbRzYzNjhdAA=="
+        },
+        {
+          "address": 6368,
+          "bytes": "JXNbRzYzODRdAA=="
+        },
+        {
+          "address": 6384,
+          "bytes": "JXNbRzY0MDBdAA=="
+        },
+        {
+          "address": 6400,
+          "bytes": "JXNbRzY0MTZdAA=="
+        },
+        {
+          "address": 6416,
+          "bytes": "JXNbRzY0MzJdAA=="
+        },
+        {
+          "address": 6432,
+          "bytes": "JXNbRzY0NDhdAA=="
+        },
+        {
+          "address": 6448,
+          "bytes": "JXNbRzY0NjRdAA=="
+        },
+        {
+          "address": 6464,
+          "bytes": "JXNbRzY0ODBdAA=="
+        },
+        {
+          "address": 6480,
+          "bytes": "JXNbRzY0OTZdAA=="
+        },
+        {
+          "address": 6496,
+          "bytes": "JXNbRzY1MTJdAA=="
+        },
+        {
+          "address": 6512,
+          "bytes": "ZW5kAA=="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "c3RhcnRlbmRmaW5pc2g=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "recursive-depth-60",
+      "source": "c3RhcnQlc1tHNjAwMF1maW5pc2g=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 6000,
+          "bytes": "JXNbRzYwMTZdAA=="
+        },
+        {
+          "address": 6016,
+          "bytes": "JXNbRzYwMzJdAA=="
+        },
+        {
+          "address": 6032,
+          "bytes": "JXNbRzYwNDhdAA=="
+        },
+        {
+          "address": 6048,
+          "bytes": "JXNbRzYwNjRdAA=="
+        },
+        {
+          "address": 6064,
+          "bytes": "JXNbRzYwODBdAA=="
+        },
+        {
+          "address": 6080,
+          "bytes": "JXNbRzYwOTZdAA=="
+        },
+        {
+          "address": 6096,
+          "bytes": "JXNbRzYxMTJdAA=="
+        },
+        {
+          "address": 6112,
+          "bytes": "JXNbRzYxMjhdAA=="
+        },
+        {
+          "address": 6128,
+          "bytes": "JXNbRzYxNDRdAA=="
+        },
+        {
+          "address": 6144,
+          "bytes": "JXNbRzYxNjBdAA=="
+        },
+        {
+          "address": 6160,
+          "bytes": "JXNbRzYxNzZdAA=="
+        },
+        {
+          "address": 6176,
+          "bytes": "JXNbRzYxOTJdAA=="
+        },
+        {
+          "address": 6192,
+          "bytes": "JXNbRzYyMDhdAA=="
+        },
+        {
+          "address": 6208,
+          "bytes": "JXNbRzYyMjRdAA=="
+        },
+        {
+          "address": 6224,
+          "bytes": "JXNbRzYyNDBdAA=="
+        },
+        {
+          "address": 6240,
+          "bytes": "JXNbRzYyNTZdAA=="
+        },
+        {
+          "address": 6256,
+          "bytes": "JXNbRzYyNzJdAA=="
+        },
+        {
+          "address": 6272,
+          "bytes": "JXNbRzYyODhdAA=="
+        },
+        {
+          "address": 6288,
+          "bytes": "JXNbRzYzMDRdAA=="
+        },
+        {
+          "address": 6304,
+          "bytes": "JXNbRzYzMjBdAA=="
+        },
+        {
+          "address": 6320,
+          "bytes": "JXNbRzYzMzZdAA=="
+        },
+        {
+          "address": 6336,
+          "bytes": "JXNbRzYzNTJdAA=="
+        },
+        {
+          "address": 6352,
+          "bytes": "JXNbRzYzNjhdAA=="
+        },
+        {
+          "address": 6368,
+          "bytes": "JXNbRzYzODRdAA=="
+        },
+        {
+          "address": 6384,
+          "bytes": "JXNbRzY0MDBdAA=="
+        },
+        {
+          "address": 6400,
+          "bytes": "JXNbRzY0MTZdAA=="
+        },
+        {
+          "address": 6416,
+          "bytes": "JXNbRzY0MzJdAA=="
+        },
+        {
+          "address": 6432,
+          "bytes": "JXNbRzY0NDhdAA=="
+        },
+        {
+          "address": 6448,
+          "bytes": "JXNbRzY0NjRdAA=="
+        },
+        {
+          "address": 6464,
+          "bytes": "JXNbRzY0ODBdAA=="
+        },
+        {
+          "address": 6480,
+          "bytes": "JXNbRzY0OTZdAA=="
+        },
+        {
+          "address": 6496,
+          "bytes": "JXNbRzY1MTJdAA=="
+        },
+        {
+          "address": 6512,
+          "bytes": "JXNbRzY1MjhdAA=="
+        },
+        {
+          "address": 6528,
+          "bytes": "JXNbRzY1NDRdAA=="
+        },
+        {
+          "address": 6544,
+          "bytes": "JXNbRzY1NjBdAA=="
+        },
+        {
+          "address": 6560,
+          "bytes": "JXNbRzY1NzZdAA=="
+        },
+        {
+          "address": 6576,
+          "bytes": "JXNbRzY1OTJdAA=="
+        },
+        {
+          "address": 6592,
+          "bytes": "JXNbRzY2MDhdAA=="
+        },
+        {
+          "address": 6608,
+          "bytes": "JXNbRzY2MjRdAA=="
+        },
+        {
+          "address": 6624,
+          "bytes": "JXNbRzY2NDBdAA=="
+        },
+        {
+          "address": 6640,
+          "bytes": "JXNbRzY2NTZdAA=="
+        },
+        {
+          "address": 6656,
+          "bytes": "JXNbRzY2NzJdAA=="
+        },
+        {
+          "address": 6672,
+          "bytes": "JXNbRzY2ODhdAA=="
+        },
+        {
+          "address": 6688,
+          "bytes": "JXNbRzY3MDRdAA=="
+        },
+        {
+          "address": 6704,
+          "bytes": "JXNbRzY3MjBdAA=="
+        },
+        {
+          "address": 6720,
+          "bytes": "JXNbRzY3MzZdAA=="
+        },
+        {
+          "address": 6736,
+          "bytes": "JXNbRzY3NTJdAA=="
+        },
+        {
+          "address": 6752,
+          "bytes": "JXNbRzY3NjhdAA=="
+        },
+        {
+          "address": 6768,
+          "bytes": "JXNbRzY3ODRdAA=="
+        },
+        {
+          "address": 6784,
+          "bytes": "JXNbRzY4MDBdAA=="
+        },
+        {
+          "address": 6800,
+          "bytes": "JXNbRzY4MTZdAA=="
+        },
+        {
+          "address": 6816,
+          "bytes": "JXNbRzY4MzJdAA=="
+        },
+        {
+          "address": 6832,
+          "bytes": "JXNbRzY4NDhdAA=="
+        },
+        {
+          "address": 6848,
+          "bytes": "JXNbRzY4NjRdAA=="
+        },
+        {
+          "address": 6864,
+          "bytes": "JXNbRzY4ODBdAA=="
+        },
+        {
+          "address": 6880,
+          "bytes": "JXNbRzY4OTZdAA=="
+        },
+        {
+          "address": 6896,
+          "bytes": "JXNbRzY5MTJdAA=="
+        },
+        {
+          "address": 6912,
+          "bytes": "JXNbRzY5MjhdAA=="
+        },
+        {
+          "address": 6928,
+          "bytes": "JXNbRzY5NDRdAA=="
+        },
+        {
+          "address": 6944,
+          "bytes": "ZW5kAA=="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "c3RhcnRlbmRmaW5pc2g=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "logger-literal-bytes-498",
+      "source": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh782riWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh",
+      "expectedBytes": 498
+    },
+    {
+      "name": "logger-literal-bytes-499",
+      "source": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYQ==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh782riWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYQ==",
+      "expectedBytes": 499
+    },
+    {
+      "name": "logger-literal-bytes-500",
+      "source": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "undefined-unterminated-logger-buffer",
+      "expected": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh782riWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=",
+      "expectedBytes": 500
+    },
+    {
+      "name": "logger-literal-bytes-501",
+      "source": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "undefined-unterminated-logger-buffer",
+      "expected": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh782riWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh",
+      "expectedBytes": 501
+    },
+    {
+      "name": "cp932-string-width",
+      "source": "YSU4c1tHMTAyNF1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "k/qWewA="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICCT+pZ7Yg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "cp932-string-left-width",
+      "source": "YSUtOHNbRzEwMjRdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "k/qWewA="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YZP6lnsgICAgYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "cp932-string-precision1",
+      "source": "YSU4LjFzW0cxMDI0XWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "k/qWewA="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAgICCTYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "cp932-string-precision3",
+      "source": "YSU4LjNzW0cxMDI0XWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "k/qWewA="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAgk/qWYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "cp932-string-exact-width",
+      "source": "YSU0c1tHMTAyNF1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "k/qWewA="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YZP6lnti",
+      "expectedBytes": 6
+    },
+    {
+      "name": "char-raw-0",
+      "source": "YSVjW0c1MTJdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YQBi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "char-raw-256",
+      "source": "YSVjW0c1MTJdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 256,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YQBi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "char-raw-129",
+      "source": "YSVjW0c1MTJdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 129,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YYFi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "char-raw-233",
+      "source": "YSVjW0c1MTJdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 233,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "Yeli",
+      "expectedBytes": 3
+    },
+    {
+      "name": "char-raw-9601",
+      "source": "YSVjW0c1MTJdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 9601,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YYFi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "string-with-escaped-percent",
+      "source": "YSVzW0cxMDI0XWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "dmFsdWUlJSUlAA=="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YXZhbHVlJSVi",
+      "expectedBytes": 9
+    },
+    {
+      "name": "precision-clamp-511",
+      "source": "YSUuNTExZltHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1066192077,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMTAwMDAwMDIzODQxODU3OTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 515
+    },
+    {
+      "name": "precision-clamp-512",
+      "source": "YSUuNTEyZltHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1066192077,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMTAwMDAwMDIzODQxODU3OTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBi",
+      "expectedBytes": 516
+    },
+    {
+      "name": "precision-clamp-513",
+      "source": "YSUuNTEzZltHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1066192077,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMTAwMDAwMDIzODQxODU3OTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBi",
+      "expectedBytes": 516
+    },
+    {
+      "name": "owned-numeric-width-1023",
+      "source": "JTEwMjNkW0c1MTJd",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDQy",
+      "expectedBytes": 1023
+    },
+    {
+      "name": "owned-numeric-width-10000",
+      "source": "JTEwMDAwZFtHNTEyXQ==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0Mg==",
+      "expectedBytes": 10000
+    },
+    {
+      "name": "owned-numeric-width-10239",
+      "source": "JTEwMjM5ZFtHNTEyXQ==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDQy",
+      "expectedBytes": 10239
+    },
+    {
+      "name": "logger-flags-0",
+      "source": "ZmxhZ2dlZCBsb2c=",
+      "mode": 0,
+      "flags": 0,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "host-gated-no-emission",
+      "expected": "ZmxhZ2dlZCBsb2c=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "logger-flags-3",
+      "source": "ZmxhZ2dlZCBsb2c=",
+      "mode": 0,
+      "flags": 3,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "host-gated-no-emission",
+      "expected": "ZmxhZ2dlZCBsb2c=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "logger-flags-5",
+      "source": "ZmxhZ2dlZCBsb2c=",
+      "mode": 0,
+      "flags": 5,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "host-gated-no-emission",
+      "expected": "ZmxhZ2dlZCBsb2c=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "logger-flags-6",
+      "source": "ZmxhZ2dlZCBsb2c=",
+      "mode": 0,
+      "flags": 6,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "host-gated-no-emission",
+      "expected": "ZmxhZ2dlZCBsb2c=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "argument-frame-mapped",
+      "source": "ZnJhbWUgJWRbRzUxMl0=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "mapped",
+      "word": 123,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "ZnJhbWUgMTIz",
+      "expectedBytes": 9
+    },
+    {
+      "name": "argument-frame-tail",
+      "source": "ZnJhbWUgJWRbRzUxMl0=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "tail",
+      "word": 123,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "ZnJhbWUgMTIz",
+      "expectedBytes": 9
+    },
+    {
+      "name": "special-inf-p0",
+      "source": "YSUrLjBmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "special-inf-p1",
+      "source": "YSUrLjFmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiRi",
+      "expectedBytes": 6
+    },
+    {
+      "name": "special-inf-p2",
+      "source": "YSUrLjJmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNKYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "special-inf-p3",
+      "source": "YSUrLjNmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNJT2I=",
+      "expectedBytes": 8
+    },
+    {
+      "name": "special-inf-p4",
+      "source": "YSUrLjRmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNJTkZi",
+      "expectedBytes": 9
+    },
+    {
+      "name": "special-inf-p5",
+      "source": "YSUrLjVmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNJTkYwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "special-inf-p6",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNJTkYwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "special-inf-p8",
+      "source": "YSUrLjhmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095040,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNJTkYwMDAwYg==",
+      "expectedBytes": 13
+    },
+    {
+      "name": "special-negative-inf-p0",
+      "source": "YSUrLjBmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "special-negative-inf-p1",
+      "source": "YSUrLjFmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiRi",
+      "expectedBytes": 6
+    },
+    {
+      "name": "special-negative-inf-p2",
+      "source": "YSUrLjJmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNKYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "special-negative-inf-p3",
+      "source": "YSUrLjNmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJT2I=",
+      "expectedBytes": 8
+    },
+    {
+      "name": "special-negative-inf-p4",
+      "source": "YSUrLjRmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkZi",
+      "expectedBytes": 9
+    },
+    {
+      "name": "special-negative-inf-p5",
+      "source": "YSUrLjVmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkYwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "special-negative-inf-p6",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkYwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "special-negative-inf-p8",
+      "source": "YSUrLjhmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4286578688,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkYwMDAwYg==",
+      "expectedBytes": 13
+    },
+    {
+      "name": "special-qnan-p0",
+      "source": "YSUrLjBmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "special-qnan-p1",
+      "source": "YSUrLjFmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiRi",
+      "expectedBytes": 6
+    },
+    {
+      "name": "special-qnan-p2",
+      "source": "YSUrLjJmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNSYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "special-qnan-p3",
+      "source": "YSUrLjNmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNRT2I=",
+      "expectedBytes": 8
+    },
+    {
+      "name": "special-qnan-p4",
+      "source": "YSUrLjRmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNRTkJi",
+      "expectedBytes": 9
+    },
+    {
+      "name": "special-qnan-p5",
+      "source": "YSUrLjVmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNRTkFOYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "special-qnan-p6",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNRTkFOMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "special-qnan-p8",
+      "source": "YSUrLjhmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2143363909,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSsxLiNRTkFOMDAwYg==",
+      "expectedBytes": 13
+    },
+    {
+      "name": "special-indefinite-p0",
+      "source": "YSUrLjBmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "special-indefinite-p1",
+      "source": "YSUrLjFmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiRi",
+      "expectedBytes": 6
+    },
+    {
+      "name": "special-indefinite-p2",
+      "source": "YSUrLjJmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNKYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "special-indefinite-p3",
+      "source": "YSUrLjNmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJT2I=",
+      "expectedBytes": 8
+    },
+    {
+      "name": "special-indefinite-p4",
+      "source": "YSUrLjRmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkRi",
+      "expectedBytes": 9
+    },
+    {
+      "name": "special-indefinite-p5",
+      "source": "YSUrLjVmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkQwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "special-indefinite-p6",
+      "source": "YSUrLjZmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkQwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "special-indefinite-p8",
+      "source": "YSUrLjhmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4290772992,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0xLiNJTkQwMDAwYg==",
+      "expectedBytes": 13
+    },
+    {
+      "name": "round-half-low-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1040187392,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTBi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "round-half-low-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1040187392,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMTI1MDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "round-half-low-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1040187392,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMTI1MDAwMDAwMDAwMDAwMDBi",
+      "expectedBytes": 21
+    },
+    {
+      "name": "round-half-low-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1040187392,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMTI1MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 104
+    },
+    {
+      "name": "round-half-high-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1206984768,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEyMzQ1N2I=",
+      "expectedBytes": 8
+    },
+    {
+      "name": "round-half-high-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1206984768,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEyMzQ1Ni41MDAwMDBi",
+      "expectedBytes": 15
+    },
+    {
+      "name": "round-half-high-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1206984768,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEyMzQ1Ni41MDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 26
+    },
+    {
+      "name": "round-half-high-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1206984768,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEyMzQ1Ni41MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwYg==",
+      "expectedBytes": 109
+    },
+    {
+      "name": "round-small-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1036831949,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTBi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "round-small-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1036831949,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMTAwMDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "round-small-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1036831949,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMTAwMDAwMDAxNDkwMTE2MTJi",
+      "expectedBytes": 21
+    },
+    {
+      "name": "round-small-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1036831949,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMTAwMDAwMDAxNDkwMTE2MTIwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 104
+    },
+    {
+      "name": "round-negative-small-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 3184315597,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0wYg==",
+      "expectedBytes": 4
+    },
+    {
+      "name": "round-negative-small-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 3184315597,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0wLjEwMDAwMGI=",
+      "expectedBytes": 11
+    },
+    {
+      "name": "round-negative-small-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 3184315597,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0wLjEwMDAwMDAwMTQ5MDExNjEyYg==",
+      "expectedBytes": 22
+    },
+    {
+      "name": "round-negative-small-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 3184315597,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YS0wLjEwMDAwMDAwMTQ5MDExNjEyMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBi",
+      "expectedBytes": 105
+    },
+    {
+      "name": "round-large-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1649989415,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEwMDAwMDAwMjAwNDA4NzczMDAwMDBi",
+      "expectedBytes": 24
+    },
+    {
+      "name": "round-large-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1649989415,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEwMDAwMDAwMjAwNDA4NzczMDAwMDAuMDAwMDAwYg==",
+      "expectedBytes": 31
+    },
+    {
+      "name": "round-large-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1649989415,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEwMDAwMDAwMjAwNDA4NzczMDAwMDAuMDAwMDAwMDAwMDAwMDAwMDBi",
+      "expectedBytes": 42
+    },
+    {
+      "name": "round-large-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1649989415,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEwMDAwMDAwMjAwNDA4NzczMDAwMDAuMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 125
+    },
+    {
+      "name": "round-subnormal-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTBi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "round-subnormal-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMDAwMDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "round-subnormal-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMDAwMDAwMDAwMDAwMDAwMDBi",
+      "expectedBytes": 21
+    },
+    {
+      "name": "round-subnormal-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAxNDAxMjk4NDY0MzI0ODE3MTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 104
+    },
+    {
+      "name": "round-near-unit-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1065353215,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTFi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "round-near-unit-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1065353215,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMDAwMDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "round-near-unit-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1065353215,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuOTk5OTk5OTQwMzk1MzU1MjJi",
+      "expectedBytes": 21
+    },
+    {
+      "name": "round-near-unit-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1065353215,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAuOTk5OTk5OTQwMzk1MzU1MjIwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 104
+    },
+    {
+      "name": "round-max-p0",
+      "source": "YSUuMGZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTM0MDI4MjM0NjYzODUyODg2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 41
+    },
+    {
+      "name": "round-max-p6",
+      "source": "YSUuNmZbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTM0MDI4MjM0NjYzODUyODg2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMC4wMDAwMDBi",
+      "expectedBytes": 48
+    },
+    {
+      "name": "round-max-p17",
+      "source": "YSUuMTdmW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTM0MDI4MjM0NjYzODUyODg2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAwMGI=",
+      "expectedBytes": 59
+    },
+    {
+      "name": "round-max-p100",
+      "source": "YSUuMTAwZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2139095039,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTM0MDI4MjM0NjYzODUyODg2MDAwMDAwMDAwMDAwMDAwMDAwMDAwMC4wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwYg==",
+      "expectedBytes": 142
+    },
+    {
+      "name": "pointer-null",
+      "source": "YSVwW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAwMDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "pointer-max",
+      "source": "YSVwW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4294967295,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YUZGRkZGRkZGYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "pointer-width",
+      "source": "YSUxMnBbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4660,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAwMDAwMTIzNGI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "pointer-zero",
+      "source": "YSUwMTJwW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4660,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAwMDAwMTIzNGI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "pointer-left",
+      "source": "YSUtMTJwW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4660,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAxMjM0ICAgIGI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "pointer-precision0",
+      "source": "YSUuMHBbRzUxMl1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAwMDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "pointer-precision12",
+      "source": "YSUuMTJwW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4660,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAxMjM0Yg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "pointer-alternate",
+      "source": "YSUjcFtHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4660,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTBYMDAwMDEyMzRi",
+      "expectedBytes": 12
+    },
+    {
+      "name": "pointer-plus",
+      "source": "YSUrcFtHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4660,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAxMjM0Yg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "modifier-hu",
+      "source": "YSUjMTIuNmh1W0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAgIDA1MjcxOWI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "modifier-ho",
+      "source": "YSUjMTIuNmhvW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAgMDE0Njc1N2I=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "modifier-hx",
+      "source": "YSUjMTIuNmh4W0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAweDAwY2RlZmI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "modifier-hX",
+      "source": "YSUjMTIuNmhYW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAwWDAwQ0RFRmI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "modifier-lu",
+      "source": "YSUjMTIuNmx1W0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgMjMwOTczNzk2N2I=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "modifier-lo",
+      "source": "YSUjMTIuNmxvW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAyMTE1Mjc0Njc1N2I=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "modifier-lx",
+      "source": "YSUjMTIuNmx4W0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgMHg4OWFiY2RlZmI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "modifier-lX",
+      "source": "YSUjMTIuNmxYW0c1MTJdYg==",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgMFg4OUFCQ0RFRmI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "empty-float-precision",
+      "source": "YSUuZltHNTEyXWI=",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1067450368,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTFi",
+      "expectedBytes": 3
+    },
+    {
+      "name": "byte-precision200",
+      "source": "YSUuMjAwc1tHMTAyNF1i",
+      "mode": 0,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "b3JkaW5hcnkgc3RyaW5nAA=="
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YW9yZGluYXJ5IHN0cmluZ2I=",
+      "expectedBytes": 17
+    },
+    {
+      "name": "string-width10000",
+      "source": "JTEwMDAwc1tHMTAyNF0=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 2309737967,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "c2hvcnQA"
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzaG9ydA==",
+      "expectedBytes": 10000
+    },
+    {
+      "name": "pointer-alternate-null",
+      "source": "YSUjcFtHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAwMDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "pointer-alternate-width",
+      "source": "YSUjMDEycFtHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 4660,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgMFgwMDAwMTIzNGI=",
+      "expectedBytes": 14
+    },
+    {
+      "name": "char-zero-padding",
+      "source": "YSUwNWNbRzUxMl1i",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 65,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDBBYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "char-precision",
+      "source": "YSU1LjBjW0c1MTJdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 65,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICBBYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "wrapped-width",
+      "source": "YSU0Mjk0OTY3MzAwZFtHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgNDJi",
+      "expectedBytes": 6
+    },
+    {
+      "name": "wrapped-float-precision",
+      "source": "YSUuNDI5NDk2NzI5OGZbRzUxMl1i",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1067450368,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMjVi",
+      "expectedBytes": 6
+    },
+    {
+      "name": "wrapped-negative-float-precision",
+      "source": "YSUuNDI5NDk2NzI5NWZbRzUxMl1i",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 1067450368,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTEuMjUwMDAwYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "wrapped-negative-int-precision",
+      "source": "YSUwOC40Mjk0OTY3Mjk1ZFtHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAwMDQyYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "integer-precision101",
+      "source": "YSUuMTAxZFtHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 42,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDQyYg==",
+      "expectedBytes": 103
+    },
+    {
+      "name": "alternate-hex-zero",
+      "source": "YSUjLjB4W0c1MTJdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YWI=",
+      "expectedBytes": 2
+    },
+    {
+      "name": "zero-precision-int",
+      "source": "YSUwOC4wZFtHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YSAgICAgICAgYg==",
+      "expectedBytes": 10
+    },
+    {
+      "name": "char-zero-precision0",
+      "source": "YSUwNS4wY1tHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 65,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDBBYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "char-zero-precision3",
+      "source": "YSUwNS4zY1tHNTEyXWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 65,
+      "stores": [],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDBBYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "string-zero",
+      "source": "YSUwNXNbRzEwMjRdYg==",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "YWIA"
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMGFiYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "string-zero-precision",
+      "source": "YSUwNS4xc1tHMTAyNF1i",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "YWIA"
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YTAwMDBhYg==",
+      "expectedBytes": 7
+    },
+    {
+      "name": "string-left-zero",
+      "source": "YSUtMDVzW0cxMDI0XWI=",
+      "mode": 1,
+      "flags": 7,
+      "frame": "exact",
+      "word": 0,
+      "stores": [
+        {
+          "address": 1024,
+          "bytes": "YWIA"
+        }
+      ],
+      "fp": 0,
+      "scope": "defined",
+      "expected": "YWFiICAgYg==",
+      "expectedBytes": 7
+    }
+  ]
+}

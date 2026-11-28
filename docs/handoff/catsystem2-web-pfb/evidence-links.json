@@ -1,0 +1,319 @@
+{
+  "asOf": "2026-11-28",
+  "purpose": "Thin project handoff links, not SDK functionality or release manifest",
+  "pathBase": "Core repository root",
+  "privateRawAvailability": "Local ignored evidence may be absent outside this workspace; never package raw/private inputs",
+  "acceptedActivePFBPair": {
+    "core": "0e9b20b7454d06d797c5e84c88995dc6a519e757",
+    "runtime": "8f96596d739bebcd8c7e79baeece203e3db0ffc7",
+    "retrom": "4ae4530f9401de7c95357d0a88925a676cc5a281",
+    "coreFingerprint": "cc05cbf490dcc3d8146e6191b7c75aae603ff203e0070af731064ce8d217c121",
+    "provider": "02f8316709542a0dfbb34eeead80fab3f7d0a63b434df5107d821f598d37402e",
+    "devModule": "f94f022dc54b0ffde74891cf635ae3a00b21f0daa6d3483cbc31a3d6169aace2",
+    "hostTool": "f77ce4a6b779b362e8ff1ea9ac78025a02ea27f844fc632424bb8fc5a15d3f3c",
+    "nativeSaveRows": 100,
+    "nativeSaveObjects": 183
+  },
+  "coveragePolicy": {
+    "key": ["exactPE", "table", "id", "shape/context"],
+    "thinBaselineKeys": 5509,
+    "globalNewestFunctionalCount": null,
+    "reason": "Later sealed deltas overlap/support earlier shapes; no fabricated cumulative unique count",
+    "baseLibrary": ".local/phase11/sdk-build-acceptance-library-3cdb/INDEX.json",
+    "thinBaseline": ".local/phase11/sdk-five-closure-strings63-20261128/REFRESH-SUMMARY.json",
+    "remainingPerBuildPattern": ".local/phase11/sdk-five-closure-strings63-20261128/BUILD-{23,63,67,74,76}-REMAINING.json"
+  },
+  "protectedWIP": [
+    {
+      "path": "src/audio.mjs",
+      "sha256": "a68445804a399512a933592695327d54132af801d8c50c3e77ab50b0050c2107"
+    },
+    {
+      "path": "src/native/audio-pcm.mjs",
+      "sha256": "02545e9dccd88336347f88e798ab594c979c602414e06b2a435a7f17eba3e01a"
+    },
+    {
+      "path": "tests/fixtures/native-ms-adpcm-io-golden.json",
+      "sha256": "5dcfc4cef0a904d6b872a8f467b08a851591fd2e1fc9ed8ae408847a15a2abef"
+    },
+    {
+      "path": "tests/native-ms-adpcm-io.test.mjs",
+      "sha256": "8b5efcde85a878b7e7d42839606779389c62ba78d646e528c34b05a373b1f591"
+    },
+    {
+      "path": "test-results/.last-run.json",
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    }
+  ],
+  "references": [
+    {
+      "id": "neko3-story",
+      "path": ".local/phase11/game-route-after-confirmed-plane-20261118/runs/route/RESULT.json",
+      "sha256": "1b05b1a9b13c0c394f9fc91817a154dbad6da3765056264cbd7355e3165f2ed1",
+      "bytes": 7486,
+      "status": "accepted-historical",
+      "scope": "14 chapters/7501 unique messages/natural title; original fixed source",
+      "source": "085a80cc130021ce46dd475711fb433e2e37f9b1"
+    },
+    {
+      "id": "neko3-natural-end",
+      "path": ".local/phase11/game-route-movie-input-20261118/ORIGINAL-ROUTE-NATURAL-ADJUDICATION.json",
+      "sha256": "ae81a09968ea2d34632a313ddedf183470e1581c45f1067e5e449894996ff480",
+      "bytes": 7764,
+      "status": "accepted-historical",
+      "scope": "Natural route terminal adjudication"
+    },
+    {
+      "id": "neko3-gallery",
+      "path": ".local/phase11/game-gallery-physical-stop-ed-20261118/run/RESULT.json",
+      "sha256": "a53c8f4d31fb08748bdaceed14cacb52127d70040e5a529d072751eda1568e51",
+      "bytes": 4742,
+      "status": "accepted-limited",
+      "scope": "174 committed records, actual selected gallery/music/ED/restart; not174 individual replays"
+    },
+    {
+      "id": "H01-source",
+      "path": ".local/phase11/game-gallery-owned-surface-20261118/REC-ORIGINAL-SOURCE-CUSTODY.json",
+      "sha256": "0f6f837be453fdd17b80a3d490d864801438c261cf2382711443d0ce3f6c71d5",
+      "bytes": 4727,
+      "status": "accepted-limited",
+      "scope": "Original missing asset/user waiver; no repaired or passed playback"
+    },
+    {
+      "id": "active-product",
+      "path": ".local/phase11/sdk-stable-functional-integration-w69-w70-20261128/FINAL-READY.json",
+      "sha256": "4cc4c93c54dbf9394eefa3e69aff6cee134adebc91a11c8c7d7a5a3ed4f39514",
+      "bytes": 22085,
+      "status": "accepted-active",
+      "scope": "Six full cases; native write/cold/body/continue/firstquit/capture",
+      "source": "0e9b20b7454d06d797c5e84c88995dc6a519e757"
+    },
+    {
+      "id": "active-product-root",
+      "path": ".local/phase11/sdk-stable-functional-integration-w69-w70-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "7bce1e0c28e5eab2e20d66a42bdb6450d8e16c76df1668d793982eec6e8bfab9",
+      "bytes": 4477,
+      "status": "accepted-active",
+      "scope": "Root accepted active pair and data protection",
+      "source": "0e9b20b7454d06d797c5e84c88995dc6a519e757"
+    },
+    {
+      "id": "W55-root",
+      "path": ".local/phase11/sdk-runtime-review-wave55/REPORT.json",
+      "sha256": "a8d9def444ec013a7f0f2d0377846b9bd2047adf71fbb796cc346bdf22787831",
+      "bytes": 9441,
+      "status": "accepted-baseline",
+      "scope": "4500 keys plus23 overlay; closed W39/40/42 links; shape limits"
+    },
+    {
+      "id": "W67-root",
+      "path": ".local/phase11/sdk-five-closure-strings63-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "b75bf0cdd847847d3a00c546a7e7bd14dd243c14a0cf90da0e383fe41ec80c10",
+      "bytes": 1626,
+      "status": "accepted-baseline",
+      "scope": "Thin5509 plus63 strings11new/4strengthened; separate annotation delta",
+      "source": "8859266b2ebdb53709b75c9a9fe4073de241e233"
+    },
+    {
+      "id": "W67-groups",
+      "path": ".local/phase11/sdk-five-closure-strings63-20261128/REFRESH-GROUP-INDEX.json",
+      "sha256": "fb91520295eef08e389a30ed80c1efdde70677eddce3293370897b00fbfa48c0",
+      "bytes": 12658,
+      "status": "accepted-baseline",
+      "scope": "Pointers to accepted W57/W59/W61/W62/W63/W64/W65/W66; not aggregate newest counts"
+    },
+    {
+      "id": "W68-root",
+      "path": ".local/phase11/sdk63-mot-typed-css-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "c24fbfd541425eaa4987f4f5cdcbb0364892e736cd8a3fc6cb3a0442cc1107ae",
+      "bytes": 1379,
+      "status": "accepted-evidence",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "b361cd77005115dd3cf5a01093a2f53b0d8b586e"
+    },
+    {
+      "id": "W69-root",
+      "path": ".local/phase11/sdk-graphics-object-consumers-20261128/repair1/ROOT-ACCEPTANCE.json",
+      "sha256": "3aeb79d69cf12c6b0e582d0d8714e1a6174228960ad342ff26aeed4247b6f84f",
+      "bytes": 1641,
+      "status": "accepted-integrated-own-delta",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "a76f28f6b5c101a549d6abc01459c31dcad9cdb5"
+    },
+    {
+      "id": "W70-root",
+      "path": ".local/phase11/sdk63-scene-css-consumers-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "c5647da81b2820ffddc10b5bcc2ce32aee6e336eb9ddd8e2104b9752a71ee8ba",
+      "bytes": 1691,
+      "status": "accepted-evidence",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "e9e4035c75b538a127e616f38d1a1838c68b4e02"
+    },
+    {
+      "id": "W71-root",
+      "path": ".local/phase11/sdk63-particle-attachment-lifecycle-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "0a7eb9112731722546b45e899578b03da47f975638edeac77cc7a34148d5e3f5",
+      "bytes": 1814,
+      "status": "accepted-integrated-own-delta",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "3f8cd4eb85df6c45b7836c5a4ad3b3764849eb27"
+    },
+    {
+      "id": "W72-root",
+      "path": ".local/phase11/sdk63-fes-named-private-registry-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "fc08eb4edd0a16ae289b11395f5cd7b6cb8564e7facac5b24327abdaa7913d80",
+      "bytes": 1509,
+      "status": "accepted-evidence",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "729ace35c83e45c06c7422029a5cc369f2b750f1"
+    },
+    {
+      "id": "W73-root",
+      "path": ".local/phase11/sdk-modern-primary-sound-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "0ce26cee1c9c931e99736432e1e895ee484b8ac25d27148b47716efcf1d4df80",
+      "bytes": 1798,
+      "status": "accepted-pending-integration",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "910cf41fa7d564a4c600f65ff345bbd132586920"
+    },
+    {
+      "id": "W74-root",
+      "path": ".local/phase11/sdk-modern-fes-context-registry-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "c982931675b49d5a7ff3842964aed9ae7724d63472342764e6199d53d7257190",
+      "bytes": 1972,
+      "status": "accepted-pending-integration",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "6cd95d77057e2ba576af07da9d401b97516d3d2e"
+    },
+    {
+      "id": "W75-root",
+      "path": ".local/phase11/sdk-graphics-remaining-consumers-20261128/repair1/ROOT-ACCEPTANCE.json",
+      "sha256": "1f922cd81ba47ae67e01fdfe18cdaff115eb330049ce55657e9c763879acc268",
+      "bytes": 2008,
+      "status": "accepted-pending-integration",
+      "scope": "Only root-scoped finite forms; preserve original group/host/receiver limits",
+      "source": "833e7e4df9f7be1b264dff5a627fc4a7940c5929"
+    },
+    {
+      "id": "W76-ready",
+      "path": ".local/phase11/sdk-primary-loop-metadata-20261128/READY.json",
+      "sha256": "9dcbb3475b42908eaaae1ac632e52b780b193c4b8a3e8a8cd2bafd5138a0e92b",
+      "bytes": 5537,
+      "status": "accepted-pending-integration",
+      "scope": "Root-accepted finite PCM prefix/loop/metadata; prior author failures and duplicate-key diagnosis withdrawal retained; not active/product/released",
+      "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
+    },
+    {
+      "id": "config-checkpoint",
+      "path": ".local/phase11/sdk-cross-build-configuration-metadata-20261128/READY.json",
+      "sha256": "3ee5f984207ca7b8fc5ce1db9e20c93e52d619f03c0016b45051ce789431e2f9",
+      "bytes": 2307,
+      "status": "accepted-current-only-partial",
+      "scope": "13current/config8cold/diagnostic1cold;0prod0ABI0newnative",
+      "source": "c53b046e32e53f0cc0c9c71a6c3d3c24afb366fc"
+    },
+    {
+      "id": "VM-offset-diagnostic",
+      "path": ".local/phase11/sdk-cross-build-configuration-metadata-20261128/ALLOCATOR-CONCLUSION.json",
+      "sha256": "ce908c3936677d91ef6add7b3ff7b09053379dfdc67ee6c996900d1b3e28c62c",
+      "bytes": 6106,
+      "status": "diagnostic-limited",
+      "scope": "Current two-baseline compact numeric offsets and original complete static; no native nonLIFO dynamic proof"
+    },
+    {
+      "id": "cold1740",
+      "path": ".local/phase11/emote-cold-f1740-20261119/F1740-COLD-ACCEPTANCE.json",
+      "sha256": "c3ec63c623a690302370d32420f0334ad37644010b4fea438f3023d5528fb84c",
+      "bytes": 68900,
+      "status": "accepted-historical-performance",
+      "scope": "Same-source139.2->133.2ms gap; not final SLO",
+      "source": "d5c31552f33d581c7e12af70e6a5d547911c6f13"
+    },
+    {
+      "id": "cold1740-followup",
+      "path": ".local/phase11/emote-f1740-latency-20261119/F1740-UHD730-FINAL-ACCEPTANCE.json",
+      "sha256": "f912017e06580ff06e11d82e64518c4c1831bd40e44992271830beffa4413815",
+      "bytes": 14992,
+      "status": "accepted-historical-performance",
+      "scope": "Same-checkpoint133.2->57.5ms/steady60; no physical scanout",
+      "source": "64d148559f33eeaa945e1eb2340a7ac32378dbd4"
+    },
+    {
+      "id": "perf-prepared",
+      "path": ".local/phase11/retrom-engine63-sdk-acceptance/wave35/prepared-resident-p2-closure/HANDOFF.json",
+      "sha256": "f940a23e6b4f5be26d868656522fc0d73b58cfb3d2628672ef2281185e9a2bfe",
+      "bytes": 10456,
+      "status": "frozen-withdrawn",
+      "scope": "Candidatec60f/original894; ownership rechecks deferred; explicit no-run-now",
+      "source": "c60f4a63d781419d7850f69249a24b78bdc92ef3"
+    },
+    {
+      "id": "perf-hotchain",
+      "path": ".local/phase11/retrom-engine63-sdk-acceptance/wave34/hot-chain-withdrawal/WITHDRAWAL.json",
+      "sha256": "c5173c61e3df357200f87db3036b05493e08e027417f4f618b6037e8359a972f",
+      "bytes": 4773,
+      "status": "withdrawn",
+      "scope": "No full-frame benefit; own8 only; clock/FES retained",
+      "source": "08f54cc664696b15c0b85fda8423b6021c76c370"
+    },
+    {
+      "id": "video-driver",
+      "path": ".local/phase11/engine63-video-context-20261122/4118-OP1-WEBGL-CONTEXT-EVIDENCE.json",
+      "sha256": "5d86fc044cb347c9e02e3ef20523e1c0279ab5aee5223a3e5e21f4a86d7894da",
+      "bytes": 34791,
+      "status": "external-limit",
+      "scope": "Pure HTML hardware decode context loss; software path is separate"
+    },
+    {
+      "id": "dense-survey",
+      "path": ".local/phase11/game-real-raf-m2-geometry-20261118/ROUTE-DENSE-CHECKPOINT-PROJECTION.json",
+      "sha256": "ab1900f3a5c889ffbf9ea4f8b2a95400fcb492c3dd86cdc23b7f436a2159cc88",
+      "bytes": 2013,
+      "status": "input-unavailable",
+      "scope": "Actual authored dense input threshold not met; user has no alternate"
+    },
+    {
+      "id": "W76-root",
+      "path": ".local/phase11/sdk-primary-loop-metadata-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "3fc296c887dbb68bd961c1cd911bd08d826ae9e514a9552208e7d35c45058983",
+      "bytes": 1708,
+      "status": "accepted-pending-integration",
+      "scope": "Root finite source-only27new/1strengthened;6unique/0finding;no product or fullSDK",
+      "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
+    },
+    {
+      "id": "W76-review",
+      "path": ".local/phase11/sdk-runtime-review-wave76/REPORT.json",
+      "sha256": "a6e7bdc10cc9d19a899459bba1e9e0b925acaeaf10bfeb7fa9bcba1d5b839ed2",
+      "bytes": 11427,
+      "status": "accepted-finite-review",
+      "scope": "4targeted+2independent finalgreen; original author reds preserved",
+      "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
+    },
+    {
+      "id": "W76-review-ready",
+      "path": ".local/phase11/sdk-runtime-review-wave76/READY.json",
+      "sha256": "ca2d7fe4b45564fbc2c8607e4f9fc440e3e474d629f98a14ffd45f76126906c2",
+      "bytes": 1262,
+      "status": "accepted-finite-review",
+      "scope": "Fixed review source/closure; no publication",
+      "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
+    },
+    {
+      "id": "config-root",
+      "path": ".local/phase11/sdk-cross-build-configuration-metadata-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "de050e887c7363f0931d7854dc408d79a8cb40bcf1a2b37cd5e2f3f7c58c1c56",
+      "bytes": 1341,
+      "status": "accepted-current-only-partial",
+      "scope": "4testdoc0prod0ABI0native; compressed VM offset preserved; no native nonLIFO dynamic proof",
+      "source": "c53b046e32e53f0cc0c9c71a6c3d3c24afb366fc"
+    }
+  ],
+  "releasePreparation": {
+    "proposedCoreTag": "v0.1.0-rc.1",
+    "tagCreated": false,
+    "finalCutAndAssets": "Integrator RELEASE-PREPARED receipt, not source self-reference",
+    "docsFreeze": "After accepted-status refresh until current release candidate complete",
+    "activeSourceUnchanged": "0e9b20b7454d06d797c5e84c88995dc6a519e757"
+  }
+}

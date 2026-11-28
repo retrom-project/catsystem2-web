@@ -1,0 +1,3341 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "provenance": {
+    "path": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/areas3-20261127/ORIGINAL-AREAS3.json",
+    "sha256": "8c8f6a1a7b09cdd6c0de1dc05f20ce40ea44985dead371a937f9d492f4c35e88",
+    "producerSha256": "b5c71a78fe1c8ac71dd7f77f53e932f9bddeaaae0d4886d8f7a89d2ee8254890",
+    "helperSha256": "c5874299238bd2fd666d1acf4c95cbf69109db33c25232ebee6b2a35268852c3"
+  },
+  "scope": "True Main66 kind0/26/27 factory and full Script Main143 VM GCALL. Normal same-size RGBA sources stay live across replacements; real logic/draw updates and actual Script retirement release owned work and then owned input bitmaps. Main199 copies finite matrix bits to a local packet, ignored by reviewed Base/Area receiver branches, with no uninitialized reply read or matrix-arithmetic claim. Generic COM/GDI platform leaves only; no GPU/desktop/fault input or PE text changes.",
+  "rows": [
+    {
+      "label": "create-wipe",
+      "id": 66,
+      "args": [26, 3, 256],
+      "resultAddress": 32,
+      "matrix": [
+        1065353216, 0, 2147483648, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704,
+        3223322624, 0, 1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": null,
+      "bitmaps": [],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "create-fade",
+      "id": 66,
+      "args": [27, 3, 256],
+      "resultAddress": 36,
+      "matrix": [
+        1065353216, 0, 2147483648, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704,
+        3223322624, 0, 1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "create-Base",
+      "id": 66,
+      "args": [0, 3, 256],
+      "resultAddress": 40,
+      "matrix": [
+        1065353216, 0, 2147483648, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704,
+        3223322624, 0, 1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "matrix-Base-copy",
+      "id": 199,
+      "args": [[19, 40], 1664],
+      "matrix": [
+        1065353216, 0, 2147483648, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704,
+        3223322624, 0, 1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [
+        {
+          "kind": 0,
+          "message": 262,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": [
+            1065353216, 0, 2147483648, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704,
+            3223322624, 0, 1065353216
+          ],
+          "unhandled": true
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "modify-matrix-source",
+      "code": [
+        [37, 1056964608],
+        [38, 1664],
+        [37, 0],
+        [38, 1672]
+      ],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "matrix-Base-new-copy",
+      "id": 199,
+      "args": [[19, 40], 1664],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [
+        {
+          "kind": 0,
+          "message": 262,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": [
+            1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624,
+            0, 1065353216
+          ],
+          "unhandled": true
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "matrix-wipe-uninitialized",
+      "id": 199,
+      "args": [[19, 32], 1664],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [
+        {
+          "kind": 26,
+          "message": 262,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": [
+            1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624,
+            0, 1065353216
+          ],
+          "unhandled": true
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "matrix-fade-uninitialized",
+      "id": 199,
+      "args": [[19, 36], 1664],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [
+        {
+          "kind": 27,
+          "message": 262,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": [
+            1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624,
+            0, 1065353216
+          ],
+          "unhandled": true
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "finish-wipe-uninitialized",
+      "id": 198,
+      "args": [[19, 32]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [
+        {
+          "kind": 26,
+          "message": 258,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "finish-fade-uninitialized",
+      "id": 198,
+      "args": [[19, 36]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [
+        {
+          "kind": 27,
+          "message": 258,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "replace-Base-early-return",
+      "id": 202,
+      "args": [[19, 40], 1664],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [],
+      "events": [
+        {
+          "kind": 0,
+          "message": 13,
+          "replyWritten": true,
+          "reply": 0,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "create-bitmap-64",
+      "id": 112,
+      "args": [2, 2],
+      "resultAddress": 64,
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "fill-bitmap-64",
+      "id": 117,
+      "args": [[19, 64], 0, 0, 2, 2, 2151686160],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "create-bitmap-68",
+      "id": 112,
+      "args": [2, 2],
+      "resultAddress": 68,
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "fill-bitmap-68",
+      "id": 117,
+      "args": [[19, 68], 0, 0, 2, 2, 4284514464],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "create-bitmap-72",
+      "id": 112,
+      "args": [2, 2],
+      "resultAddress": 72,
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "fill-bitmap-72",
+      "id": 117,
+      "args": [[19, 72], 0, 0, 2, 2, 4280370021],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "create-bitmap-76",
+      "id": 112,
+      "args": [2, 2],
+      "resultAddress": 76,
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "fill-bitmap-76",
+      "id": 117,
+      "args": [[19, 76], 0, 0, 2, 2, 3368067168],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "create-bitmap-80",
+      "id": 112,
+      "args": [2, 2],
+      "resultAddress": 80,
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "fill-bitmap-80",
+      "id": 117,
+      "args": [[19, 80], 0, 0, 2, 2, 4286611584],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "build-normal-initializers",
+      "code": [
+        [37, 4],
+        [38, 1024],
+        [37, [19, 64]],
+        [38, 1028],
+        [37, 0],
+        [38, 1032],
+        [37, 0],
+        [38, 1036],
+        [37, [19, 68]],
+        [38, 1040],
+        [37, 0],
+        [38, 1044],
+        [37, 0],
+        [38, 1048],
+        [37, [19, 80]],
+        [38, 1052],
+        [37, 0],
+        [38, 1056],
+        [37, 0],
+        [38, 1060],
+        [37, 0],
+        [38, 1064],
+        [37, 0],
+        [38, 1068],
+        [37, 0],
+        [38, 1072],
+        [37, 0],
+        [38, 1076],
+        [37, 4],
+        [38, 1152],
+        [37, [19, 64]],
+        [38, 1156],
+        [37, 0],
+        [38, 1160],
+        [37, 0],
+        [38, 1164],
+        [37, [19, 68]],
+        [38, 1168],
+        [37, 0],
+        [38, 1172],
+        [37, 0],
+        [38, 1176],
+        [37, 0],
+        [38, 1180],
+        [37, 0],
+        [38, 1184],
+        [37, 2],
+        [38, 1188],
+        [37, 2],
+        [38, 1192],
+        [37, 4],
+        [38, 1280],
+        [37, [19, 72]],
+        [38, 1284],
+        [37, 0],
+        [38, 1288],
+        [37, 0],
+        [38, 1292],
+        [37, [19, 76]],
+        [38, 1296]
+      ],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "initialize-wipe",
+      "id": 196,
+      "args": [[19, 32], 1024],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      },
+      "fade": {
+        "initialized": false,
+        "active": 0,
+        "sourceSlot": null,
+        "destinationSlot": null,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": null,
+        "width": null,
+        "height": null,
+        "start": 0,
+        "work": null
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 26,
+          "message": 13,
+          "replyWritten": true,
+          "reply": 26,
+          "matrix": null,
+          "unhandled": false
+        },
+        {
+          "kind": 26,
+          "message": 274,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "initialize-fade",
+      "id": 196,
+      "args": [[19, 36], 1152],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 27,
+          "message": 13,
+          "replyWritten": true,
+          "reply": 27,
+          "matrix": null,
+          "unhandled": false
+        },
+        {
+          "kind": 27,
+          "message": 275,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "start-wipe",
+      "id": 197,
+      "args": [[19, 32]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "start-fade",
+      "id": 197,
+      "args": [[19, 36]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "real-draw-before-replacement",
+      "update": 1,
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": [
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159]
+          }
+        }
+      ]
+    },
+    {
+      "label": "matrix-wipe-initialized",
+      "id": 199,
+      "args": [[19, 32], 1664],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 26,
+          "message": 262,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": [
+            1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624,
+            0, 1065353216
+          ],
+          "unhandled": true
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "matrix-fade-initialized",
+      "id": 199,
+      "args": [[19, 36], 1664],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 27,
+          "message": 262,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": [
+            1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624,
+            0, 1065353216
+          ],
+          "unhandled": true
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "replace-wipe-live",
+      "id": 202,
+      "args": [[19, 32], 1280],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 64,
+        "destinationSlot": 68,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 26,
+          "message": 13,
+          "replyWritten": true,
+          "reply": 26,
+          "matrix": null,
+          "unhandled": false
+        },
+        {
+          "kind": 26,
+          "message": 260,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "replace-fade-live",
+      "id": 202,
+      "args": [[19, 36], 1280],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159, 72, 56, 52, 159]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 27,
+          "message": 13,
+          "replyWritten": true,
+          "reply": 27,
+          "matrix": null,
+          "unhandled": false
+        },
+        {
+          "kind": 27,
+          "message": 260,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "real-draw-after-replacement",
+      "update": 2,
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": [
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+          }
+        },
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+          }
+        }
+      ]
+    },
+    {
+      "label": "finish-wipe-live",
+      "id": 198,
+      "args": [[19, 32]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 1,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 26,
+          "message": 258,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": [
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        }
+      ]
+    },
+    {
+      "label": "finish-fade-live",
+      "id": 198,
+      "args": [[19, 36]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 27,
+          "message": 258,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": [
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        }
+      ]
+    },
+    {
+      "label": "finish-wipe-inactive",
+      "id": 198,
+      "args": [[19, 32]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 26,
+          "message": 258,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": [
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        }
+      ]
+    },
+    {
+      "label": "finish-fade-inactive",
+      "id": 198,
+      "args": [[19, 36]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 27,
+          "message": 258,
+          "replyWritten": false,
+          "reply": null,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": [
+        {
+          "args": [0, 0, 2, 2, 0, 0],
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        }
+      ]
+    },
+    {
+      "label": "replace-Base-after-effects",
+      "id": 202,
+      "args": [[19, 40], 1280],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [
+        {
+          "kind": 0,
+          "message": 13,
+          "replyWritten": true,
+          "reply": 0,
+          "matrix": null,
+          "unhandled": false
+        }
+      ],
+      "uploads": []
+    },
+    {
+      "label": "delete-wipe",
+      "id": 67,
+      "args": [[19, 32]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "delete-fade",
+      "id": 67,
+      "args": [[19, 36]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    },
+    {
+      "label": "delete-Base",
+      "id": 67,
+      "args": [[19, 40]],
+      "matrix": [
+        1056964608, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1078984704, 3223322624, 0,
+        1065353216
+      ],
+      "wipe": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": 80,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "fade": {
+        "initialized": true,
+        "active": 0,
+        "sourceSlot": 72,
+        "destinationSlot": 76,
+        "maskSlot": null,
+        "sourceOrigin": [0, 0],
+        "destinationOrigin": [0, 0],
+        "output": [0, 0],
+        "duration": 4,
+        "width": 2,
+        "height": 2,
+        "start": 0,
+        "work": {
+          "width": 2,
+          "height": 2,
+          "rgba": [112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227, 112, 113, 98, 227]
+        }
+      },
+      "bitmaps": [
+        {
+          "slot": 64,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128, 64, 32, 16, 128]
+          }
+        },
+        {
+          "slot": 68,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255, 96, 128, 160, 255]
+          }
+        },
+        {
+          "slot": 72,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255, 33, 67, 101, 255]
+          }
+        },
+        {
+          "slot": 76,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200, 192, 160, 96, 200]
+          }
+        },
+        {
+          "slot": 80,
+          "refs": 1,
+          "frame": {
+            "width": 2,
+            "height": 2,
+            "rgba": [128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255, 128, 128, 128, 255]
+          }
+        }
+      ],
+      "events": [],
+      "uploads": []
+    }
+  ],
+  "retirement": {
+    "areasDeleted": true,
+    "workDeleted": true,
+    "borrowedSourcesAliveUntilCreatorDeleted": true,
+    "creatorDeleted": true,
+    "sourceOwnersDeleted": true,
+    "released": [
+      539062704, 539038080, 539038064, 539038032, 539037824, 539062832, 539038224, 539038208,
+      539038176, 539060128, 539060448, 539038320, 539060416, 539060304, 539038112, 539038256,
+      539060480, 539038016, 539038000, 539037968, 539037952, 539025552, 539025536, 539025504,
+      539060832, 539060544, 539061264, 539060976, 539061696, 539061408, 539062128, 539061840,
+      539062560, 539062272, 539060960, 539061392, 539061824, 539062256, 539062688, 539026000,
+      539025984, 539025952, 539026096, 539026016, 539026064, 539027552, 539027536, 539027504,
+      539026112, 539025584, 539025904, 539025872, 539025008, 539026032
+    ]
+  }
+}

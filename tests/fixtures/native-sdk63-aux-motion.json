@@ -1,0 +1,301 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "originalSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+  "evidence": {
+    "raw": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk63-auxiliary-tables-20261128/ORIGINAL-A1.json",
+    "sha256": "0d4753d1087e04141987bf3094a2bae5b82bfcf8537705ddc844b221876611ad",
+    "qualification": "Actual explicit MOT manager->parsed generic VM17/41->defined branch/shared position->Main302 owned working-bank reader->clear/rebind->delete. Same qualified true CRT/Settings/FileServer/typed Script host; no new Root0/App/GPU/physical span.",
+    "accounting": {
+      "targetGeneric": 8,
+      "allGCALL": 22,
+      "actualBusinessDirect": 0,
+      "journalEntries": 56,
+      "overlap": "MOT generic calls occur inside307, caller VM dispatches overlap GCALL wrappers; setup/cleanup journal entries separate."
+    }
+  },
+  "motion": "S0NTAAIAAAAAAAAANAAAAOUAAAAZAQAAAAAAAAAAAAAAEAAAABAAABkBAAAAAAAAygEAAHicbY4xCsJAEEUf6AGUsbBIERg2EtKktxnBIkUOtUfbY1haeA5XZmIQIc3n8+Yx/KQw2qBHQPdApwYkhUP5w/cvxiJvkUHa6NkG7V0/hT6tevEs9tPZ0mc/yhT9DDnJHL2FLOKTdAdc9AGI+Bh911oX4A+f1mkDudfXSspCrh/RSh5T",
+  "init": [
+    [1024, 0],
+    [1028, 0],
+    [1032, 0],
+    [1036, 0],
+    [1040, 0],
+    [1044, 0],
+    [1048, 0],
+    [1052, 0],
+    [1056, 0],
+    [1060, 1065353216],
+    [1064, 0],
+    [1068, 0],
+    [1072, 0],
+    [1076, 0],
+    [1080, 1065353216],
+    [1084, 0],
+    [1088, 0],
+    [1092, 0],
+    [1096, 0],
+    [1100, 1065353216],
+    [1104, 0],
+    [1108, 0],
+    [1112, 0],
+    [1116, 0],
+    [1120, 1065353216],
+    [1124, 1065353216],
+    [1128, 1065353216],
+    [1132, 1065353216],
+    [1136, 4294967295],
+    [1140, 0],
+    [1144, 0],
+    [1148, 0],
+    [1152, 0],
+    [1156, 0],
+    [1160, 0],
+    [1164, 1],
+    [256, 762869089],
+    [260, 1768843622],
+    [264, 1798202740],
+    [268, 29539],
+    [272, 0],
+    [276, 0],
+    [280, 0],
+    [284, 0]
+  ],
+  "calls": [
+    {
+      "id": 294,
+      "args": [],
+      "out": 64
+    },
+    {
+      "id": 299,
+      "args": [[19, 64], 1024, 1036, 1048, 1060, 1124, 4294967295, 1140, 1152, 1]
+    },
+    {
+      "id": 301,
+      "args": [[19, 64], 1024, 1036, 1048, 1060, 1124, 4294967295, 1140, 1152, 1]
+    },
+    {
+      "id": 304,
+      "args": [[19, 64], 256, 768, 0, 0, 0, 1],
+      "out": 68
+    },
+    {
+      "id": 307,
+      "args": [[19, 64], 100, 0],
+      "out": 72
+    },
+    {
+      "id": 302,
+      "args": [[19, 64], 1536, 1548, 1560, 1572, 1636, 1648, 1652, 1664, 1676]
+    },
+    {
+      "id": 296,
+      "args": [[19, 64]]
+    },
+    {
+      "id": 304,
+      "args": [[19, 64], 256, 768, 0, 0, 0, 2],
+      "out": 68
+    },
+    {
+      "id": 307,
+      "args": [[19, 64], 104, 0],
+      "out": 72
+    },
+    {
+      "id": 302,
+      "args": [[19, 64], 1536, 1548, 1560, 1572, 1636, 1648, 1652, 1664, 1676]
+    },
+    {
+      "id": 295,
+      "args": [[19, 64]]
+    }
+  ],
+  "rows": [
+    {
+      "i": 0,
+      "id": 294,
+      "control": 1,
+      "result": "owned-manager",
+      "records": [],
+      "working": null,
+      "output": null
+    },
+    {
+      "i": 1,
+      "id": 299,
+      "control": 2,
+      "result": null,
+      "records": [],
+      "working": null,
+      "output": null
+    },
+    {
+      "i": 2,
+      "id": 301,
+      "control": 2,
+      "result": null,
+      "records": [],
+      "working": null,
+      "output": null
+    },
+    {
+      "i": 3,
+      "id": 304,
+      "control": 1,
+      "result": "owned-record",
+      "records": [
+        {
+          "handle": 1,
+          "pc": 0,
+          "results": null
+        }
+      ],
+      "working": null,
+      "output": null
+    },
+    {
+      "i": 4,
+      "id": 307,
+      "control": 1,
+      "result": 1,
+      "records": [
+        {
+          "handle": 1,
+          "pc": 228,
+          "results": [3, 4294967294, 1082969293, 1073741824]
+        }
+      ],
+      "working": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "output": null
+    },
+    {
+      "i": 5,
+      "id": 302,
+      "control": 2,
+      "result": null,
+      "records": [
+        {
+          "handle": 1,
+          "pc": 228,
+          "results": [3, 4294967294, 1082969293, 1073741824]
+        }
+      ],
+      "working": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "output": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA"
+    },
+    {
+      "i": 6,
+      "id": 296,
+      "control": 2,
+      "result": null,
+      "records": [],
+      "working": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "output": null
+    },
+    {
+      "i": 7,
+      "id": 304,
+      "control": 1,
+      "result": "owned-record",
+      "records": [
+        {
+          "handle": 2,
+          "pc": 0,
+          "results": [0, 0, 0, 0]
+        }
+      ],
+      "working": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "output": null
+    },
+    {
+      "i": 8,
+      "id": 307,
+      "control": 1,
+      "result": 1,
+      "records": [
+        {
+          "handle": 2,
+          "pc": 228,
+          "results": [3, 4294967294, 1082969293, 1073741824]
+        }
+      ],
+      "working": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "output": null
+    },
+    {
+      "i": 9,
+      "id": 302,
+      "control": 2,
+      "result": null,
+      "records": [
+        {
+          "handle": 2,
+          "pc": 228,
+          "results": [3, 4294967294, 1082969293, 1073741824]
+        }
+      ],
+      "working": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "output": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzcyMQAAA4EAAAABAAACAPwAAAAAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAP/////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA"
+    },
+    {
+      "i": 10,
+      "id": 295,
+      "control": 2,
+      "result": null,
+      "records": [],
+      "working": null,
+      "output": null
+    }
+  ],
+  "generic": [
+    {
+      "id": 17,
+      "args": [1076887552],
+      "control": 1,
+      "value": 3
+    },
+    {
+      "id": 17,
+      "args": [3222274048],
+      "control": 1,
+      "value": 4294967294
+    },
+    {
+      "id": 41,
+      "args": [1073741824, 1090519040, 0, 1092616192, 1082130432],
+      "control": 1,
+      "value": 1082969293
+    },
+    {
+      "id": 41,
+      "args": [3221225472, 1086324736, 0, 1090519040, 1082130432],
+      "control": 1,
+      "value": 1073741824
+    },
+    {
+      "id": 17,
+      "args": [1076887552],
+      "control": 1,
+      "value": 3
+    },
+    {
+      "id": 17,
+      "args": [3222274048],
+      "control": 1,
+      "value": 4294967294
+    },
+    {
+      "id": 41,
+      "args": [1073741824, 1090519040, 0, 1092616192, 1082130432],
+      "control": 1,
+      "value": 1082969293
+    },
+    {
+      "id": 41,
+      "args": [3221225472, 1086324736, 0, 1090519040, 1082130432],
+      "control": 1,
+      "value": 1073741824
+    }
+  ]
+}

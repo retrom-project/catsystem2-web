@@ -1,0 +1,1067 @@
+[
+  {
+    "name": "sprite-mode0-one",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 0
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-mode0-two",
+    "kind": "sprite",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 0
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [40, 47, 71, 211],
+          [227, 210, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-mode1-one",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 1
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-mode1-two",
+    "kind": "sprite",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 1
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [40, 47, 71, 211],
+          [227, 210, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-mode2-one",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 2
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-mode2-two",
+    "kind": "sprite",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 2
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [40, 47, 71, 211],
+          [227, 210, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-mode3-one",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-mode3-two",
+    "kind": "sprite",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 3
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [40, 47, 71, 211],
+          [227, 210, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-fixed-paired-order-discriminator",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 2
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [0.125, 3.75, -0.5, 7.125, -0.875, 1.25, -2.5, 0.25, 4, 199.25, -137.5, 0.3125],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-rotated-negative-cos",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-rotated-threshold-else",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [2, 0, 0, 0, 0, 3, 0, -4, 0, 1, 2, 3],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-rotated-unused-NaN-threshold-else",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [2, 0, 0, 0, 3, 0, 0, 0, 0, 2, 3, 4],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-billboard-zero-scales",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 0
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-camera-parallel-up",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 0
+    },
+    "camera": [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-partial-reserved-zero-tail",
+    "kind": "sprite",
+    "sourceCount": 3,
+    "nodeParams": {
+      "billboard": 2
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-reversed-order",
+    "kind": "sprite",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 2
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [40, 47, 71, 211],
+          [227, 210, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "sprite-empty",
+    "kind": "sprite",
+    "sourceCount": 0,
+    "nodeParams": {
+      "billboard": 2
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": []
+  },
+  {
+    "name": "sprite-zero-up-explicit-error",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 1
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ],
+    "expectedUnsupported": "billboard.zero-up-scale"
+  },
+  {
+    "name": "sprite-rotated-nonfinite-explicit-error",
+    "kind": "sprite",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 3],
+        "positions": [-1.125, -0.75, 1.5, -0.5, -0.875, 1.25, 1.75, 1.5],
+        "colors": [
+          [23, 47, 71, 211],
+          [227, 199, 173, 83],
+          [31, 151, 89, 239],
+          [181, 61, 251, 127]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ],
+    "expectedUnsupported": "rotated-billboard.basis"
+  },
+  {
+    "name": "ring-mode0-single-local",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 0,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-mode0-multi-world",
+    "kind": "ring",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 0,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "viewingAngle": 135,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [252, 72, 28, 234],
+          [48, 222, 108, 160],
+          [22, 54, 250, 82]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-mode1-single-local",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 1,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-mode1-multi-world",
+    "kind": "ring",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 1,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "viewingAngle": 135,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [252, 72, 28, 234],
+          [48, 222, 108, 160],
+          [22, 54, 250, 82]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-mode2-single-local",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-mode2-multi-world",
+    "kind": "ring",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "viewingAngle": 135,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [252, 72, 28, 234],
+          [48, 222, 108, 160],
+          [22, 54, 250, 82]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-mode3-single-local",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-mode3-multi-world",
+    "kind": "ring",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 3,
+      "vertexCount": 5
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "viewingAngle": 135,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [252, 72, 28, 234],
+          [48, 222, 108, 160],
+          [22, 54, 250, 82]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-fixed-one-segment",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 1
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 45,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-full-circle-step-recurrence",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 8
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 360,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-negative-angle-and-UV",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 7
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "viewingAngle": -180,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 1.5,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [-0.5, 0.25, -1.25, -0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-zero-angle-collapsed",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 0,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-billboard-zero-scales",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 0,
+      "vertexCount": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-rotated-threshold-else",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3,
+      "vertexCount": 4
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [2, 0, 0, 0, 0, 3, 0, -4, 0, 1, 2, 3],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-rotated-unused-NaN-threshold-else",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 3,
+      "vertexCount": 4
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [2, 0, 0, 0, 3, 0, 0, 0, 0, 2, 3, 4],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-camera-parallel-up",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 0,
+      "vertexCount": 4
+    },
+    "camera": [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-one-submitted-but-node-count-two-bakes",
+    "kind": "ring",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-multi-reversed-order",
+    "kind": "ring",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [-1.6, 1.2, 0, -1.8, -2.4, 0, 0, 0, 4, -5, 11, 2],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [252, 72, 28, 234],
+          [48, 222, 108, 160],
+          [22, 54, 250, 82]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      },
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-partial-zero-tail",
+    "kind": "ring",
+    "sourceCount": 3,
+    "nodeParams": {
+      "billboard": 0,
+      "vertexCount": 3
+    },
+    "camera": [0.8, 0, 0.6, 0, 0, 1, 0, 0, -0.6, 0, 0.8, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1.6, 1.2, 0, -1.8, 2.4, 0, 0, 0, 4, 7, -3, 5],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-empty",
+    "kind": "ring",
+    "sourceCount": 0,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": []
+  },
+  {
+    "name": "ring-bulk-paired-tree-cancellation",
+    "kind": "ring",
+    "sourceCount": 2,
+    "nodeParams": {
+      "billboard": 2,
+      "vertexCount": 1
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1, 0, 0, 0, 1, 0, 1, 0, 1, -16777216, 0, 0],
+        "viewingAngle": 0,
+        "outerLocation": [16777216, 1],
+        "innerLocation": [0, 1],
+        "centerRatio": 0.5,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ]
+  },
+  {
+    "name": "ring-zero-up-explicit-error",
+    "kind": "ring",
+    "sourceCount": 1,
+    "nodeParams": {
+      "billboard": 1,
+      "vertexCount": 3
+    },
+    "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "instances": [
+      {
+        "matrix": [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3],
+        "viewingAngle": 240,
+        "outerLocation": [3.75, 0.5],
+        "innerLocation": [1.25, -0.75],
+        "centerRatio": 0.375,
+        "colors": [
+          [241, 61, 17, 223],
+          [37, 211, 97, 149],
+          [11, 43, 239, 71]
+        ],
+        "uv": [0.125, -0.25, 0.625, 0.75]
+      }
+    ],
+    "expectedUnsupported": "billboard.zero-up-scale"
+  }
+]

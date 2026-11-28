@@ -1,0 +1,1964 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "scope": "Actual loaded Script/Main271/typed kind16 normal4x4 HG3 atlas and header-selected tables; seventeen finite calls per particle, two particles finish even after first exit, normal update/copy/stop/disposal. Six independent current cold points per table. Native post-idle before=current is distinct from interpreter-before during execution. Current unstarted hasFrame=false sentinel is an abstract state, not a numeric comparison to native pre-update raw0. No physicalGPU/disk or all operands claim.",
+  "mainInstructions": [
+    [37, 603028165],
+    [37, 1279480912],
+    [38, 256],
+    [37, 1919905312],
+    [38, 260],
+    [37, 543973741],
+    [38, 264],
+    [37, 1701738351],
+    [38, 268],
+    [37, 114],
+    [38, 272],
+    [37, 1949118832],
+    [38, 320],
+    [37, 1701601889],
+    [38, 324],
+    [37, 0],
+    [38, 328],
+    [37, 1630351728],
+    [38, 384],
+    [37, 1935764596],
+    [38, 388],
+    [37, 0],
+    [38, 392],
+    [37, 3219128320],
+    [38, 1024],
+    [37, 3217031168],
+    [38, 1028],
+    [37, 3214934016],
+    [38, 1032],
+    [37, 3212836864],
+    [38, 1036],
+    [37, 3208642560],
+    [38, 1040],
+    [37, 3204448256],
+    [38, 1044],
+    [37, 3196059648],
+    [38, 1048],
+    [37, 0],
+    [38, 1052],
+    [37, 1048576000],
+    [38, 1056],
+    [37, 1056964608],
+    [38, 1060],
+    [37, 1061158912],
+    [38, 1064],
+    [37, 1065353216],
+    [38, 1068],
+    [37, 1067450368],
+    [38, 1072],
+    [37, 1069547520],
+    [38, 1076],
+    [37, 1071644672],
+    [38, 1080],
+    [37, 1073741824],
+    [38, 1084],
+    [37, 1074790400],
+    [38, 1088],
+    [37, 1075838976],
+    [38, 1092],
+    [37, 1076887552],
+    [38, 1096],
+    [37, 1077936128],
+    [38, 1100],
+    [37, 1078984704],
+    [38, 1104],
+    [37, 1080033280],
+    [38, 1108],
+    [37, 1081081856],
+    [38, 1112],
+    [37, 1082130432],
+    [38, 1116],
+    [37, 1082654720],
+    [38, 1120],
+    [37, 1083179008],
+    [38, 1124],
+    [37, 1083703296],
+    [38, 1128],
+    [37, 1084227584],
+    [38, 1132],
+    [37, 1084751872],
+    [38, 1136],
+    [37, 1085276160],
+    [38, 1140],
+    [37, 1085800448],
+    [38, 1144],
+    [37, 1086324736],
+    [38, 1148],
+    [37, 1056964608],
+    [38, 1152],
+    [37, 1065353216],
+    [38, 1156],
+    [37, 1069547520],
+    [38, 1160],
+    [37, 1073741824],
+    [38, 1164],
+    [37, 1075838976],
+    [38, 1168],
+    [37, 1077936128],
+    [38, 1172],
+    [37, 1080033280],
+    [38, 1176],
+    [37, 1082130432],
+    [38, 1180],
+    [37, 1083179008],
+    [38, 1184],
+    [37, 1084227584],
+    [38, 1188],
+    [37, 1085276160],
+    [38, 1192],
+    [37, 1086324736],
+    [38, 1196],
+    [37, 1087373312],
+    [38, 1200],
+    [37, 1088421888],
+    [38, 1204],
+    [37, 1089470464],
+    [38, 1208],
+    [37, 1090519040],
+    [38, 1212],
+    [37, 1091043328],
+    [38, 1216],
+    [37, 1091567616],
+    [38, 1220],
+    [37, 1092091904],
+    [38, 1224],
+    [37, 1092616192],
+    [38, 1228],
+    [37, 1093140480],
+    [38, 1232],
+    [37, 1093664768],
+    [38, 1236],
+    [37, 1094189056],
+    [38, 1240],
+    [37, 1094713344],
+    [38, 1244],
+    [37, 1095237632],
+    [38, 1248],
+    [37, 1095761920],
+    [38, 1252],
+    [37, 1096286208],
+    [38, 1256],
+    [37, 1096810496],
+    [38, 1260],
+    [37, 1097334784],
+    [38, 1264],
+    [37, 1097859072],
+    [38, 1268],
+    [37, 1098383360],
+    [38, 1272],
+    [37, 1098907648],
+    [38, 1276],
+    [43, 68, 0],
+    [38, 44],
+    [37, 16],
+    [37, [19, 44]],
+    [37, 256],
+    [43, 66, 12],
+    [38, 40],
+    [37, [19, 40]],
+    [37, 320],
+    [37, 384],
+    [37, 2],
+    [37, 1167867904],
+    [37, 1024],
+    [43, 271, 24],
+    [38, 160],
+    [43, 65, 0],
+    [37, [19, 40]],
+    [43, 272, 4],
+    [43, 65, 0],
+    [37, [19, 40]],
+    [43, 274, 4],
+    [38, 164],
+    [43, 65, 0],
+    [37, [19, 40]],
+    [37, 1152],
+    [43, 275, 8],
+    [37, [19, 40]],
+    [43, 273, 4],
+    [37, [19, 40]],
+    [43, 274, 4],
+    [38, 168],
+    [37, 0],
+    [38, 1152],
+    [37, 0],
+    [38, 1156],
+    [37, 0],
+    [38, 1160],
+    [37, 0],
+    [38, 1164],
+    [37, 0],
+    [38, 1168],
+    [37, 0],
+    [38, 1172],
+    [37, 0],
+    [38, 1176],
+    [37, 0],
+    [38, 1180],
+    [37, 0],
+    [38, 1184],
+    [37, 0],
+    [38, 1188],
+    [37, 0],
+    [38, 1192],
+    [37, 0],
+    [38, 1196],
+    [37, 0],
+    [38, 1200],
+    [37, 0],
+    [38, 1204],
+    [37, 0],
+    [38, 1208],
+    [37, 0],
+    [38, 1212],
+    [37, 0],
+    [38, 1216],
+    [37, 0],
+    [38, 1220],
+    [37, 0],
+    [38, 1224],
+    [37, 0],
+    [38, 1228],
+    [37, 0],
+    [38, 1232],
+    [37, 0],
+    [38, 1236],
+    [37, 0],
+    [38, 1240],
+    [37, 0],
+    [38, 1244],
+    [37, 0],
+    [38, 1248],
+    [37, 0],
+    [38, 1252],
+    [37, 0],
+    [38, 1256],
+    [37, 0],
+    [38, 1260],
+    [37, 0],
+    [38, 1264],
+    [37, 0],
+    [38, 1268],
+    [37, 0],
+    [38, 1272],
+    [37, 0],
+    [38, 1276],
+    [43, 65, 0],
+    [37, [19, 40]],
+    [43, 67, 4],
+    [43, 65, 0],
+    [37, 240],
+    [43, 71, 4],
+    [59]
+  ],
+  "particleInstructions": [
+    [37, 603028166],
+    [43, 1, 0],
+    [38, 64],
+    [43, 2, 0],
+    [38, 68],
+    [37, 123],
+    [43, 3, 4],
+    [38, 72],
+    [43, 4, 0],
+    [38, 76],
+    [37, 80],
+    [37, 84],
+    [43, 5, 8],
+    [37, 1048576000],
+    [43, 9, 4],
+    [38, 88],
+    [37, 3204448256],
+    [43, 10, 4],
+    [38, 92],
+    [37, 3224371200],
+    [43, 14, 4],
+    [38, 96],
+    [37, 1110704128],
+    [43, 19, 4],
+    [38, 100],
+    [37, 1061752795],
+    [43, 20, 4],
+    [38, 104],
+    [37, -17],
+    [43, 21, 4],
+    [38, 108],
+    [37, 128],
+    [43, 35, 4],
+    [43, 36, 0],
+    [38, 112],
+    [43, 40, 0],
+    [38, 116],
+    [37, 1073741824],
+    [37, 1090519040],
+    [37, 0],
+    [37, 1092616192],
+    [37, 1082130432],
+    [43, 41, 20],
+    [38, 120],
+    [37, 3224371200],
+    [43, 42, 4],
+    [38, 124],
+    [43, 32, 0],
+    [59]
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "args": [],
+      "out": 64
+    },
+    {
+      "id": 2,
+      "args": [],
+      "out": 68
+    },
+    {
+      "id": 3,
+      "args": [123],
+      "out": 72
+    },
+    {
+      "id": 4,
+      "args": [],
+      "out": 76
+    },
+    {
+      "id": 5,
+      "args": [80, 84]
+    },
+    {
+      "id": 9,
+      "args": [1048576000],
+      "out": 88
+    },
+    {
+      "id": 10,
+      "args": [3204448256],
+      "out": 92
+    },
+    {
+      "id": 14,
+      "args": [3224371200],
+      "out": 96
+    },
+    {
+      "id": 19,
+      "args": [1110704128],
+      "out": 100
+    },
+    {
+      "id": 20,
+      "args": [1061752795],
+      "out": 104
+    },
+    {
+      "id": 21,
+      "args": [-17],
+      "out": 108
+    },
+    {
+      "id": 35,
+      "args": [128]
+    },
+    {
+      "id": 36,
+      "args": [],
+      "out": 112
+    },
+    {
+      "id": 40,
+      "args": [],
+      "out": 116
+    },
+    {
+      "id": 41,
+      "args": [1073741824, 1090519040, 0, 1092616192, 1082130432],
+      "out": 120
+    },
+    {
+      "id": 42,
+      "args": [3224371200],
+      "out": 124
+    },
+    {
+      "id": 32,
+      "args": []
+    }
+  ],
+  "phases": [
+    {
+      "label": "normal typed factory and sized native atlas load"
+    },
+    {
+      "label": "normal start before the next parent update"
+    },
+    {
+      "label": "two complete particle invocations and original exit"
+    },
+    {
+      "label": "register replacement and ordinary stop/query"
+    },
+    {
+      "label": "normal child retirement request"
+    },
+    {
+      "label": "parent prune and normal wait"
+    }
+  ],
+  "budget": {
+    "tableInvocationsPerParticle": 17,
+    "particleCount": 2,
+    "particleTargets": 34,
+    "mainTargets": 6,
+    "targetTotal": 40,
+    "factoryGCALL": 1,
+    "supportSelfGCALL": 1,
+    "bootstrapGCALL": 3,
+    "carrier65": 5,
+    "cleanup67": 1,
+    "cleanup71": 1,
+    "allGCALL": 52,
+    "scriptFrameDirect": 6,
+    "newBusinessDirect": 6,
+    "oldHostSetup": "Unchanged qualified true CRT/Settings/FileServer/Window/Input/View/ApplicationRoot and cleanup journal; bootstrap overlaps are marked, not counted as independent evidence."
+  },
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjwvSU5UPjwvZG9jdW1lbnQ+",
+    "mainProgram": "S0NTAAIAAAAAAAAANAAAADQGAABoBgAAAAAAAAAAAAAAEAAAABAAAGgGAAAAAAAAaAwAAHicbdMhTJtBFAfwY6moIFk3JhATTf7rPyRlCUsmSLasd6PLKhAIBGKCLiNBdEAYycgygaioQFQgEIgKRAWiAoEgawVLEAgEAoGoQCAQXYJATCzffe+Fl6zmyy937+577+5eAb9//EEBc/Mzs4Qbca6A/MrqOpGJ/lqt5Yls9Or3lSViNHrdOUfkotdevdwgfHT1c22JKEe7GFPRmCqxFb1Rq34j6iamIe53CZdJ3esSGXGrS2TFW11iVOy7RE7susQzjflFjGce9n+u4++IvI6XiBe6T4mY0JgSMan/LRFTmk+JeC3ul4hp3ccTb8U5T3hx3hNl8ZQnKvovT8yK5zwxJ170xLx4zRMLmo8nPokbnlgUNz3xRbzriWXN2RM1cdsTa+KOJzbER57Y1Lo88dOcyZY5h7qpvWHq3TY1Nk1dO6aWXZP/nsm5ZfLcN7m1TT4H4nNPdPTMPXEoHnjiSPMJxLE4G4ie3kUgTsTjgTjVnANxJp4IxLneUSAuxNOBuNS6AnElrgSir3cXiGvxQiButPZA3IqXAzHQOw3EnXgzEPd6PoH4m3GuiLJzTh7spEsmc8l3LHXSmkW8T0JGY8hEnIxf6b20ux6l4X7vQyH2UhGPR5zDeFzUcslA0B+l64uxj5EZPvdU54j9YRGF+GKKGEvismbhE104ZKe2e2hOfXCJ68YN423jpvGO8a7xnnHLeN+4bXxg3DE+ND4yPjbuGZ8YnxqfGZ8bXxhfGl8Z942vjW+Mb40HxnfG98bpg/vvrmfckHeAQRz4qHNv/gEg8sqH",
+    "particlePrograms": [
+      "S0NTAAIAAAABAAAANAAAAHYBAACqAQAAAAAAAAAAAAAAEAAAABAAAKoBAAAAAAAA7AIAAHicTc+xjgFRFAbgnx0JW1AYveQ3spxGoZMwRLGbKBQKhUKh2EKhUAiKeTNb7Ut4CPEEI/NnJkdzcvOd/557bsT/85PGEgACQJcxAGPZYQ4g4kX8kXEg/hYEnlsot1RdqVnJmlUBkIyNNb++zhk346fzJufBn7HuvM15ODM2nXfie+NnYgydf8WPNE2NLee9ONFqLNjY8S8cBF8Ox2LLWHWqKmnrnMTGXhYPFT+9bd/3h68a2y7Gjl7VeyYT",
+      "S0NTAAIAAAACAAAANAAAAHYBAACqAQAAAAAAAAAAAAAAEAAAABAAAKoBAAAAAAAA7AIAAHicTc+xjgFRFAbgnx0JW1AYveQ3spxGoZMwRLGbKBQKhUKh2EKhUAiKeTNb7Ut4CPEEI/NnJkdzcvOd/557bsT/85PGEgACQJcxAGPZYQ4g4kX8kXEg/hYEnlsot1RdqVnJmlUBkIyNNb++zhk346fzJufBn7HuvM15ODM2nXfie+NnYgydf8WPNE2NLee9ONFqLNjY8S8cBF8Ox2LLWHWqKmnrnMTGXhYPFT+9bd/3h68a2y7Gjl7VeyYT"
+    ],
+    "imagesArchive": "S0lGAAEAAABwMS1hdGxhcy5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAKIAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARgAAAAAAAAAEAAAAIgAAAEAAAAAMAAAABAAAAHic42hoaBBEAsoTJ06UQQJMc+bMUUMGy5Yt40ECAJJvC8F4nGtkEGAAAAIoAJI=",
+    "rgba": "Eb8dABy4JlUnsS+qMqo4/z2jQQBInEpVU5VTql6OXP9ph2UAdIBuVX95d6qKcoD/lWuJAKBkklWrXZuqtlak/w=="
+  },
+  "versions": [
+    {
+      "version": 1,
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P1-V1.json",
+        "sha256": "e4320775d642970decefc83a0bf7a053df35914a11f366182b29916539730731",
+        "bytes": 118487
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "normal typed factory and sized native atlas load",
+          "frame": 600,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565792,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 65536,
+            "dimensions": [4, 4],
+            "registers": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "unobservedContents": true
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "unobservedContents": true
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "label": "normal start before the next parent update",
+          "frame": 601,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565792,
+            "receiver": 537130496,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 65536,
+            "dimensions": [4, 4],
+            "registers": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "unobservedContents": true
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "unobservedContents": true
+              }
+            ]
+          }
+        },
+        {
+          "phase": 2,
+          "label": "two complete particle invocations and original exit",
+          "frame": 602,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565792,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 602,
+            "now": 2,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 65536,
+            "dimensions": [4, 4],
+            "registers": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAQAAAA=="
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "bytes": "lEwEIJxMBCA="
+              }
+            ],
+            "results": [
+              0, 4294967295, 123, 60, 32, 24, 1048665934, 1074137746, 1076887552, 1061752795,
+              1110704128, 17, 1, 1, 1082969293, 4294967293
+            ],
+            "registerCopy": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ]
+          }
+        },
+        {
+          "phase": 3,
+          "label": "register replacement and ordinary stop/query",
+          "frame": 603,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565792,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 602,
+            "now": 2,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 65536,
+            "dimensions": [4, 4],
+            "registers": [
+              1056964608, 1065353216, 1069547520, 1073741824, 1075838976, 1077936128, 1080033280,
+              1082130432, 1083179008, 1084227584, 1085276160, 1086324736, 1087373312, 1088421888,
+              1089470464, 1090519040, 1091043328, 1091567616, 1092091904, 1092616192, 1093140480,
+              1093664768, 1094189056, 1094713344, 1095237632, 1095761920, 1096286208, 1096810496,
+              1097334784, 1097859072, 1098383360, 1098907648
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAQAAAA=="
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "bytes": "lEwEIJxMBCA="
+              }
+            ],
+            "results": [
+              0, 4294967295, 123, 60, 32, 24, 1048665934, 1074137746, 1076887552, 1061752795,
+              1110704128, 17, 1, 1, 1082969293, 4294967293
+            ],
+            "registerCopy": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ]
+          }
+        },
+        {
+          "phase": 4,
+          "label": "normal child retirement request",
+          "frame": 604,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565792,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 602,
+            "now": 2,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 65536,
+            "dimensions": [4, 4],
+            "registers": [
+              1056964608, 1065353216, 1069547520, 1073741824, 1075838976, 1077936128, 1080033280,
+              1082130432, 1083179008, 1084227584, 1085276160, 1086324736, 1087373312, 1088421888,
+              1089470464, 1090519040, 1091043328, 1091567616, 1092091904, 1092616192, 1093140480,
+              1093664768, 1094189056, 1094713344, 1095237632, 1095761920, 1096286208, 1096810496,
+              1097334784, 1097859072, 1098383360, 1098907648
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAQAAAA=="
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "bytes": "lEwEIJxMBCA="
+              }
+            ],
+            "results": [
+              0, 4294967295, 123, 60, 32, 24, 1048665934, 1074137746, 1076887552, 1061752795,
+              1110704128, 17, 1, 1, 1082969293, 4294967293
+            ],
+            "registerCopy": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ]
+          }
+        },
+        {
+          "phase": 5,
+          "label": "parent prune and normal wait",
+          "frame": 605,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "id": 1,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 0
+        },
+        {
+          "id": 2,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295
+        },
+        {
+          "id": 3,
+          "particle": 0,
+          "args": [123],
+          "control": 1,
+          "resultWritten": true,
+          "value": 123
+        },
+        {
+          "id": 4,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 60
+        },
+        {
+          "id": 5,
+          "particle": 0,
+          "args": [80, 84],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 9,
+          "particle": 0,
+          "args": [1048576000],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1048665934
+        },
+        {
+          "id": 10,
+          "particle": 0,
+          "args": [3204448256],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1074137746
+        },
+        {
+          "id": 14,
+          "particle": 0,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1076887552
+        },
+        {
+          "id": 19,
+          "particle": 0,
+          "args": [1110704128],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1061752795
+        },
+        {
+          "id": 20,
+          "particle": 0,
+          "args": [1061752795],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1110704128
+        },
+        {
+          "id": 21,
+          "particle": 0,
+          "args": [4294967279],
+          "control": 1,
+          "resultWritten": true,
+          "value": 17
+        },
+        {
+          "id": 35,
+          "particle": 0,
+          "args": [128],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 36,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 0
+        },
+        {
+          "id": 40,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1
+        },
+        {
+          "id": 41,
+          "particle": 0,
+          "args": [1073741824, 1090519040, 0, 1092616192, 1082130432],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1082969293
+        },
+        {
+          "id": 42,
+          "particle": 0,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967293
+        },
+        {
+          "id": 32,
+          "particle": 0,
+          "args": [],
+          "control": 4,
+          "resultWritten": false
+        },
+        {
+          "id": 1,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 0
+        },
+        {
+          "id": 2,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295
+        },
+        {
+          "id": 3,
+          "particle": 1,
+          "args": [123],
+          "control": 1,
+          "resultWritten": true,
+          "value": 123
+        },
+        {
+          "id": 4,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 60
+        },
+        {
+          "id": 5,
+          "particle": 1,
+          "args": [80, 84],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 9,
+          "particle": 1,
+          "args": [1048576000],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1048665934
+        },
+        {
+          "id": 10,
+          "particle": 1,
+          "args": [3204448256],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1074137746
+        },
+        {
+          "id": 14,
+          "particle": 1,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1076887552
+        },
+        {
+          "id": 19,
+          "particle": 1,
+          "args": [1110704128],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1061752795
+        },
+        {
+          "id": 20,
+          "particle": 1,
+          "args": [1061752795],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1110704128
+        },
+        {
+          "id": 21,
+          "particle": 1,
+          "args": [4294967279],
+          "control": 1,
+          "resultWritten": true,
+          "value": 17
+        },
+        {
+          "id": 35,
+          "particle": 1,
+          "args": [128],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 36,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1
+        },
+        {
+          "id": 40,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1
+        },
+        {
+          "id": 41,
+          "particle": 1,
+          "args": [1073741824, 1090519040, 0, 1092616192, 1082130432],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1082969293
+        },
+        {
+          "id": 42,
+          "particle": 1,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967293
+        },
+        {
+          "id": 32,
+          "particle": 1,
+          "args": [],
+          "control": 4,
+          "resultWritten": false
+        }
+      ]
+    },
+    {
+      "version": 2,
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P1-V2.json",
+        "sha256": "964842f66a2707f56f96d1d162f2fd4e74743c6a2dd340601217ddc9dea8a1d2",
+        "bytes": 118492
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "normal typed factory and sized native atlas load",
+          "frame": 600,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565976,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 131072,
+            "dimensions": [4, 4],
+            "registers": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "unobservedContents": true
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "unobservedContents": true
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "label": "normal start before the next parent update",
+          "frame": 601,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565976,
+            "receiver": 537130496,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 131072,
+            "dimensions": [4, 4],
+            "registers": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "unobservedContents": true
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "unobservedContents": true
+              }
+            ]
+          }
+        },
+        {
+          "phase": 2,
+          "label": "two complete particle invocations and original exit",
+          "frame": 602,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565976,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 602,
+            "now": 2,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 131072,
+            "dimensions": [4, 4],
+            "registers": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAQAAAA=="
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "bytes": "lEwEIJxMBCA="
+              }
+            ],
+            "results": [
+              0, 4294967295, 123, 60, 32, 24, 1048665934, 1074137746, 1076887552, 1061752795,
+              1110704128, 17, 1, 1, 1082969293, 4294967293
+            ],
+            "registerCopy": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ]
+          }
+        },
+        {
+          "phase": 3,
+          "label": "register replacement and ordinary stop/query",
+          "frame": 603,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565976,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 602,
+            "now": 2,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 131072,
+            "dimensions": [4, 4],
+            "registers": [
+              1056964608, 1065353216, 1069547520, 1073741824, 1075838976, 1077936128, 1080033280,
+              1082130432, 1083179008, 1084227584, 1085276160, 1086324736, 1087373312, 1088421888,
+              1089470464, 1090519040, 1091043328, 1091567616, 1092091904, 1092616192, 1093140480,
+              1093664768, 1094189056, 1094713344, 1095237632, 1095761920, 1096286208, 1096810496,
+              1097334784, 1097859072, 1098383360, 1098907648
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAQAAAA=="
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "bytes": "lEwEIJxMBCA="
+              }
+            ],
+            "results": [
+              0, 4294967295, 123, 60, 32, 24, 1048665934, 1074137746, 1076887552, 1061752795,
+              1110704128, 17, 1, 1, 1082969293, 4294967293
+            ],
+            "registerCopy": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ]
+          }
+        },
+        {
+          "phase": 4,
+          "label": "normal child retirement request",
+          "frame": 604,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130496,
+            "vm": 537131840,
+            "scriptOwner": 537117264,
+            "nativeTable": 7565976,
+            "receiver": 537130496,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 602,
+            "now": 2,
+            "fps": 60,
+            "textureOwner": 537117696,
+            "bitmapOwner": 537129760,
+            "count": 2,
+            "scriptVersion": 131072,
+            "dimensions": [4, 4],
+            "registers": [
+              1056964608, 1065353216, 1069547520, 1073741824, 1075838976, 1077936128, 1080033280,
+              1082130432, 1083179008, 1084227584, 1085276160, 1086324736, 1087373312, 1088421888,
+              1089470464, 1090519040, 1091043328, 1091567616, 1092091904, 1092616192, 1093140480,
+              1093664768, 1094189056, 1094713344, 1095237632, 1095761920, 1096286208, 1096810496,
+              1097334784, 1097859072, 1098383360, 1098907648
+            ],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537153268,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537153508,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 796,
+                "pointer": 537152516,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 792,
+                "pointer": 537152564,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152612,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537153748,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537130468,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              },
+              {
+                "at": 864,
+                "pointer": 537152660,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAQAAAA=="
+              },
+              {
+                "at": 868,
+                "pointer": 537130484,
+                "reference": 1,
+                "bytes": "lEwEIJxMBCA="
+              }
+            ],
+            "results": [
+              0, 4294967295, 123, 60, 32, 24, 1048665934, 1074137746, 1076887552, 1061752795,
+              1110704128, 17, 1, 1, 1082969293, 4294967293
+            ],
+            "registerCopy": [
+              3219128320, 3217031168, 3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0,
+              1048576000, 1056964608, 1061158912, 1065353216, 1067450368, 1069547520, 1071644672,
+              1073741824, 1074790400, 1075838976, 1076887552, 1077936128, 1078984704, 1080033280,
+              1081081856, 1082130432, 1082654720, 1083179008, 1083703296, 1084227584, 1084751872,
+              1085276160, 1085800448, 1086324736
+            ]
+          }
+        },
+        {
+          "phase": 5,
+          "label": "parent prune and normal wait",
+          "frame": 605,
+          "caller": [1, 0, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "id": 1,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 0
+        },
+        {
+          "id": 2,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295
+        },
+        {
+          "id": 3,
+          "particle": 0,
+          "args": [123],
+          "control": 1,
+          "resultWritten": true,
+          "value": 123
+        },
+        {
+          "id": 4,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 60
+        },
+        {
+          "id": 5,
+          "particle": 0,
+          "args": [80, 84],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 9,
+          "particle": 0,
+          "args": [1048576000],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1048665934
+        },
+        {
+          "id": 10,
+          "particle": 0,
+          "args": [3204448256],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1074137746
+        },
+        {
+          "id": 14,
+          "particle": 0,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1076887552
+        },
+        {
+          "id": 19,
+          "particle": 0,
+          "args": [1110704128],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1061752795
+        },
+        {
+          "id": 20,
+          "particle": 0,
+          "args": [1061752795],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1110704128
+        },
+        {
+          "id": 21,
+          "particle": 0,
+          "args": [4294967279],
+          "control": 1,
+          "resultWritten": true,
+          "value": 17
+        },
+        {
+          "id": 35,
+          "particle": 0,
+          "args": [128],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 36,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 0
+        },
+        {
+          "id": 40,
+          "particle": 0,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1
+        },
+        {
+          "id": 41,
+          "particle": 0,
+          "args": [1073741824, 1090519040, 0, 1092616192, 1082130432],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1082969293
+        },
+        {
+          "id": 42,
+          "particle": 0,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967293
+        },
+        {
+          "id": 32,
+          "particle": 0,
+          "args": [],
+          "control": 4,
+          "resultWritten": false
+        },
+        {
+          "id": 1,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 0
+        },
+        {
+          "id": 2,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967295
+        },
+        {
+          "id": 3,
+          "particle": 1,
+          "args": [123],
+          "control": 1,
+          "resultWritten": true,
+          "value": 123
+        },
+        {
+          "id": 4,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 60
+        },
+        {
+          "id": 5,
+          "particle": 1,
+          "args": [80, 84],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 9,
+          "particle": 1,
+          "args": [1048576000],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1048665934
+        },
+        {
+          "id": 10,
+          "particle": 1,
+          "args": [3204448256],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1074137746
+        },
+        {
+          "id": 14,
+          "particle": 1,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1076887552
+        },
+        {
+          "id": 19,
+          "particle": 1,
+          "args": [1110704128],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1061752795
+        },
+        {
+          "id": 20,
+          "particle": 1,
+          "args": [1061752795],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1110704128
+        },
+        {
+          "id": 21,
+          "particle": 1,
+          "args": [4294967279],
+          "control": 1,
+          "resultWritten": true,
+          "value": 17
+        },
+        {
+          "id": 35,
+          "particle": 1,
+          "args": [128],
+          "control": 2,
+          "resultWritten": false
+        },
+        {
+          "id": 36,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1
+        },
+        {
+          "id": 40,
+          "particle": 1,
+          "args": [],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1
+        },
+        {
+          "id": 41,
+          "particle": 1,
+          "args": [1073741824, 1090519040, 0, 1092616192, 1082130432],
+          "control": 1,
+          "resultWritten": true,
+          "value": 1082969293
+        },
+        {
+          "id": 42,
+          "particle": 1,
+          "args": [3224371200],
+          "control": 1,
+          "resultWritten": true,
+          "value": 4294967293
+        },
+        {
+          "id": 32,
+          "particle": 1,
+          "args": [],
+          "control": 4,
+          "resultWritten": false
+        }
+      ]
+    }
+  ]
+}

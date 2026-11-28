@@ -1,0 +1,451 @@
+{
+  "license": "MPL-2.0",
+  "origin": "Authored byte inputs; outputs recorded by unmodified original whole constructor/parser/lookup/destructor methods. Both listed ABIs returned identical records.",
+  "profiles": ["sdk-4.01-engine-2.6.1.74", "nekopara-vol3-engine-2.6.1.76"],
+  "cases": [
+    {
+      "id": "empty",
+      "bodyHex": "",
+      "queries": [
+        {
+          "hex": "",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "66696c65",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        }
+      ]
+    },
+    {
+      "id": "ordinary",
+      "bodyHex": "235761726d2838302c39302c313130290a424730310a424730320a",
+      "queries": [
+        {
+          "hex": "62673031",
+          "kind": "file",
+          "found": 1,
+          "rgb": [80, 90, 110]
+        },
+        {
+          "hex": "42473032",
+          "kind": "file",
+          "found": 1,
+          "rgb": [80, 90, 110]
+        },
+        {
+          "hex": "62673033",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "237761726d",
+          "kind": "group",
+          "found": 1,
+          "rgb": [80, 90, 110]
+        },
+        {
+          "hex": "7761726d",
+          "kind": "group",
+          "found": 0,
+          "rgb": null
+        }
+      ]
+    },
+    {
+      "id": "exact-not-pattern",
+      "bodyHex": "234128312c322c33290a666f6f2a0a6261722e6867330a",
+      "queries": [
+        {
+          "hex": "666f6f2a",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "666f6f626172",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "626172",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "6261722e686733",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "6469722f6261722e686733",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "6261722e6867332c31",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        }
+      ]
+    },
+    {
+      "id": "group-first-wins",
+      "bodyHex": "234128312c322c33290a666f6f0a236128392c382c37290a6261720a",
+      "queries": [
+        {
+          "hex": "666f6f",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "626172",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "2341",
+          "kind": "group",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        }
+      ]
+    },
+    {
+      "id": "filename-first-wins",
+      "bodyHex": "234128312c322c33290a666f6f0a234228392c382c37290a666f6f0a6261720a",
+      "queries": [
+        {
+          "hex": "666f6f",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "626172",
+          "kind": "file",
+          "found": 1,
+          "rgb": [9, 8, 7]
+        },
+        {
+          "hex": "2341",
+          "kind": "group",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "2342",
+          "kind": "group",
+          "found": 1,
+          "rgb": [9, 8, 7]
+        }
+      ]
+    },
+    {
+      "id": "implicit-group",
+      "bodyHex": "6f727068616e0a234128342c352c36290a6368696c640a",
+      "queries": [
+        {
+          "hex": "6f727068616e",
+          "kind": "file",
+          "found": 1,
+          "rgb": [100, 100, 100]
+        },
+        {
+          "hex": "6368696c64",
+          "kind": "file",
+          "found": 1,
+          "rgb": [4, 5, 6]
+        },
+        {
+          "hex": "5f5f554e4b4e4f574e5f5f",
+          "kind": "group",
+          "found": 1,
+          "rgb": [100, 100, 100]
+        }
+      ]
+    },
+    {
+      "id": "partial-no-comma",
+      "bodyHex": "2341283132290a66697273740a23422831332c3134290a7365636f6e640a23432831352c31362c31370a74686972640a",
+      "queries": [
+        {
+          "hex": "6669727374",
+          "kind": "file",
+          "found": 1,
+          "rgb": [100, 100, 100]
+        },
+        {
+          "hex": "7365636f6e64",
+          "kind": "file",
+          "found": 1,
+          "rgb": [13, 100, 100]
+        },
+        {
+          "hex": "7468697264",
+          "kind": "file",
+          "found": 1,
+          "rgb": [15, 16, 100]
+        }
+      ]
+    },
+    {
+      "id": "partial-inherits",
+      "bodyHex": "234128312c322c33290a610a23422834290a620a234328352c36290a630a234428372c382c390a640a",
+      "queries": [
+        {
+          "hex": "61",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "62",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "63",
+          "kind": "file",
+          "found": 1,
+          "rgb": [5, 2, 3]
+        },
+        {
+          "hex": "64",
+          "kind": "file",
+          "found": 1,
+          "rgb": [7, 8, 3]
+        }
+      ]
+    },
+    {
+      "id": "empty-fields",
+      "bodyHex": "23282c2c290a7a65726f0a2328352c362c37290a6c617465720a",
+      "queries": [
+        {
+          "hex": "7a65726f",
+          "kind": "file",
+          "found": 1,
+          "rgb": [0, 0, 0]
+        },
+        {
+          "hex": "6c61746572",
+          "kind": "file",
+          "found": 1,
+          "rgb": [0, 0, 0]
+        },
+        {
+          "hex": "23",
+          "kind": "group",
+          "found": 1,
+          "rgb": [0, 0, 0]
+        }
+      ]
+    },
+    {
+      "id": "integer-rules",
+      "bodyHex": "2341282d312c307846464646464646462c2b34323934393637323937290a610a23422831322e352c3132782c307832307a290a620a",
+      "queries": [
+        {
+          "hex": "61",
+          "kind": "file",
+          "found": 1,
+          "rgb": [4294967295, 4294967295, 1]
+        },
+        {
+          "hex": "62",
+          "kind": "file",
+          "found": 1,
+          "rgb": [0, 12, 32]
+        }
+      ]
+    },
+    {
+      "id": "header-prefix-tail",
+      "bodyHex": "70726566697823412831302c32302c3330297461696c0a610a236261640a23420a",
+      "queries": [
+        {
+          "hex": "61",
+          "kind": "file",
+          "found": 1,
+          "rgb": [10, 20, 30]
+        },
+        {
+          "hex": "23626164",
+          "kind": "file",
+          "found": 1,
+          "rgb": [10, 20, 30]
+        },
+        {
+          "hex": "2342",
+          "kind": "file",
+          "found": 1,
+          "rgb": [10, 20, 30]
+        },
+        {
+          "hex": "2361",
+          "kind": "group",
+          "found": 1,
+          "rgb": [10, 20, 30]
+        }
+      ]
+    },
+    {
+      "id": "ascii-whitespace",
+      "bodyHex": "23204120282031202c09322c3320290a4d207909204669206c652e4847330a",
+      "queries": [
+        {
+          "hex": "4d7946696c652e484733",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "4d20792046696c652e484733",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        }
+      ]
+    },
+    {
+      "id": "comments",
+      "bodyHex": "234128312c322c3329202f2f636f6d6d656e740d0a666f6f2f2a6d756c74690d0a636f6d6d656e742a2f6261720d6e6578742f2f676f6e650a",
+      "queries": [
+        {
+          "hex": "666f6f",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "626172",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "666f6f626172",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "6e657874",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        }
+      ]
+    },
+    {
+      "id": "quotes-literal",
+      "bodyHex": "234128372c382c39290a22466f6f220a",
+      "queries": [
+        {
+          "hex": "666f6f",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "22666f6f22",
+          "kind": "file",
+          "found": 1,
+          "rgb": [7, 8, 9]
+        }
+      ]
+    },
+    {
+      "id": "nul-boundary",
+      "bodyHex": "234128312c322c33290a666f6f00234228342c352c36290a626172",
+      "queries": [
+        {
+          "hex": "666f6f",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        },
+        {
+          "hex": "626172",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        }
+      ]
+    },
+    {
+      "id": "bom-kept-file",
+      "bodyHex": "efbbbf6f727068616e0a234128312c322c33290a666f6f",
+      "queries": [
+        {
+          "hex": "efbbbf6f727068616e",
+          "kind": "file",
+          "found": 1,
+          "rgb": [100, 100, 100]
+        },
+        {
+          "hex": "6f727068616e",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "666f6f",
+          "kind": "file",
+          "found": 1,
+          "rgb": [1, 2, 3]
+        }
+      ]
+    },
+    {
+      "id": "pair-aware-lower",
+      "bodyHex": "234128332c342c35290a8141580af041580a817f58",
+      "queries": [
+        {
+          "hex": "814178",
+          "kind": "file",
+          "found": 1,
+          "rgb": [3, 4, 5]
+        },
+        {
+          "hex": "816178",
+          "kind": "file",
+          "found": 0,
+          "rgb": null
+        },
+        {
+          "hex": "f04178",
+          "kind": "file",
+          "found": 1,
+          "rgb": [3, 4, 5]
+        },
+        {
+          "hex": "f06178",
+          "kind": "file",
+          "found": 1,
+          "rgb": [3, 4, 5]
+        },
+        {
+          "hex": "817f78",
+          "kind": "file",
+          "found": 1,
+          "rgb": [3, 4, 5]
+        }
+      ]
+    }
+  ]
+}

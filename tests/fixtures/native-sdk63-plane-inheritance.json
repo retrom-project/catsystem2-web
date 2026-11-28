@@ -1,0 +1,1263 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "original": {
+    "path": ".local/phase11/sdk63-67-plane-input-20261127/ORIGINAL-P1-V3-63.json",
+    "sha256": "7fde4da85fbbda435053fc28290e1b25c8de6d570c45f16c10093b3228cf5a52",
+    "pe": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+    "text": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a"
+  },
+  "scope": "Own ordinary live parent/child solid model priority/position inheritance; explicit null-target early returns. No absent graph/native undefined output/GPU proof. Original receiver stack addresses are capture-only; normalized raw message IDs retained.",
+  "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><ETC><cache>0</cache></ETC><APP><imgcache>0</imgcache></APP><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp32y>0</bpp32y><bpp16y>1</bpp16y><bpp>32</bpp><filter_min>1</filter_min><filter_mag>1</filter_mag></TEXTURE><INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext><dir>scripts-loose</dir></int00><int01><name>scene</name><int>scene.int</int><ext>cst</ext><dir>scene-loose</dir></int01><int02><name>fes</name><int>tables.int</int><ext>tbl</ext><dir>tables-loose</dir></int02><int03><name>image</name><int>images.int</int><ext>hg3</ext><dir>images-loose</dir></int03></INT></document>",
+  "coldAfter": [5, 12, 14, 20, 24, 29, 31, 37],
+  "cases": [
+    {
+      "id": 66,
+      "args": [1, "caller", 128],
+      "dependency": true,
+      "save": "top",
+      "text": "P1 actual Top",
+      "ordinal": 0,
+      "control": 1,
+      "result": "owned:top",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          }
+        ],
+        "modelCount": 0
+      }
+    },
+    {
+      "id": 66,
+      "args": [2, "top", 128],
+      "dependency": true,
+      "save": "parent",
+      "text": "P1 actual parent Plane",
+      "ordinal": 1,
+      "control": 1,
+      "result": "owned:parent",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          }
+        ],
+        "modelCount": 0
+      }
+    },
+    {
+      "id": 66,
+      "args": [2, "parent", 128],
+      "dependency": true,
+      "save": "child",
+      "text": "P1 actual child Plane",
+      "ordinal": 2,
+      "control": 1,
+      "result": "owned:child",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 0
+      }
+    },
+    {
+      "id": 79,
+      "args": ["parent", 1094713344, 1092616192, 4280299584],
+      "dependency": true,
+      "ordinal": 3,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 1
+      }
+    },
+    {
+      "id": 79,
+      "args": ["child", 1086324736, 1082130432, 4283457648],
+      "dependency": true,
+      "ordinal": 4,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 92,
+      "args": ["parent", 1],
+      "dependency": true,
+      "ordinal": 5,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 92,
+      "args": ["child", 1],
+      "dependency": true,
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 84,
+      "args": ["parent", 1092616192, 1101004800, 1106247680, 0],
+      "dependency": true,
+      "ordinal": 7,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 88,
+      "args": ["parent", 1084227584],
+      "dependency": true,
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 84,
+      "args": ["child", 1073741824, 1082130432, 1086324736, 0],
+      "dependency": true,
+      "ordinal": 9,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 88,
+      "args": ["child", 1088421888],
+      "dependency": true,
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["parent"],
+      "ordinal": 11,
+      "control": 1,
+      "result": 1084227584,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 12,
+      "control": 1,
+      "result": 1088421888,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 90,
+      "args": ["child", 1065353216, 3221225472, 1077936128],
+      "ordinal": 13,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 14,
+      "control": 1,
+      "result": 1090519040,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 87,
+      "args": ["child", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 32, 65, 0, 0, 160, 65, 0, 0, 240, 65]
+        }
+      ],
+      "ordinal": 15,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 32],
+        [1027, 65],
+        [1028, 0],
+        [1029, 0],
+        [1030, 160],
+        [1031, 65],
+        [1032, 0],
+        [1033, 0],
+        [1034, 240],
+        [1035, 65]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 1,
+      "ordinal": 16,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 87,
+      "args": ["child", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 32, 65, 0, 0, 160, 65, 0, 0, 240, 65]
+        }
+      ],
+      "ordinal": 17,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 32],
+        [1027, 65],
+        [1028, 0],
+        [1029, 0],
+        [1030, 160],
+        [1031, 65],
+        [1032, 0],
+        [1033, 0],
+        [1034, 240],
+        [1035, 65]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 18,
+      "control": 1,
+      "result": 1090519040,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 84,
+      "args": ["parent", 1097859072, 1103626240, 1108082688, 0],
+      "dependency": true,
+      "ordinal": 19,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 88,
+      "args": ["parent", 1091567616],
+      "dependency": true,
+      "ordinal": 20,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 2,
+      "ordinal": 21,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 87,
+      "args": ["child", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+        }
+      ],
+      "ordinal": 22,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 112],
+        [1027, 65],
+        [1028, 0],
+        [1029, 0],
+        [1030, 200],
+        [1031, 65],
+        [1032, 0],
+        [1033, 0],
+        [1034, 12],
+        [1035, 66]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 23,
+      "control": 1,
+      "result": 1094713344,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 91,
+      "args": ["child"],
+      "ordinal": 24,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 87,
+      "args": ["child", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+        }
+      ],
+      "ordinal": 25,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 112],
+        [1027, 65],
+        [1028, 0],
+        [1029, 0],
+        [1030, 200],
+        [1031, 65],
+        [1032, 0],
+        [1033, 0],
+        [1034, 12],
+        [1035, 66]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 26,
+      "control": 1,
+      "result": 1094713344,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 84,
+      "args": ["parent", 1099956224, 1105199104, 1108869120, 0],
+      "dependency": true,
+      "ordinal": 27,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 3,
+      "ordinal": 28,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 87,
+      "args": ["child", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+        }
+      ],
+      "ordinal": 29,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 112],
+        [1027, 65],
+        [1028, 0],
+        [1029, 0],
+        [1030, 200],
+        [1031, 65],
+        [1032, 0],
+        [1033, 0],
+        [1034, 12],
+        [1035, 66]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 30,
+      "control": 1,
+      "result": 1094713344,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 90,
+      "args": ["child", 0, 0, 0],
+      "ordinal": 31,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 4,
+      "ordinal": 32,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 87,
+      "args": ["child", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 144, 65, 0, 0, 224, 65, 0, 0, 24, 66]
+        }
+      ],
+      "ordinal": 33,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 144],
+        [1027, 65],
+        [1028, 0],
+        [1029, 0],
+        [1030, 224],
+        [1031, 65],
+        [1032, 0],
+        [1033, 0],
+        [1034, 24],
+        [1035, 66]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 34,
+      "control": 1,
+      "result": 1091567616,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 91,
+      "args": ["child"],
+      "ordinal": 35,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": ["child"],
+      "ordinal": 36,
+      "control": 1,
+      "result": 1091567616,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 89,
+      "args": [0],
+      "ordinal": 37,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 90,
+      "args": [0, 1065353216, 1073741824, 1077936128],
+      "ordinal": 38,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 91,
+      "args": [0],
+      "ordinal": 39,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 2
+      }
+    },
+    {
+      "id": 67,
+      "args": ["child"],
+      "dependency": true,
+      "ordinal": 40,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 1
+      }
+    },
+    {
+      "id": 67,
+      "args": ["parent"],
+      "dependency": true,
+      "ordinal": 41,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": true
+          },
+          {
+            "name": "child",
+            "alive": true
+          }
+        ],
+        "modelCount": 0
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 5,
+      "ordinal": 42,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": false
+          },
+          {
+            "name": "child",
+            "alive": false
+          }
+        ],
+        "modelCount": 0
+      }
+    },
+    {
+      "id": 67,
+      "args": ["top"],
+      "dependency": true,
+      "ordinal": 43,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "top",
+            "alive": true
+          },
+          {
+            "name": "parent",
+            "alive": false
+          },
+          {
+            "name": "child",
+            "alive": false
+          }
+        ],
+        "modelCount": 0
+      }
+    }
+  ]
+}

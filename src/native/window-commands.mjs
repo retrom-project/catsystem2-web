@@ -1,0 +1,73 @@
+// SPDX-License-Identifier: MPL-2.0
+import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { formatNativeAt } from '../kcs.mjs';
+import { nativeDataString } from './data-text.mjs';
+
+export const isNativeWindowCommandMessage = (message) => message >= 0x469 && message <= 0x46c;
+
+const scriptMessages = new Map([
+    [0x34d, 0x469],
+    [0x34e, 0x46a],
+    [0x34f, 0x46b],
+  ]),
+  postedCommands = new Map([
+    [0x469, 40012],
+    [0x46a, 40021],
+    [0x46b, 40002],
+  ]);
+const menuCommands = new Map([
+  [0, 119],
+  [1, 40045],
+  [2, 40002],
+  [10, 40008],
+  [11, 40009],
+  [12, 40021],
+  [13, 40034],
+  [20, 40027],
+  [21, 40057],
+  [22, 40011],
+  [30, 40041],
+  [31, 40019],
+  [32, 40037],
+]);
+export function nativeWindowMenuCommand(selector) {
+  return menuCommands.get(selector >>> 0) ?? null;
+}
+export function nativeWindowMessageCommand(message, selector) {
+  if (message === 0x46c) return nativeWindowMenuCommand(selector);
+  return postedCommands.get(message) ?? null;
+}
+export function nativeWindowLanguageCommand(command) {
+  if (command < 40065 || command > 40094) return null;
+  const index = command - 40065;
+  return { field: ['ui', 'main', 'sub'][Math.floor(index / 10)], index: index % 10 };
+}
+export function installNativeWindowCommands(world) {
+  world.runtime.register('main', 629, async (args, machine) => {
+    if (args.length < 3) throw new Error('Native external open expects three string arguments');
+    const [file, parameters, directory] = args.slice(0, 3).map((address) => {
+      const bytes = new Uint8Array(nativeDataString(formatNativeAt(address, machine)));
+      if (bytes.length >= 260)
+        throw new RangeError('Native external open exceeds its proved 260-byte string temporary');
+      return bytes;
+    });
+    await world.window.action('script-shell-open', {
+      window: world.window.handle,
+      operation: 'open',
+      file,
+      parameters,
+      directory,
+      show: 5,
+    });
+    return nativeReply(2);
+  });
+  const directClose = nativeABI(world.profile).messages.windowDirectClose;
+  if (directClose !== undefined)
+    world.runtime.services.exit = (confirm) => world.window.post(confirm ? 0x10 : directClose);
+  for (const [id, message] of scriptMessages)
+    world.runtime.register('main', id, () => {
+      world.window.post(message);
+      return nativeReply(2);
+    });
+}

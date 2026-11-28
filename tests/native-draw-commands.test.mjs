@@ -1,0 +1,349 @@
+// SPDX-License-Identifier: MPL-2.0
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { NativeWorld } from '../web/transitional-entry.mjs';
+import { NativeConfiguration } from '../src/native/config.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
+import { MotionLibrary } from '../src/motion/library.mjs';
+import { floatBits } from '../src/kcs.mjs';
+import { imageOwnerFiles } from './fixtures/image-owner-fixture.mjs';
+import { kcsProgram, memoryGame } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('2.6.1.23 Draw owns the returned bitmap and copies an independent base image', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { main } = world,
+    call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+    id = await world.objects.create({ kind: 15, parent: world.root }),
+    nativeID = world.nativeTaskID(id),
+    draw = world.graphics.drawTasks.get(id),
+    images = world.graphics.images;
+  await world.sendEngine(id, main.id, 279, 8, 6);
+  await world.sendEngine(id, main.id, 283, 0, 0);
+  assert.deepEqual(await call(261, [nativeID]), { control: 1, value: draw.state.renderer.bitmap });
+  const handle = images.create(2, 2),
+    source = images.get(handle);
+  await source.fill(0, 0, 2, 2, 0xff123456);
+  const one = floatBits(1);
+  assert.deepEqual(await call(257, [nativeID, 6, handle, one, one, 0, 0, 0, one, one, 300, 1, 0]), {
+    control: 2,
+  });
+  const item = draw.entry((world.nativeTaskID(main.id) | (6 << 16)) >>> 0);
+  assert.deepEqual(item.position, [1, 1]);
+  assert.equal(images.get(item.image).dataHandle, source.dataHandle);
+  assert.equal(item.alpha, 255);
+  assert.deepEqual(await call(258, [nativeID, 6]), { control: 2 });
+  assert.ok(!draw.state.renderer.items.includes(item));
+  assert.deepEqual(await call(455, [nativeID, handle]), { control: 2 });
+  const copied = images.get(draw.state.baseImage);
+  await source.fill(0, 0, 2, 2, 0xffabcdef);
+  assert.equal(draw.state.baseVisible, true);
+  assert.deepEqual((await copied.pixels()).slice(0, 4), Uint8ClampedArray.of(18, 52, 86, 255));
+  await call(257, [nativeID, 6, handle, one, one, 0, 0, 0, one, one, 255, 1, 0]);
+  const key = (world.nativeTaskID(main.id) | (6 << 16)) >>> 0;
+  assert.deepEqual(await call(339, [nativeID, 6, 1, 2, 3, 4]), { control: 2 });
+  assert.deepEqual(draw.entry(key).clip, [1, 2, 4, 6]);
+  assert.deepEqual(await call(534, [nativeID, 0]), { control: 2 });
+  assert.equal(draw.state.dirty, false);
+  assert.deepEqual(await call(340, [nativeID]), { control: 2 });
+  assert.deepEqual(await call(341, [nativeID]), { control: 2 });
+  assert.deepEqual(
+    draw.state.renderer.items.map(({ key }) => key),
+    [0],
+  );
+  assert.equal(images.get(draw.entry(0).image).dataHandle, copied.dataHandle);
+  assert.deepEqual(await call(342, [nativeID]), { control: 2 });
+  const bitmap = images.get(draw.state.renderer.bitmap),
+    firstLogicalRow = (bitmap.height - 1) * bitmap.width * 4;
+  assert.deepEqual(
+    (await bitmap.pixels()).slice(firstLogicalRow, firstLogicalRow + 4),
+    Uint8ClampedArray.of(18, 52, 86, 255),
+  );
+  assert.deepEqual(await call(258, [nativeID, 0]), { control: 2 });
+  assert.deepEqual(await call(455, [nativeID, 0]), { control: 2 });
+  assert.deepEqual(await call(341, [nativeID]), { control: 2 });
+  assert.equal(draw.state.baseVisible, false);
+  assert.equal(draw.entry(0), undefined);
+});
+
+test('2.6.1.23 Draw publishes a bounded rectangle without changing the surrounding bitmap', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { main, graphics } = world,
+    call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+    drawID = await world.objects.create({ kind: 15, parent: world.root }),
+    nativeID = world.nativeTaskID(drawID),
+    task = graphics.drawTasks.get(drawID);
+  assert.deepEqual(await call(862, [nativeID, 2, 1, 5, 3]), { control: 2 });
+  assert.equal(task.state.dirty, true);
+  await call(256, [nativeID, 8, 6]);
+  await call(260, [nativeID, 10, 20]);
+  const bitmap = graphics.images.get(task.state.renderer.bitmap);
+  await bitmap.fill(0, 0, 8, 6, 0xff123456);
+  await call(862, [nativeID, 2, 1, 5, 3]);
+  const pixels = await bitmap.pixels();
+  for (let y = 0; y < 6; y++)
+    for (let x = 0; x < 8; x++) {
+      const at = ((5 - y) * 8 + x) * 4,
+        inRectangle = x >= 2 && x < 5 && y >= 1 && y < 3;
+      assert.deepEqual(
+        [...pixels.subarray(at, at + 4)],
+        inRectangle ? [0, 0, 0, 0] : [18, 52, 86, 255],
+      );
+    }
+});
+
+test(
+  'SDK full World retains decoded image pixels and original ANM control across fresh restoration',
+  { skip: !process.env.CATSYSTEM2_SDK_EXE },
+  async () => {
+    const exe = new Uint8Array(await readFile(process.env.CATSYSTEM2_SDK_EXE)),
+      resources = Object.fromEntries(await imageOwnerFiles()),
+      profile = 'sdk-4.01-engine-2.6.1.74',
+      make = () => {
+        const game = memoryGame({
+            ...resources,
+            'engine.exe': exe,
+            'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]),
+          }),
+          random = new ParticleRandom(),
+          configuration = new NativeConfiguration({ profile });
+        Object.assign(configuration.screen, {
+          width: 640,
+          height: 480,
+          currentWidth: 640,
+          currentHeight: 480,
+          virtualWidth: 640,
+          virtualHeight: 480,
+        });
+        game.resolveCategory = (name, category) =>
+          game.has(name) ? name : `@cat/${category}/${name}`;
+        game.readCategory = (name, category) => game.read(game.resolveCategory(name, category));
+        return new NativeWorld({
+          game,
+          images: {},
+          host: {},
+          profile,
+          random,
+          configuration,
+          motionLibrary: new MotionLibrary(game, { profile, random }),
+          storage: { read: async () => null, write: async () => true },
+        });
+      },
+      world = make();
+    let fresh;
+    try {
+      await world.initialize('main.kcs');
+      const task = world.main,
+        m = task.machine,
+        call = (id, args) => world.runtime.native('main', id, args, m, task),
+        id = await world.objects.create({ kind: 15, parent: world.root }),
+        nativeID = world.nativeTaskID(id),
+        draw = world.graphics.drawTasks.get(id);
+      await call(0x100, [nativeID, 8, 6]);
+      await call(0x104, [nativeID, 0, 0]);
+      m.writeString('probe.hg2', 256);
+      const handle = (await call(0x16d, [256])).value,
+        buffers = await world.getNativeFeature('data-buffers'),
+        pointer = buffers.pointer(handle),
+        p = buffers.process,
+        args = [nativeID, 0, handle, 0, 0, 0, 0, 0, floatBits(1), floatBits(1), 255, 1, 0];
+      assert.deepEqual(await call(0x26e, args), { control: 2 });
+      assert.equal(
+        p.load(pointer + 12),
+        1,
+        'a single-frame source is decoded without retaining its raw descriptor',
+      );
+      assert.equal(draw.state.renderer.items.length, 1);
+      const image = world.graphics.images.get(draw.state.renderer.items[0].image);
+      assert.deepEqual(
+        await image.pixels(),
+        Uint8ClampedArray.from({ length: 48 }, (_, i) => (i * 37 + 19) & 255),
+      );
+      args[3] = floatBits(1);
+      args[4] = floatBits(2);
+      await call(0x26f, args);
+      assert.equal(p.load(pointer + 12), 1, 'rebinding the same data does not duplicate ownership');
+      assert.deepEqual(draw.state.renderer.items[0].position, [1, 2]);
+      const retained = await world.getNativeFeature('retained-draw'),
+        key = world.nativeTaskID(task.id),
+        record = retained.record(draw, key);
+      m.writeString('@cat/image/anim.hg3', 256);
+      await call(0x270, [nativeID, 0, 256]);
+      const source = world.renderSources.get(record.source),
+        animation = source.animation;
+      assert.ok(animation, 'the shared filename lookup resolves and loads the JS ANM');
+      assert.deepEqual(await call(0x370, [nativeID, 0, 0, 0x81234567]), { control: 2 });
+      await call(0x370, [nativeID, 0, 63, 0xfedcba98]);
+      const variables = () => [...animation.registers];
+      const expected = variables();
+      assert.equal(expected[0], 0x81234567);
+      assert.equal(expected[63], 0xfedcba98);
+      for (const badIndex of [64, 0xffffffff])
+        await call(0x370, [nativeID, 0, badIndex, 0xcccccccc]);
+      assert.deepEqual(variables(), expected);
+      await call(0x370, [nativeID, 1, 0, 0]);
+      assert.deepEqual(
+        variables(),
+        expected,
+        'an absent drawing key cannot overwrite another entry',
+      );
+      await call(0x271, [nativeID, 0, 0]);
+      assert.equal(source.enabled, 0);
+      await call(0x271, [nativeID, 0, 1]);
+      assert.equal(source.enabled, 1);
+      await call(0x16e, [handle]);
+      assert.equal(
+        p.allocations.has(pointer),
+        false,
+        'the raw descriptor is released after decoding',
+      );
+      fresh = make();
+      await fresh.restore(structuredClone(world.snapshot()));
+      const ft = fresh.main,
+        fm = ft.machine,
+        invoke = (id, args) => fresh.runtime.native('main', id, args, fm, ft),
+        restored = fresh.graphics.drawTasks.get(id),
+        rr = (await fresh.getNativeFeature('retained-draw')).record(restored, key),
+        fp = fresh.nativeEngine.process,
+        restoredSource = fresh.renderSources.get(rr.source);
+      assert.equal(rr.source, record.source);
+      assert.equal(fp.allocations.has(pointer), false);
+      assert.equal(restoredSource.enabled, 1);
+      assert.deepEqual(restoredSource.animation.snapshot(), animation.snapshot());
+      assert.deepEqual([...restoredSource.animation.registers], expected);
+      await invoke(0x370, [nativeID, 0, 63, 1000]);
+      assert.equal(restoredSource.animation.registers[63], 1000);
+      assert.equal(animation.registers[63], expected[63]);
+      await invoke(0x271, [nativeID, 0, 0]);
+      assert.equal(restoredSource.enabled, 0);
+      assert.equal(source.enabled, 1, 'fresh controls have independent native RAM');
+      await invoke(0x271, [0xffffffff, 0, 1]);
+      assert.equal(restoredSource.enabled, 0, 'an absent target leaves other drawing tasks alone');
+      await invoke(0x102, [nativeID, 0]);
+      assert.equal(restored.state.renderer.items.length, 0);
+      assert.equal(
+        fresh.runtime.handles.records.has(rr.source),
+        false,
+        'removal releases the JS retained source',
+      );
+      assert.equal(world.runtime.handles.records.has(record.source), true);
+    } finally {
+      await fresh?.close({ flushFiles: false });
+      await world.close({ flushFiles: false });
+    }
+  },
+);
+
+test('2.6.1.67 Draw GCALLs initialize, replace and remove a sender-keyed bitmap', async (t) => {
+  const target = [0x13, 80],
+    bitmap = [0x13, 84],
+    point = (x, y, alpha) => [
+      target,
+      6,
+      bitmap,
+      floatBits(x),
+      floatBits(y),
+      0,
+      0,
+      0,
+      floatBits(1),
+      floatBits(1),
+      alpha,
+      1,
+      0,
+    ],
+    script = (calls) =>
+      kcsProgram([
+        [37, 0xef170f5e],
+        ...calls.flatMap(([id, args, result]) => [
+          ...args.map((arg) => [37, arg]),
+          [43, id, args.length * 4],
+          ...(result === undefined ? [] : [[38, result]]),
+        ]),
+        [59],
+      ]),
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'draw-setup.kcs': script([
+        [256, [target, 8, 6]],
+        [260, [target, 0, 0]],
+        [261, [target], 92],
+      ]),
+      'draw-add.kcs': script([[257, point(1, 2, 302)]]),
+      'draw-blank.kcs': script([[261, [target], 92]]),
+      'draw-change.kcs': script([[259, point(3, 4, 98)]]),
+      'draw-clip.kcs': script([[339, [target, 6, 1, 2, 3, 4]]]),
+      'draw-hide.kcs': script([[263, [target, 6, 0]]]),
+      'draw-show.kcs': script([[263, [target, 6, 1]]]),
+      'draw-remove.kcs': script([[258, [target, 6]]]),
+      'draw-unset-dirty.kcs': script([[534, [target, 0]]]),
+      'draw-set-dirty.kcs': script([[534, [target, 0xf3271ed0]]]),
+      'draw-refresh-rectangle.kcs': script([[862, [target, 2, 1, 5, 3]]]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    taskID = await world.objects.create({ kind: 15, parent }),
+    targetID = world.nativeTaskID(taskID),
+    task = await world.spawnScript('draw-setup.kcs', { parent, initialExecute: false }),
+    draw = world.graphics.drawTasks.get(taskID),
+    images = world.graphics.images,
+    source = images.create(1, 1, parent),
+    { scheduler } = world.runtime;
+  await images.get(source).fill(0, 0, 1, 1, 0xff123456);
+  const invoke = async (name, existing = null) => {
+    const selected = existing ?? (await world.spawnScript(name, { parent, initialExecute: false })),
+      floor = selected.machine.sp;
+    selected.machine.store(80, targetID);
+    selected.machine.store(84, source);
+    await scheduler.execute(selected);
+    assert.equal(selected.machine.sp, floor + 4);
+    assert.equal(selected.machine.load(floor), 0xef170f5e);
+    return selected.machine;
+  };
+  await assert.rejects(() => invoke('draw-blank.kcs'), /initialized renderer/);
+  const m = await invoke('draw-setup.kcs', task);
+  assert.equal(m.load(92), draw.state.renderer.bitmap);
+  const key = (world.nativeTaskID(task.id) | (6 << 16)) >>> 0;
+  // All three commands use the same Script identity across reload.
+  const transport = world.objects.objects.get(task.id).implementation;
+  for (const [name, expected] of [
+    ['draw-add.kcs', [1, 2, 255]],
+    ['draw-change.kcs', [3, 4, 98]],
+  ]) {
+    await transport.loadScript(name);
+    await invoke(name, transport.task);
+    const item = draw.entry(key);
+    assert.deepEqual([...item.position, item.alpha], expected);
+    assert.equal(images.get(item.image).dataHandle, images.get(source).dataHandle);
+    assert.equal(draw.state.renderer.items.length, 1);
+  }
+  for (const name of ['draw-clip.kcs', 'draw-hide.kcs']) {
+    await transport.loadScript(name);
+    await invoke(name, transport.task);
+  }
+  assert.deepEqual(draw.entry(key).clip, [1, 2, 4, 6]);
+  assert.equal(draw.entry(key).visible, false);
+  await transport.loadScript('draw-show.kcs');
+  await invoke('draw-show.kcs', transport.task);
+  assert.equal(draw.entry(key).visible, true);
+  await transport.loadScript('draw-remove.kcs');
+  await invoke('draw-remove.kcs', transport.task);
+  assert.equal(draw.entry(key), undefined);
+  assert.equal(images.get(source).state.rgba[0], 0x12);
+  await invoke('draw-unset-dirty.kcs');
+  assert.equal(draw.state.dirty, 0);
+  await invoke('draw-set-dirty.kcs');
+  assert.equal(draw.state.dirty, 0xf3271ed0);
+  const output = images.get(draw.state.renderer.bitmap);
+  await output.fill(0, 0, 8, 6, 0xff123456);
+  await invoke('draw-refresh-rectangle.kcs');
+  const pixels = await output.pixels();
+  for (let y = 0; y < 6; y++)
+    for (let x = 0; x < 8; x++) {
+      const at = ((5 - y) * 8 + x) * 4;
+      const expected = x >= 2 && x < 5 && y >= 1 && y < 3 ? [0, 0, 0, 0] : [18, 52, 86, 255];
+      assert.deepEqual([...pixels.subarray(at, at + 4)], expected);
+    }
+});

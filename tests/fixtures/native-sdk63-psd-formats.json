@@ -1,0 +1,3161 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+  "wholeTextSha256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+  "original": {
+    "path": ".local/phase11/sdk63-67-raster-retained-formats-20261127/ORIGINAL-R3-63.json",
+    "sha256": "75074e7d68cd43b805eda14151988cefbc9d065a4cb77b0b0973b925f610539c"
+  },
+  "scope": "R3 merged RGB PSD3/4 raw/RLE and16bit raw only. Alpha discarded, fixed3-channel RLE table and byte-depth interpretation are own native behaviors; unsupported combinations stay guarded.",
+  "counts": {
+    "targetGCALLs": 40,
+    "dependencyGCALLs": 33,
+    "currentFullFrames": 70,
+    "directBridgeInvocations": 119,
+    "directBridgeIncludesTargets": true
+  },
+  "resources": {
+    "rgb3-raw.psd": "OEJQUwABAAAAAAAAAAMAAAACAAAAAwAIAAMAAAAAAAAAAAAAAAAAAB87U2V/l0lhcYudrX+Vp7XH3w==",
+    "rgba4-raw.psd": "OEJQUwABAAAAAAAAAAQAAAACAAAAAwAIAAMAAAAAAAAAAAAAAAAAAB87U2V/l0lhcYudrX+Vp7XH3/+AAP9A/w==",
+    "rgb3-rle.psd": "OEJQUwABAAAAAAAAAAMAAAACAAAAAwAIAAMAAAAAAAAAAAAAAAAAAQAEAAQABAAEAAQABP8fAFP/ZQCX/0kAcf+LAK3/fwCn/7UA3w==",
+    "rgba4-rle.psd": "OEJQUwABAAAAAAAAAAQAAAACAAAAAwAIAAMAAAAAAAAAAAAAAAAAAQAGAAYABgAGAAYABgAGAAYAHwA7AFMAZQB/AJcASQBhAHEAiwCdAK0AfwCVAKcAtQDHAN8A/wCAAAAA/wBAAP8=",
+    "rgb3-depth16.psd": "OEJQUwABAAAAAAAAAAMAAAACAAAAAwAQAAMAAAAAAAAAAAAAAAAAAB/gO8RTrGWaf4CXaEm2YZ5xjot0nWKtUn+AlWqnWLVKxzjfIA=="
+  },
+  "cases": [
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "rgb3-raw.psd",
+      "ordinal": 0,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165
+          ]
+        }
+      ],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "rgb3-raw.psd",
+      "save": "encoded0",
+      "kind": "encoded",
+      "source": "rgb3-raw.psd",
+      "dependency": true,
+      "ordinal": 1,
+      "control": 1,
+      "result": "owned:encoded0",
+      "outputs": [],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded0",
+          "kind": "encoded",
+          "byteLength": 58,
+          "capacity": 58,
+          "references": 1,
+          "flags": 0,
+          "sha256": "c53d47bb0274130719c0f89dd04d4d70519eaee92e4fd14fdc6d6a939c86f531"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["encoded0", 320],
+      "ordinal": 2,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded0",
+          "kind": "encoded",
+          "byteLength": 58,
+          "capacity": 58,
+          "references": 1,
+          "flags": 0,
+          "sha256": "c53d47bb0274130719c0f89dd04d4d70519eaee92e4fd14fdc6d6a939c86f531"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["encoded0", 0, 256],
+      "save": "ordinal0",
+      "kind": "bitmap",
+      "ordinal": 3,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded0",
+          "kind": "encoded",
+          "byteLength": 58,
+          "capacity": 58,
+          "references": 1,
+          "flags": 0,
+          "sha256": "c53d47bb0274130719c0f89dd04d4d70519eaee92e4fd14fdc6d6a939c86f531"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["ordinal0"],
+      "close": "ordinal0",
+      "dependency": true,
+      "ordinal": 4,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded0",
+          "kind": "encoded",
+          "byteLength": 58,
+          "capacity": 58,
+          "references": 1,
+          "flags": 0,
+          "sha256": "c53d47bb0274130719c0f89dd04d4d70519eaee92e4fd14fdc6d6a939c86f531"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 648,
+      "args": ["encoded0", 8, 6],
+      "save": "nine0",
+      "kind": "bitmap",
+      "ordinal": 5,
+      "control": 1,
+      "result": "owned:nine0",
+      "outputs": [],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "encoded0",
+          "kind": "encoded",
+          "byteLength": 58,
+          "capacity": 58,
+          "references": 1,
+          "flags": 0,
+          "sha256": "c53d47bb0274130719c0f89dd04d4d70519eaee92e4fd14fdc6d6a939c86f531"
+        },
+        {
+          "name": "nine0",
+          "kind": "bitmap",
+          "empty": true,
+          "wrapperReferences": 1
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["nine0"],
+      "close": "nine0",
+      "dependency": true,
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded0",
+          "kind": "encoded",
+          "byteLength": 58,
+          "capacity": 58,
+          "references": 1,
+          "flags": 0,
+          "sha256": "c53d47bb0274130719c0f89dd04d4d70519eaee92e4fd14fdc6d6a939c86f531"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["encoded0"],
+      "close": "encoded0",
+      "dependency": true,
+      "ordinal": 7,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "rgb3-raw.psd",
+      "save": "primary0",
+      "kind": "bitmap",
+      "ordinal": 8,
+      "control": 1,
+      "result": "owned:primary0",
+      "outputs": [],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "primary0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 111,
+      "args": [64],
+      "text": "rgb3-raw.psd",
+      "save": "formatted0",
+      "kind": "bitmap",
+      "ordinal": 9,
+      "control": 1,
+      "result": "owned:formatted0",
+      "outputs": [],
+      "records": [
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 703,
+      "args": [64, 512, 2],
+      "text": "rgb3-raw.psd",
+      "sourceRecord": true,
+      "ordinal": 10,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "records": [
+        1, 537210352, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": {
+        "empty": false,
+        "width": 3,
+        "height": 2,
+        "pitch": 12,
+        "bpp": 4,
+        "physicalPixels": [
+          181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97, 59,
+          255, 167, 113, 83, 255
+        ],
+        "wrapperReferences": 1,
+        "bitmapReferences": 1,
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0,
+          "blendType": 0
+        },
+        "clip": [0, 0, 0, 0]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 704,
+      "args": [512, 2],
+      "ordinal": 11,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["primary0"],
+      "close": "primary0",
+      "dependency": true,
+      "ordinal": 12,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "formatted0",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["formatted0"],
+      "close": "formatted0",
+      "dependency": true,
+      "ordinal": 13,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "rgba4-raw.psd",
+      "ordinal": 14,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "rgba4-raw.psd",
+      "save": "encoded1",
+      "kind": "encoded",
+      "source": "rgba4-raw.psd",
+      "dependency": true,
+      "ordinal": 15,
+      "control": 1,
+      "result": "owned:encoded1",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded1",
+          "kind": "encoded",
+          "byteLength": 64,
+          "capacity": 64,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1c6790213b229f8793b800a1e873a2e932988f585ad9881964f646299561610c"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["encoded1", 320],
+      "ordinal": 16,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded1",
+          "kind": "encoded",
+          "byteLength": 64,
+          "capacity": 64,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1c6790213b229f8793b800a1e873a2e932988f585ad9881964f646299561610c"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["encoded1", 0, 256],
+      "save": "ordinal1",
+      "kind": "bitmap",
+      "ordinal": 17,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded1",
+          "kind": "encoded",
+          "byteLength": 64,
+          "capacity": 64,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1c6790213b229f8793b800a1e873a2e932988f585ad9881964f646299561610c"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["ordinal1"],
+      "close": "ordinal1",
+      "dependency": true,
+      "ordinal": 18,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded1",
+          "kind": "encoded",
+          "byteLength": 64,
+          "capacity": 64,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1c6790213b229f8793b800a1e873a2e932988f585ad9881964f646299561610c"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 648,
+      "args": ["encoded1", 8, 6],
+      "save": "nine1",
+      "kind": "bitmap",
+      "ordinal": 19,
+      "control": 1,
+      "result": "owned:nine1",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "encoded1",
+          "kind": "encoded",
+          "byteLength": 64,
+          "capacity": 64,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1c6790213b229f8793b800a1e873a2e932988f585ad9881964f646299561610c"
+        },
+        {
+          "name": "nine1",
+          "kind": "bitmap",
+          "empty": true,
+          "wrapperReferences": 1
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["nine1"],
+      "close": "nine1",
+      "dependency": true,
+      "ordinal": 20,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded1",
+          "kind": "encoded",
+          "byteLength": 64,
+          "capacity": 64,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1c6790213b229f8793b800a1e873a2e932988f585ad9881964f646299561610c"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["encoded1"],
+      "close": "encoded1",
+      "dependency": true,
+      "ordinal": 21,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "rgba4-raw.psd",
+      "save": "primary1",
+      "kind": "bitmap",
+      "ordinal": 22,
+      "control": 1,
+      "result": "owned:primary1",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "primary1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 111,
+      "args": [64],
+      "text": "rgba4-raw.psd",
+      "save": "formatted1",
+      "kind": "bitmap",
+      "ordinal": 23,
+      "control": 1,
+      "result": "owned:formatted1",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 703,
+      "args": [64, 512, 2],
+      "text": "rgba4-raw.psd",
+      "sourceRecord": true,
+      "ordinal": 24,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "records": [
+        1, 537210336, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": {
+        "empty": false,
+        "width": 3,
+        "height": 2,
+        "pitch": 12,
+        "bpp": 4,
+        "physicalPixels": [
+          181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97, 59,
+          255, 167, 113, 83, 255
+        ],
+        "wrapperReferences": 1,
+        "bitmapReferences": 1,
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0,
+          "blendType": 0
+        },
+        "clip": [0, 0, 0, 0]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 704,
+      "args": [512, 2],
+      "ordinal": 25,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["primary1"],
+      "close": "primary1",
+      "dependency": true,
+      "ordinal": 26,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "formatted1",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 199, 157, 127, 255, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+            59, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["formatted1"],
+      "close": "formatted1",
+      "dependency": true,
+      "ordinal": 27,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "rgb3-rle.psd",
+      "ordinal": 28,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "rgb3-rle.psd",
+      "save": "encoded2",
+      "kind": "encoded",
+      "source": "rgb3-rle.psd",
+      "dependency": true,
+      "ordinal": 29,
+      "control": 1,
+      "result": "owned:encoded2",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded2",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1f34baf9647bb9d474b9fd09a8259b863d19599cd961e36752f76ef262df6dbf"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["encoded2", 320],
+      "ordinal": 30,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded2",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1f34baf9647bb9d474b9fd09a8259b863d19599cd961e36752f76ef262df6dbf"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["encoded2", 0, 256],
+      "save": "ordinal2",
+      "kind": "bitmap",
+      "ordinal": 31,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded2",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1f34baf9647bb9d474b9fd09a8259b863d19599cd961e36752f76ef262df6dbf"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["ordinal2"],
+      "close": "ordinal2",
+      "dependency": true,
+      "ordinal": 32,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded2",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1f34baf9647bb9d474b9fd09a8259b863d19599cd961e36752f76ef262df6dbf"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 648,
+      "args": ["encoded2", 8, 6],
+      "save": "nine2",
+      "kind": "bitmap",
+      "ordinal": 33,
+      "control": 1,
+      "result": "owned:nine2",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "encoded2",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1f34baf9647bb9d474b9fd09a8259b863d19599cd961e36752f76ef262df6dbf"
+        },
+        {
+          "name": "nine2",
+          "kind": "bitmap",
+          "empty": true,
+          "wrapperReferences": 1
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["nine2"],
+      "close": "nine2",
+      "dependency": true,
+      "ordinal": 34,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded2",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "1f34baf9647bb9d474b9fd09a8259b863d19599cd961e36752f76ef262df6dbf"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["encoded2"],
+      "close": "encoded2",
+      "dependency": true,
+      "ordinal": 35,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "rgb3-rle.psd",
+      "save": "primary2",
+      "kind": "bitmap",
+      "ordinal": 36,
+      "control": 1,
+      "result": "owned:primary2",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "primary2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 111,
+      "args": [64],
+      "text": "rgb3-rle.psd",
+      "save": "formatted2",
+      "kind": "bitmap",
+      "ordinal": 37,
+      "control": 1,
+      "result": "owned:formatted2",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 703,
+      "args": [64, 512, 2],
+      "text": "rgb3-rle.psd",
+      "sourceRecord": true,
+      "ordinal": 38,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "records": [
+        1, 537210352, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": {
+        "empty": false,
+        "width": 3,
+        "height": 2,
+        "pitch": 12,
+        "bpp": 4,
+        "physicalPixels": [
+          181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73, 31,
+          255, 167, 113, 83, 255
+        ],
+        "wrapperReferences": 1,
+        "bitmapReferences": 1,
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0,
+          "blendType": 0
+        },
+        "clip": [0, 0, 0, 0]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 704,
+      "args": [512, 2],
+      "ordinal": 39,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["primary2"],
+      "close": "primary2",
+      "dependency": true,
+      "ordinal": 40,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "formatted2",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            181, 139, 101, 255, 181, 139, 101, 255, 223, 173, 151, 255, 127, 73, 31, 255, 127, 73,
+            31, 255, 167, 113, 83, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["formatted2"],
+      "close": "formatted2",
+      "dependency": true,
+      "ordinal": 41,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "rgba4-rle.psd",
+      "ordinal": 42,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "rgba4-rle.psd",
+      "save": "encoded3",
+      "kind": "encoded",
+      "source": "rgba4-rle.psd",
+      "dependency": true,
+      "ordinal": 43,
+      "control": 1,
+      "result": "owned:encoded3",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded3",
+          "kind": "encoded",
+          "byteLength": 104,
+          "capacity": 104,
+          "references": 1,
+          "flags": 0,
+          "sha256": "8adfda03ba1de2a4e653fc008a3c5537e1c87daf44367279f3472d316e8c1d8b"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["encoded3", 320],
+      "ordinal": 44,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded3",
+          "kind": "encoded",
+          "byteLength": 104,
+          "capacity": 104,
+          "references": 1,
+          "flags": 0,
+          "sha256": "8adfda03ba1de2a4e653fc008a3c5537e1c87daf44367279f3472d316e8c1d8b"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["encoded3", 0, 256],
+      "save": "ordinal3",
+      "kind": "bitmap",
+      "ordinal": 45,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded3",
+          "kind": "encoded",
+          "byteLength": 104,
+          "capacity": 104,
+          "references": 1,
+          "flags": 0,
+          "sha256": "8adfda03ba1de2a4e653fc008a3c5537e1c87daf44367279f3472d316e8c1d8b"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["ordinal3"],
+      "close": "ordinal3",
+      "dependency": true,
+      "ordinal": 46,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded3",
+          "kind": "encoded",
+          "byteLength": 104,
+          "capacity": 104,
+          "references": 1,
+          "flags": 0,
+          "sha256": "8adfda03ba1de2a4e653fc008a3c5537e1c87daf44367279f3472d316e8c1d8b"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 648,
+      "args": ["encoded3", 8, 6],
+      "save": "nine3",
+      "kind": "bitmap",
+      "ordinal": 47,
+      "control": 1,
+      "result": "owned:nine3",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "encoded3",
+          "kind": "encoded",
+          "byteLength": 104,
+          "capacity": 104,
+          "references": 1,
+          "flags": 0,
+          "sha256": "8adfda03ba1de2a4e653fc008a3c5537e1c87daf44367279f3472d316e8c1d8b"
+        },
+        {
+          "name": "nine3",
+          "kind": "bitmap",
+          "empty": true,
+          "wrapperReferences": 1
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["nine3"],
+      "close": "nine3",
+      "dependency": true,
+      "ordinal": 48,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded3",
+          "kind": "encoded",
+          "byteLength": 104,
+          "capacity": 104,
+          "references": 1,
+          "flags": 0,
+          "sha256": "8adfda03ba1de2a4e653fc008a3c5537e1c87daf44367279f3472d316e8c1d8b"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["encoded3"],
+      "close": "encoded3",
+      "dependency": true,
+      "ordinal": 49,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "rgba4-rle.psd",
+      "save": "primary3",
+      "kind": "bitmap",
+      "ordinal": 50,
+      "control": 1,
+      "result": "owned:primary3",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "primary3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 111,
+      "args": [64],
+      "text": "rgba4-rle.psd",
+      "save": "formatted3",
+      "kind": "bitmap",
+      "ordinal": 51,
+      "control": 1,
+      "result": "owned:formatted3",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 703,
+      "args": [64, 512, 2],
+      "text": "rgba4-rle.psd",
+      "sourceRecord": true,
+      "ordinal": 52,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "records": [
+        1, 537210368, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": {
+        "empty": false,
+        "width": 3,
+        "height": 2,
+        "pitch": 12,
+        "bpp": 4,
+        "physicalPixels": [
+          149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+          255, 127, 73, 31, 255
+        ],
+        "wrapperReferences": 1,
+        "bitmapReferences": 1,
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0,
+          "blendType": 0
+        },
+        "clip": [0, 0, 0, 0]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 704,
+      "args": [512, 2],
+      "ordinal": 53,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["primary3"],
+      "close": "primary3",
+      "dependency": true,
+      "ordinal": 54,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "formatted3",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            149, 97, 59, 255, 167, 113, 83, 255, 181, 139, 101, 255, 157, 127, 6, 255, 173, 151, 6,
+            255, 127, 73, 31, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["formatted3"],
+      "close": "formatted3",
+      "dependency": true,
+      "ordinal": 55,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 375,
+      "args": [64, 320],
+      "text": "rgb3-depth16.psd",
+      "ordinal": 56,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 365,
+      "args": [64],
+      "text": "rgb3-depth16.psd",
+      "save": "encoded4",
+      "kind": "encoded",
+      "source": "rgb3-depth16.psd",
+      "dependency": true,
+      "ordinal": 57,
+      "control": 1,
+      "result": "owned:encoded4",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded4",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "65112ea38b3d421ac9c1c72515c726307959429763ccdaf4c49d2c25c53ce49a"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 431,
+      "args": ["encoded4", 320],
+      "ordinal": 58,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded4",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "65112ea38b3d421ac9c1c72515c726307959429763ccdaf4c49d2c25c53ce49a"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 428,
+      "args": ["encoded4", 0, 256],
+      "save": "ordinal4",
+      "kind": "bitmap",
+      "ordinal": 59,
+      "control": 1,
+      "result": 0,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [165, 165, 165, 165]
+        }
+      ],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded4",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "65112ea38b3d421ac9c1c72515c726307959429763ccdaf4c49d2c25c53ce49a"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["ordinal4"],
+      "close": "ordinal4",
+      "dependency": true,
+      "ordinal": 60,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded4",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "65112ea38b3d421ac9c1c72515c726307959429763ccdaf4c49d2c25c53ce49a"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 648,
+      "args": ["encoded4", 8, 6],
+      "save": "nine4",
+      "kind": "bitmap",
+      "ordinal": 61,
+      "control": 1,
+      "result": "owned:nine4",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "encoded4",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "65112ea38b3d421ac9c1c72515c726307959429763ccdaf4c49d2c25c53ce49a"
+        },
+        {
+          "name": "nine4",
+          "kind": "bitmap",
+          "empty": true,
+          "wrapperReferences": 1
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["nine4"],
+      "close": "nine4",
+      "dependency": true,
+      "ordinal": 62,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "encoded4",
+          "kind": "encoded",
+          "byteLength": 76,
+          "capacity": 76,
+          "references": 1,
+          "flags": 0,
+          "sha256": "65112ea38b3d421ac9c1c72515c726307959429763ccdaf4c49d2c25c53ce49a"
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 366,
+      "args": ["encoded4"],
+      "close": "encoded4",
+      "dependency": true,
+      "ordinal": 63,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 460,
+      "args": [64],
+      "text": "rgb3-depth16.psd",
+      "save": "primary4",
+      "kind": "bitmap",
+      "ordinal": 64,
+      "control": 1,
+      "result": "owned:primary4",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [
+        {
+          "name": "primary4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 111,
+      "args": [64],
+      "text": "rgb3-depth16.psd",
+      "save": "formatted4",
+      "kind": "bitmap",
+      "ordinal": 65,
+      "control": 1,
+      "result": "owned:formatted4",
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 703,
+      "args": [64, 512, 2],
+      "text": "rgb3-depth16.psd",
+      "sourceRecord": true,
+      "ordinal": 66,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "records": [
+        1, 537210352, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": {
+        "empty": false,
+        "width": 3,
+        "height": 2,
+        "pitch": 12,
+        "bpp": 4,
+        "physicalPixels": [
+          158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+          224, 255, 97, 127, 59, 255
+        ],
+        "wrapperReferences": 1,
+        "bitmapReferences": 1,
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0,
+          "blendType": 0
+        },
+        "clip": [0, 0, 0, 0]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 704,
+      "args": [512, 2],
+      "ordinal": 67,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "primary4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        },
+        {
+          "name": "formatted4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["primary4"],
+      "close": "primary4",
+      "dependency": true,
+      "ordinal": 68,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 1,
+      "state": [
+        {
+          "name": "formatted4",
+          "kind": "bitmap",
+          "empty": false,
+          "width": 3,
+          "height": 2,
+          "pitch": 12,
+          "bpp": 4,
+          "physicalPixels": [
+            158, 128, 196, 255, 113, 151, 83, 255, 142, 104, 172, 255, 73, 101, 31, 255, 182, 154,
+            224, 255, 97, 127, 59, 255
+          ],
+          "wrapperReferences": 1,
+          "bitmapReferences": 1,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 2,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 0, 0]
+        }
+      ],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["formatted4"],
+      "close": "formatted4",
+      "dependency": true,
+      "ordinal": 69,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "scriptBitmapCount": 0,
+      "state": [],
+      "sourceBitmap": null,
+      "unexpectedMemoryWrites": []
+    }
+  ]
+}

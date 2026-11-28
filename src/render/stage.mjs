@@ -1,0 +1,555 @@
+// SPDX-License-Identifier: MPL-2.0
+import { originalView } from '../native/original-adapter.mjs';
+// Stage placement and pixel effects adapted from CatSystemKit StageLayout (OWCramer).
+import {
+  StageSurfaces,
+  nativeStageSurface,
+  borrowNativeSurfaceStorage,
+  nativeStageSurfaceRecords,
+} from './surfaces.mjs';
+import { ParticlesGL, createD3DContext } from './particles-gl.mjs';
+import { EmoteMaterials } from '../emote/materials.mjs';
+const stageSurfaceOwners = new WeakMap();
+function stageSurfaceOwner(stage) {
+  const surfaces = stageSurfaceOwners.get(stage);
+  if (surfaces && Object.getOwnPropertyDescriptor(stage, 'surfaces')?.value === surfaces)
+    return surfaces;
+  // Fence the originally registered owner before evaluating a replacement port.
+  if (surfaces) borrowNativeSurfaceStorage(surfaces);
+  return stage.surfaces;
+}
+function boxBlur(pixels, width, height, radius, horizontal) {
+  const count = horizontal ? width : height,
+    lines = horizontal ? height : width,
+    step = horizontal ? 4 : width * 4,
+    span = radius * 2 + 1;
+  for (let l = 0; l < lines; l++) {
+    const start = horizontal ? l * width * 4 : l * 4,
+      line = new Uint8Array(count * 4),
+      sum = [0, 0, 0, 0];
+    for (let i = 0; i < count; i++)
+      for (let c = 0; c < 4; c++) line[i * 4 + c] = pixels[start + i * step + c];
+    for (let k = -radius; k <= radius; k++)
+      for (let c = 0; c < 4; c++) sum[c] += line[Math.max(0, Math.min(count - 1, k)) * 4 + c];
+    for (let i = 0; i < count; i++)
+      for (let c = 0; c < 4; c++) {
+        pixels[start + i * step + c] = Math.floor(sum[c] / span);
+        sum[c] +=
+          line[Math.min(count - 1, i + radius + 1) * 4 + c] - line[Math.max(0, i - radius) * 4 + c];
+      }
+  }
+}
+export class StageRenderer {
+  dispose() {
+    if (this.disposed) return;
+    const owner = stageSurfaceOwners.get(this);
+    if (owner) nativeStageSurfaceRecords(owner);
+    this.disposed = true;
+    this.graphicsDevice?.close();
+    this.gpu?.close();
+    this.effects = new WeakMap();
+    if (this.plane) this.plane.width = this.plane.height = this.mask.width = this.mask.height = 0;
+    stageSurfaceOwner(this).clear();
+    this.surfaceTargets.clear();
+    this.surfaceDepths.clear();
+    this.surfaceFrames.clear();
+    this.frameDepth = null;
+  }
+  constructor(renderer, emote) {
+    const surfaces = new StageSurfaces();
+    this.surfaces = surfaces;
+    stageSurfaceOwners.set(this, surfaces);
+    this.surfaceTargets = new Map();
+    this.surfaceDepths = new Map();
+    this.surfaceFrames = new Map();
+    this.depthFormat = 80;
+    this.frameDepth = null;
+    this.savedFrameDepth = null;
+    this.d3dContext = createD3DContext();
+    this.emoteMaterials = new EmoteMaterials();
+    this.effects = new WeakMap();
+    if (renderer) this.attach(renderer, emote);
+  }
+  attach(renderer, emote) {
+    if (this.renderer) throw new Error('Stage renderer already has a presentation target');
+    this.renderer = renderer;
+    this.emote = emote;
+    this.plane = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
+    this.mask = new OffscreenCanvas(renderer.canvas.width, renderer.canvas.height);
+    this.gpu = new ParticlesGL(renderer.canvas.width, renderer.canvas.height, this.graphicsDevice);
+    this.bindGraphicsDevice(this.gpu.graphicsDevice);
+  }
+  bindGraphicsDevice(device) {
+    if (this.graphicsDevice && this.graphicsDevice !== device)
+      throw new Error('Stage renderer already has a shared graphics owner');
+    this.graphicsDevice = device;
+    if (this.gpu) this.gpu.attachGraphicsDevice(device);
+  }
+  async withPluginTarget(device, callback) {
+    if (!this.gpu || device.gpu !== this.gpu)
+      throw new Error('Plugin rendering requires the StageRenderer device');
+    const target = this.gpu.target,
+      depth = target.stageSurface ? this.surfaceDepth(target.stageSurface) : this.screenDepth();
+    return device.withStageTarget(target, callback, depth);
+  }
+  releaseTextureFrame(frame) {
+    if (!this.disposed) this.gpu?.releaseTextureFrame(frame);
+  }
+  drawEffekseer(packet, frame, { state, context, scissor, opaqueTarget } = {}) {
+    if (!this.gpu?.drawing)
+      throw new Error('Effekseer drawing requires an open StageRenderer frame');
+    if (!state) throw new Error('Effekseer drawing requires current shared device material state');
+    return this.gpu.drawGeometry(null, frame, {
+      state,
+      context,
+      scissor,
+      opaqueTarget,
+      effekseer: packet,
+    });
+  }
+  drawEmote(geometry, { matrix, viewport, opaqueTarget = false } = {}) {
+    if (!this.gpu?.drawing) throw new Error('E-mote drawing requires an open StageRenderer frame');
+    let stencil = 0;
+    let texture, material, triangles;
+    const flush = () => {
+      if (!triangles) return;
+      this.gpu.drawGeometry(triangles, texture, { state: material, opaqueTarget });
+      triangles = undefined;
+    };
+    for (const command of geometry.project(
+      this.gpu.target.width,
+      this.gpu.target.height,
+      matrix,
+      viewport,
+    )) {
+      if (command.stencil && command.stencil !== stencil) {
+        flush();
+        stencil = command.stencil;
+        // Mask draws increment from this group's base reference. A new group
+        // starts with its own coverage even when it overlaps an earlier one.
+        this.gpu.clear({ flags: 4, stencil: stencil - 1 });
+      }
+      const next = this.emoteMaterials.get(command.blend, command.stencil, command.maskWrite);
+      // Adjacent triangles share a submission only while their texture and material agree.
+      if (command.texture !== texture || next !== material) {
+        flush();
+        texture = command.texture;
+        material = next;
+      }
+      triangles ??= [];
+      for (const triangle of command.geometry) triangles.push(triangle);
+    }
+    flush();
+  }
+  drawEmoteSurface(id, geometry, { matrix } = {}) {
+    const surface = nativeStageSurface(stageSurfaceOwner(this), id),
+      target = this.surfaceTarget(id),
+      depthStencil = this.surfaceDepth(id, 75);
+    this.gpu.withRenderTarget(
+      target,
+      () => {
+        this.gpu.clear({ flags: 7, color: 0, depth: 1, stencil: 0, opaqueTarget: false });
+        this.drawEmote(geometry, { matrix });
+      },
+      { depthStencil },
+    );
+    surface.revision = (surface.revision ?? 0) + 1;
+    return this.surfaceFrame(id);
+  }
+  createSurface(width, height, rgba) {
+    const id = stageSurfaceOwner(this).create({ width, height, pitch: width * 4, format: 'rgba8' });
+    if (rgba) nativeStageSurface(stageSurfaceOwner(this), id).bytes.set(rgba);
+    return id;
+  }
+  blendSurfaces(id, next, previous, alpha) {
+    this.gpu.blendTargets(
+      this.surfaceTarget(id),
+      this.surfaceTarget(next),
+      previous ? this.surfaceTarget(previous) : null,
+      alpha,
+    );
+    const surface = nativeStageSurface(stageSurfaceOwner(this), id);
+    surface.revision = (surface.revision ?? 0) + 1;
+    return this.surfaceFrame(id);
+  }
+  surfaceTarget(id) {
+    if (!this.gpu) throw new Error('Stage surface drawing requires a GPU');
+    let target = this.surfaceTargets.get(id);
+    if (!target) {
+      const surface = nativeStageSurface(stageSurfaceOwner(this), id);
+      const frame = this.surfaceFrames.get(id);
+      if (frame) this.gpu.releaseTextureFrame(frame);
+      this.surfaceFrames.delete(id);
+      target = this.gpu.createRenderTarget(surface.width, surface.height, surface.bytes);
+      target.stageSurface = id;
+      this.surfaceTargets.set(id, target);
+    }
+    return target;
+  }
+  surfaceDepth(id, format = this.depthFormat) {
+    let depth = this.surfaceDepths.get(id);
+    if (!depth) {
+      const surface = nativeStageSurface(stageSurfaceOwner(this), id);
+      depth = this.gpu.createDepthStencil(
+        surface.width,
+        surface.height,
+        surface.depthStencil?.format ?? format,
+      );
+      this.surfaceDepths.set(id, depth);
+      if (surface.depthStencil) this.gpu.restoreDepthStencil(depth, surface.depthStencil);
+      else
+        this.gpu.withRenderTarget(this.surfaceTarget(id), () => this.gpu.clear({ flags: 6 }), {
+          depthStencil: depth,
+        });
+    }
+    return depth;
+  }
+  screenDepth() {
+    const view = this.gpu.primaryTarget;
+    if (
+      this.frameDepth &&
+      (this.frameDepth.width !== view.width ||
+        this.frameDepth.height !== view.height ||
+        this.frameDepth.format !== this.depthFormat)
+    ) {
+      this.gpu.destroyDepthStencil(this.frameDepth);
+      this.frameDepth = null;
+    }
+    if (!this.frameDepth) {
+      this.frameDepth = this.gpu.createDepthStencil(view.width, view.height, this.depthFormat);
+      if (this.savedFrameDepth) {
+        this.gpu.restoreDepthStencil(this.frameDepth, this.savedFrameDepth);
+        this.savedFrameDepth = null;
+      } else
+        this.gpu.withRenderTarget(this.gpu.primaryTarget, () => this.gpu.clear({ flags: 6 }), {
+          depthStencil: this.frameDepth,
+        });
+    }
+    return this.frameDepth;
+  }
+  surfaceFrame(id) {
+    const surface = stageSurfaceOwner(this).get(id),
+      target = this.surfaceTargets.get(id);
+    let frame = this.surfaceFrames.get(id);
+    if (frame?.revision === (surface.revision ?? 0)) return frame;
+    frame = target
+      ? { width: surface.width, height: surface.height, nativeTarget: target }
+      : { width: surface.width, height: surface.height, rgba: surface.bytes };
+    frame.revision = surface.revision ?? 0;
+    this.surfaceFrames.set(id, frame);
+    return frame;
+  }
+  surfacePixels(id) {
+    const surface = stageSurfaceOwner(this).get(id),
+      target = this.surfaceTargets.get(id);
+    if (target) surface.bytes.set(this.gpu.pixels(target));
+    return surface.bytes;
+  }
+  writeSurface(id, bytes) {
+    const surface = nativeStageSurface(stageSurfaceOwner(this), id);
+    if (bytes.length !== surface.bytes.length)
+      throw new RangeError('Stage surface write dimensions differ');
+    surface.bytes.set(bytes);
+    surface.revision = (surface.revision ?? 0) + 1;
+    const frame = this.surfaceFrames.get(id);
+    if (frame) frame.revision = surface.revision;
+    const target = this.surfaceTargets.get(id);
+    if (target)
+      this.gpu.uploadRenderTarget(target, {
+        width: surface.width,
+        height: surface.height,
+        rgba: surface.bytes,
+      });
+  }
+  releaseSurface(id) {
+    nativeStageSurface(stageSurfaceOwner(this), id);
+    const target = this.surfaceTargets.get(id);
+    if (target) this.gpu.destroyRenderTarget(target);
+    const depth = this.surfaceDepths.get(id);
+    if (depth) this.gpu.destroyDepthStencil(depth);
+    this.surfaceTargets.delete(id);
+    this.surfaceDepths.delete(id);
+    const frame = this.surfaceFrames.get(id);
+    if (frame) this.gpu?.releaseTextureFrame(frame);
+    this.surfaceFrames.delete(id);
+    stageSurfaceOwner(this).release(id);
+  }
+  snapshotSurfaces(ids) {
+    const owner = stageSurfaceOwners.get(this);
+    if (owner) nativeStageSurfaceRecords(owner);
+    for (const id of ids) {
+      const surface = nativeStageSurface(stageSurfaceOwner(this), id),
+        target = this.surfaceTargets.get(id);
+      if (target) surface.bytes.set(this.gpu.pixels(target));
+      const depth = this.surfaceDepths.get(id);
+      if (depth)
+        nativeStageSurface(stageSurfaceOwner(this), id).depthStencil =
+          this.gpu.snapshotDepthStencil(depth);
+    }
+    return stageSurfaceOwner(this).snapshot(ids);
+  }
+  restoreSurfaces(records) {
+    const owner = stageSurfaceOwners.get(this);
+    if (owner) nativeStageSurfaceRecords(owner);
+    for (const [id] of records) {
+      const target = this.surfaceTargets.get(id);
+      if (target) this.gpu.destroyRenderTarget(target);
+      this.surfaceTargets.delete(id);
+      const depth = this.surfaceDepths.get(id);
+      if (depth) this.gpu.destroyDepthStencil(depth);
+      this.surfaceDepths.delete(id);
+      const frame = this.surfaceFrames.get(id);
+      if (frame) this.gpu?.releaseTextureFrame(frame);
+      this.surfaceFrames.delete(id);
+    }
+    stageSurfaceOwner(this).restore(records);
+  }
+  effect(frame, picture) {
+    if (!picture.mode?.length && !picture.tone?.length && !picture.blur?.length)
+      return this.renderer.frameCanvas(frame);
+    const key = JSON.stringify([picture.mode, picture.tone, picture.blur]);
+    let cache = this.effects.get(frame);
+    if (!cache) this.effects.set(frame, (cache = new Map()));
+    if (cache.has(key)) return cache.get(key);
+    const rgba = new Uint8ClampedArray(frame.rgba),
+      tone = (picture.tone || [100, 100, 100]).map(Number),
+      blur = (picture.blur || [0, 0]).map(Number);
+    for (let pass = 0; pass < 2; pass++) {
+      if (blur[0] > 0) boxBlur(rgba, frame.width, frame.height, Math.floor(blur[0] / 2), true);
+      if ((blur[1] || blur[0]) > 0)
+        boxBlur(rgba, frame.width, frame.height, Math.floor((blur[1] || blur[0]) / 2), false);
+    }
+    for (let i = 0; i < rgba.length; i += 4) {
+      const grey = 0.299 * rgba[i] + 0.587 * rgba[i + 1] + 0.114 * rgba[i + 2];
+      for (let c = 0; c < 3; c++)
+        rgba[i + c] = Math.round(
+          ((picture.mode?.[0] === 'sepia' ? grey * [1.07, 0.89, 0.66][c] : rgba[i + c]) *
+            (tone[c] ?? 100)) /
+            100,
+        );
+    }
+    const canvas = new OffscreenCanvas(frame.width, frame.height);
+    canvas.getContext('2d').putImageData(new ImageData(rgba, frame.width, frame.height), 0, 0);
+    if (cache.size > 8) cache.clear();
+    cache.set(key, canvas);
+    return canvas;
+  }
+  transform(ctx, plane) {
+    ctx.translate(plane.x, plane.y);
+    if (plane.rotation) ctx.rotate((plane.rotation * Math.PI) / 180);
+    ctx.scale(plane.scaleX / 100, plane.scaleY / 100);
+    ctx.translate(-plane.baseX, -plane.baseY);
+  }
+  async picture(stage, plane, picture, context) {
+    const p = stage.place(picture),
+      ctx = context;
+    ctx.save();
+    this.transform(ctx, plane);
+    ctx.globalAlpha *= p.alpha / 255;
+    ctx.translate(p.x, p.y);
+    ctx.scale(((p.flipX ? -1 : 1) * p.scaleX) / 100, ((p.flipY ? -1 : 1) * p.scaleY) / 100);
+    if (p.color !== null && p.color !== undefined) {
+      ctx.fillStyle = `rgba(${(p.color >>> 16) & 255},${(p.color >>> 8) & 255},${p.color & 255},${(p.color >>> 24) / 255})`;
+      ctx.fillRect(0, 0, stage.width, stage.height);
+    } else if (p.file) {
+      const f = await this.renderer.images.frame(p.file, p.frameID);
+      ctx.drawImage(this.effect(f, p), f.offsetX - f.baseX, f.offsetY - f.baseY);
+    }
+    ctx.restore();
+  }
+  async render(stage, voice, additionalItems = [], { present = true } = {}) {
+    if (this.rendering) throw new Error('Stage rendering cannot be reentered');
+    if (typeof present !== 'boolean') throw new TypeError('Stage presentation must be boolean');
+    if (!present && !stage.nativeGraphics?.world?.screenEffects)
+      throw new Error('Nonpresenting capture requires its native compositor');
+    const previousContext = this.currentD3DContext,
+      previousFrameContext = this.gpu.frameContext,
+      previousOpaqueTarget = this.gpu.frameOpaqueTarget;
+    this.rendering = true;
+    try {
+      const compose = async () => {
+        const r = this.renderer,
+          ctx = r.ctx;
+        await stage.nativeGraphics?.prepareRender(this);
+        const nativeWorld = stage.nativeGraphics?.world,
+          effects = nativeWorld?.screenEffects ?? null;
+        if (present) {
+          if (!effects) r.begin();
+          this.gpu.beginFrame(0xff000000, { preserve: Boolean(effects) });
+        }
+        this.currentD3DContext = stage.nativeGraphics?.d3dContext || this.d3dContext;
+        this.gpu.frameContext = this.currentD3DContext;
+        const actors = Object.entries(stage.actors || {});
+        if (actors.length && !this.emote)
+          throw new Error('Stage actors require a model rendering provider');
+        if (this.emote) await this.emote.prepare(stage);
+        const ordered = [
+          ...Object.entries(stage.planes).map(([n, p]) => ({
+            type: 'plane',
+            n,
+            p,
+            priority: p.priority,
+            order: p.nativeGraph?.renderOrder ?? 0,
+          })),
+          ...actors.map(([n, p]) => ({
+            type: 'actor',
+            n,
+            p,
+            priority: p.priority,
+          })),
+          ...[...(stage.nativeGraphics?.drawItems() ?? []), ...additionalItems].map(
+            (item, index) => {
+              if (
+                !Number.isFinite(item.priority) ||
+                (typeof item.draw !== 'function' && typeof item.drawGPU !== 'function')
+              )
+                throw new Error('Invalid additional stage draw item');
+              return { ...item, order: item.nativeRenderOrder ?? item.order ?? index };
+            },
+          ),
+        ].sort(
+          (a, b) =>
+            a.priority - b.priority ||
+            (a.order ?? 0) - (b.order ?? 0) ||
+            Number(a.type === 'actor') - Number(b.type === 'actor') ||
+            Number(a.n) - Number(b.n),
+        );
+        const draw = (item, gpu = this.gpu, options = {}) =>
+          this.drawItem(stage, voice, item, gpu, options);
+        let presentation = null;
+        const overlays = [];
+        if (effects) {
+          await effects.rendering.render(
+            ordered,
+            (item, gpu) =>
+              draw(item, gpu, { fromHost: Boolean(originalView(nativeWorld, 'fromHost')) }),
+            present
+              ? (request) => {
+                  presentation = request;
+                  return this.presentNative(request);
+                }
+              : null,
+            present ? undefined : { minimum: 0, maximum: 65535 },
+          );
+          if (present)
+            for (const item of ordered)
+              if (!item.p?.nativeGraph && item.type !== 'particle') {
+                if (item.draw) overlays.push(item);
+                else await draw(item);
+              }
+        } else for (const item of ordered) await draw(item);
+        if (!present) return;
+        if (presentation) {
+          await nativeWorld?.screenCapture?.afterPresent();
+          this.gpu.endNativeFrame();
+          for (const item of overlays) await item.draw(ctx);
+        } else if (effects) {
+          this.gpu.endNativeFrame();
+        } else {
+          ctx.reset();
+          ctx.drawImage(this.gpu.endFrame(), 0, 0);
+        }
+      };
+      if (present) await compose();
+      else
+        await this.gpu.withRenderTargetAsync(this.gpu.primaryTarget, compose, {
+          preserveState: true,
+        });
+    } finally {
+      if (!present) {
+        this.currentD3DContext = previousContext;
+        this.gpu.frameContext = previousFrameContext;
+        this.gpu.frameOpaqueTarget = previousOpaqueTarget;
+      }
+      this.rendering = false;
+    }
+  }
+
+  presentNative(options) {
+    const { stageTarget } = options;
+    if (stageTarget) {
+      const ctx = this.renderer.ctx;
+      if (stageTarget === this.gpu.primaryTarget && this.gpu.presentPrimaryTo?.(ctx)) return 0;
+      ctx.reset();
+      ctx.drawImage(this.gpu.presentTarget(stageTarget), 0, 0);
+      return 0;
+    }
+    if (typeof this.originalPresent !== 'function')
+      throw new Error(
+        'Physical surface presentation requires its explicitly selected original oracle adapter',
+      );
+    return this.originalPresent(options);
+  }
+  async drawItem(stage, voice, item, gpu = this.gpu, options = {}) {
+    if (item.drawGPU) {
+      await item.drawGPU(gpu, options);
+      return;
+    }
+    if (item.draw) {
+      const off = this.plane.getContext('2d');
+      off.reset();
+      await item.draw(off);
+      this.drawCanvas(this.plane);
+      return;
+    }
+    if (item.p.nativeGraph) {
+      if (!stage.nativeGraphics) throw new Error('Native graph stage has no graphics owner');
+      await stage.nativeGraphics
+        .get(item.p?.nativeTaskWorldID ?? Number(item.n))
+        .drawGPU(gpu, options);
+      return;
+    }
+    const p = stage.place(item.p);
+    if (!p.visible || p.alpha < 0.5) return;
+    if (item.type === 'actor') {
+      const d = this.emote.drawing(stage, item.n, voice);
+      if (d) {
+        this.drawCanvas(this.emote.gpu.render(d.model, d.list, d.alpha));
+      }
+      return;
+    }
+    const off = this.plane.getContext('2d');
+    off.reset();
+    if (p.color !== undefined) {
+      off.fillStyle = `rgb(${(p.color >>> 16) & 255},${(p.color >>> 8) & 255},${p.color & 255})`;
+      off.fillRect(0, 0, stage.width, stage.height);
+    }
+    const pictures = p.pictures.toSorted(
+      (a, b) =>
+        ['bg', 'cg', 'fg', 'fw', 'eg'].indexOf(a.kind) -
+          ['bg', 'cg', 'fg', 'fw', 'eg'].indexOf(b.kind) || a.slot - b.slot,
+    );
+    for (const picture of pictures.filter((p) => !p.mask))
+      await this.picture(stage, p, picture, off);
+    const mask = pictures.find((p) => p.mask);
+    if (mask) {
+      const m = this.mask.getContext('2d');
+      m.reset();
+      await this.picture(stage, p, mask, m);
+      off.save();
+      off.globalCompositeOperation = 'destination-in';
+      off.drawImage(this.mask, 0, 0);
+      off.restore();
+    }
+    this.drawCanvas(this.plane, { alpha: p.alpha, blendMode: p.blendMode });
+  }
+  drawCanvas(canvas, { alpha = 255, blendMode = 0 } = {}) {
+    const width = this.renderer.canvas.width,
+      height = this.renderer.canvas.height,
+      color = ((Math.max(0, Math.min(255, alpha)) << 24) | 0xffffff) >>> 0;
+    this.gpu.drawGeometry(
+      [
+        {
+          vertices: [
+            { x: -0.5, y: -0.5, z: 0, w: 1, color, u: 0, v: 0 },
+            { x: width - 0.5, y: -0.5, z: 0, w: 1, color, u: 1, v: 0 },
+            { x: -0.5, y: height - 0.5, z: 0, w: 1, color, u: 0, v: 1 },
+            { x: width - 0.5, y: height - 0.5, z: 0, w: 1, color, u: 1, v: 1 },
+          ],
+        },
+      ],
+      canvas,
+      { blendMode, context: this.currentD3DContext, drawType: 0 },
+    );
+  }
+}

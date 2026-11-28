@@ -1,0 +1,111 @@
+// SPDX-License-Identifier: MPL-2.0
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { dataWorld } from './fixtures/data-world.mjs';
+import { prepareTileGame, tileGameEventReply } from './fixtures/tile-game-fixture.mjs';
+
+for (const profile of [
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
+]) {
+  test(`${profile} JS tile contexts share one model and restore independent event caches`, async (t) => {
+    t.mock.method(Date, 'now', () => new Date(2026, 10, 25, 12, 34, 56).getTime());
+    const first = await dataWorld(profile);
+    let fresh;
+    const invoke = async (world, id, args) =>
+      world.runtime.native('main', id, args, world.main.machine, world.main);
+    const advance = async (world, handle, count) => {
+      const events = [];
+      for (let index = 0; index < count; index++) {
+        const event = (await invoke(world, 0x1d9, [handle])).value;
+        events.push(event);
+        const response = tileGameEventReply(event);
+        if (response) await invoke(world, response[0], [handle, ...response.slice(1)]);
+      }
+      return events;
+    };
+    try {
+      const handle = (await invoke(first, 0x1d6, [])).value,
+        peer = (await invoke(first, 0x1d6, [])).value;
+      assert.notEqual(handle, peer);
+      assert.notEqual(
+        first.runtime.handles.get(handle, 'tile-game'),
+        first.runtime.handles.get(peer, 'tile-game'),
+      );
+      await invoke(first, 0x1d8, [handle, ...prepareTileGame(first.main.machine, 2)]);
+      assert.equal((await invoke(first, 0x1db, [peer])).value, 2);
+      const initial = await advance(first, handle, 170);
+      assert.ok(initial.includes(10003) && initial.includes(10004));
+      const pending = (await invoke(first, 0x1d9, [handle])).value;
+      await invoke(first, 0x1f5, [handle]);
+      const snapshot = structuredClone(first.snapshot());
+      assert.equal(Object.hasOwn(snapshot, 'nativeEngine'), false);
+      assert.equal(snapshot.tileGame.random.words.length, 624);
+      assert.equal(
+        snapshot.runtime.handles.records.filter(([, record]) => record.type === 'tile-game').length,
+        2,
+      );
+      fresh = await dataWorld(profile, {}, { initialize: false });
+      await fresh.restore(snapshot);
+      assert.equal((await invoke(fresh, 0x1d9, [handle])).value, pending);
+      assert.equal((await invoke(first, 0x1d9, [handle])).value, pending);
+      assert.equal((await invoke(fresh, 0x1db, [peer])).value, 2);
+      const expected = await advance(first, handle, 600),
+        actual = await advance(fresh, handle, 600);
+      assert.deepEqual(actual, expected);
+      assert.ok(actual.includes(20047));
+      assert.deepEqual(fresh.tileGame.snapshot(), first.tileGame.snapshot());
+      assert.deepEqual(fresh.main.machine.memory, first.main.machine.memory);
+      const wrong = fresh.runtime.handles.add('unrelated', {});
+      await assert.rejects(() => invoke(fresh, 0x1db, [wrong]), /expected tile-game/);
+      await assert.rejects(() => invoke(fresh, 0x1d8, [handle]), /expects 9/);
+      await invoke(fresh, 0x1d7, [handle]);
+      await assert.rejects(() => invoke(fresh, 0x1d9, [handle]), /released/);
+      assert.equal((await invoke(fresh, 0x1db, [peer])).value, 2);
+      await invoke(fresh, 0x1d7, [0]);
+      assert.equal((await invoke(fresh, 0x1eb, [0, 0, 0])).value, 0xffffffff);
+      assert.equal((await invoke(first, 0x1db, [handle])).value, 2);
+      assert.equal(first.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await first.close();
+      await fresh?.close();
+    }
+  });
+}
+
+for (const profile of [
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
+])
+  for (const [fields, seed, stream] of [
+    [[1970, 0, 2, 0, 0, 0], 0x18040000, [0xa3a0c528, 0x8a614458, 0x25501e94, 0xbb766a1d]],
+    [[2000, 1, 29, 23, 59, 59], 0x907b7efb, [0x7e505426, 0x860fcbb1, 0x32b6c287, 0xfcb2f493]],
+    [[2026, 10, 25, 12, 34, 56], 0xfab2c8b8, [0xf68b2d9c, 0xd4b855d3, 0x18f1d52f, 0x18b738db]],
+  ])
+    test(`${profile} initializes its tile random stream from local clock fields ${fields.join('/')}`, async (t) => {
+      t.mock.method(Date, 'now', () => new Date(...fields).getTime());
+      const world = await dataWorld(profile);
+      t.after(() => world.close({ flushFiles: false }));
+      const random = world.tileGame.model.random;
+      assert.equal(random.index, 624);
+      assert.equal(random.words[0], seed);
+      assert.deepEqual(
+        stream.map(() => random.nextUint32()),
+        stream,
+      );
+      const checkpoint = structuredClone(world.snapshot());
+      t.mock.method(Date, 'now', () => new Date(2038, 0, 19, 3, 14, 8).getTime());
+      const fresh = await dataWorld(profile, {}, { initialize: false });
+      t.after(() => fresh.close({ flushFiles: false }));
+      await fresh.restore(checkpoint);
+      assert.deepEqual(fresh.tileGame.snapshot(), world.tileGame.snapshot());
+      assert.deepEqual(
+        Array.from({ length: 32 }, () => fresh.tileGame.model.random.nextUint32()),
+        Array.from({ length: 32 }, () => random.nextUint32()),
+      );
+    });

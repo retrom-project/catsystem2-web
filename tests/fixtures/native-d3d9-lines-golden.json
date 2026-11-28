@@ -1,0 +1,2486 @@
+{
+  "kind": "Authored D3D9 untextured XYZRHW lines",
+  "width": 8,
+  "height": 8,
+  "format": "RGBA8",
+  "wineImage": "sha256:9a6c60e2c760730b99a8ddbc94da318a8ba667e5f206972436bf3820fe0892b7",
+  "harnessSHA256": "1313f51b43ef38eb4db63f2381baf8f452689bbeb34ca1bb41a83d184d739910",
+  "deviceCaps": { "rasterCaps": 120791441, "textureFilterCaps": 117638912, "maxAnisotropy": 16 },
+  "cases": [
+    {
+      "name": "horizontal",
+      "probe": {
+        "name": "horizontal",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 2, 0.5, 1, 4282417344],
+              [7, 2, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/0CAwP9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "52ef68a7ab692a1baaa35e5a8c668e9093363ca02e3ffbb0ebbe862a43165b6f"
+    },
+    {
+      "name": "horizontal-reversed",
+      "probe": {
+        "name": "horizontal-reversed",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7, 2, 0.5, 1, 4282417344],
+              [1, 2, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP9AgMD/QIDA/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "739b4d46dbae7b11edcf2dbbc65977bd0240f5fcc00fdf056172f2ae6fb8edd3"
+    },
+    {
+      "name": "vertical",
+      "probe": {
+        "name": "vertical",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2, 1, 0.5, 1, 4282417344],
+              [2, 7, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "89f8a88cda5691847573947bf96f5676bcd5a76333711386396b07e3da4f5f35"
+    },
+    {
+      "name": "vertical-reversed",
+      "probe": {
+        "name": "vertical-reversed",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2, 7, 0.5, 1, 4282417344],
+              [2, 1, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "fd00755aa929028e63d1febbb1a3809c3abb977b773214dffe669f45ea238c0c"
+    },
+    {
+      "name": "diagonal",
+      "probe": {
+        "name": "diagonal",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 1, 0.5, 1, 4282417344],
+              [7, 7, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "71bbdc5611b90b16e0c0c828b0c310aabdb09673fb6071e781d388269bfccd2d"
+    },
+    {
+      "name": "diagonal-reversed",
+      "probe": {
+        "name": "diagonal-reversed",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7, 7, 0.5, 1, 4282417344],
+              [1, 1, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/w==",
+      "rgbaSHA256": "106e2b41b8018f90b549a526b9e0e328e3f1659c1a4c490dc36ba9689a15610a"
+    },
+    {
+      "name": "opposite-diagonal",
+      "probe": {
+        "name": "opposite-diagonal",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 7, 0.5, 1, 4282417344],
+              [7, 1, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "fc78012e4add3e04e37fcc49fa135d40925857448eea4b3fa98f86530c379df1"
+    },
+    {
+      "name": "opposite-diagonal-reversed",
+      "probe": {
+        "name": "opposite-diagonal-reversed",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7, 1, 0.5, 1, 4282417344],
+              [1, 7, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "2260ab58e71e836b274089a4207f1dda5b3cc6ca07c13d279120a6ee9715a86e"
+    },
+    {
+      "name": "x-major",
+      "probe": {
+        "name": "x-major",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 2, 0.5, 1, 4282417344],
+              [7, 5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "ec7b4101a0cda094b2d272a5742680ee573666faacb5b1858338bd23d787d362"
+    },
+    {
+      "name": "y-major",
+      "probe": {
+        "name": "y-major",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2, 1, 0.5, 1, 4282417344],
+              [5, 7, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "2a92cf431a56f8a41be8d50ef44c5d6c1949ddf43ee50799453b6e91b51375f8"
+    },
+    {
+      "name": "half-row",
+      "probe": {
+        "name": "half-row",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 2.5, 0.5, 1, 4282417344],
+              [7, 2.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/0CAwP9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "52ef68a7ab692a1baaa35e5a8c668e9093363ca02e3ffbb0ebbe862a43165b6f"
+    },
+    {
+      "name": "half-column",
+      "probe": {
+        "name": "half-column",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.5, 1, 0.5, 1, 4282417344],
+              [2.5, 7, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "89f8a88cda5691847573947bf96f5676bcd5a76333711386396b07e3da4f5f35"
+    },
+    {
+      "name": "quarter",
+      "probe": {
+        "name": "quarter",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.125, 1.375, 0.5, 1, 4282417344],
+              [6.625, 4.75, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eda4b55574f4dd53db2023f7809ac92b9e70c7e0d574ea837441c84362c90c2c"
+    },
+    {
+      "name": "vertical-quarter",
+      "probe": {
+        "name": "vertical-quarter",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.375, -2.625, 0.5, 1, 4282417344],
+              [2.375, 7.75, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e2e795df5f172208fb4597f39293e01bc7350ce3ef32e1db35c3dbb333a5cf6b"
+    },
+    {
+      "name": "partial",
+      "probe": {
+        "name": "partial",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-4, 2, 0.5, 1, 4282417344],
+              [10, 5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/0CAwP9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "b3b4d80e48c8e74783591d718d928989ef8bc58d2e5621a40d3535d55531bee3"
+    },
+    {
+      "name": "degenerate",
+      "probe": {
+        "name": "degenerate",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [3, 3, 0.5, 1, 4282417344],
+              [3, 3, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "subpixel",
+      "probe": {
+        "name": "subpixel",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.1, 2.1, 0.5, 1, 4282417344],
+              [2.2, 2.2, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "overlap-blend",
+      "probe": {
+        "name": "overlap-blend",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 3, 0.5, 1, 2151710912],
+              [7, 3, 0.5, 1, 2151710912],
+              [3, 1, 0.5, 1, 2151710912],
+              [3, 7, 0.5, 1, 2151710912]
+            ],
+            "count": 2,
+            "states": [
+              [19, 5],
+              [20, 6],
+              [27, 1]
+            ]
+          }
+        ],
+        "channelRounding": 1
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8sVn+/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/yxWf78YLD7/GCw+/xgsPv8YLD7/GCw+/yxWf78sVn+/NmufnyxWf78sVn+/LFZ/vxgsPv8YLD7/GCw+/xgsPv8sVn+/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/yxWf78YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/LFZ/vxgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "7ddca81a3f9b7b296fb885c2c726d3dc88e1e935e297558c0ac36e14c925775a",
+      "channelRounding": 1
+    },
+    {
+      "name": "gouraud",
+      "probe": {
+        "name": "gouraud",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 2, 0.5, 1, 4294901760],
+              [7, 2, 0.5, 1, 4278190335]
+            ],
+            "count": 1
+          }
+        ],
+        "channelRounding": 1
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv//AAD/1AAq/6oAVf9/AID/VQCq/yoA1f8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "0e2c8ea8f580a245557811d67437200f262eff814b780ff903fb8ded2e9966b8",
+      "channelRounding": 1
+    },
+    {
+      "name": "gouraud-rhw",
+      "probe": {
+        "name": "gouraud-rhw",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 2, 0.5, 1, 4294901760],
+              [7, 2, 0.5, 0.25, 4278190335]
+            ],
+            "count": 1
+          }
+        ],
+        "channelRounding": 1
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv//AAD/8wAM/+MAHP/MADP/qgBV/3EAjv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "7c4513b1492010d34de447aa86e1c465358c7b17692b731674766e000c84d7ab",
+      "channelRounding": 1
+    },
+    {
+      "name": "gouraud-diagonal",
+      "probe": {
+        "name": "gouraud-diagonal",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 1, 0.5, 1, 4294901760],
+              [7, 4, 0.5, 1, 4278190335]
+            ],
+            "count": 1
+          }
+        ],
+        "channelRounding": 1
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7//wAA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/1AAq/6oAVf8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/38AgP9VAKr/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8qANX/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "2e9e3122b5c99138e619572e52b46e303f38c2f82ccdbf1b708a7bdd07c3d568",
+      "channelRounding": 1
+    },
+    {
+      "name": "flat-shade",
+      "probe": {
+        "name": "flat-shade",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 1, 0.5, 1, 4294901760],
+              [7, 4, 0.5, 1, 4278190335]
+            ],
+            "count": 1,
+            "states": [[9, 1]]
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7//wAA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7//wAA//8AAP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+//8AAP//AAD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv//AAD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e1f79f04e596c7f96847e9817e4ff8fa663741e4307859a822fd729fad5bf793"
+    },
+    {
+      "name": "gouraud-reversed",
+      "probe": {
+        "name": "gouraud-reversed",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7, 4, 0.5, 1, 4294901760],
+              [1, 1, 0.5, 1, 4278190335]
+            ],
+            "count": 1
+          }
+        ],
+        "channelRounding": 1
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/KgDV/1UAqv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/4AAgP+qAFX/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv/UACv//wAA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "676b586fbc72dac0c1a8753547253258791ee62ba99e31e31ca8b0a2d5ebdb47",
+      "channelRounding": 1
+    },
+    {
+      "name": "depth",
+      "probe": {
+        "name": "depth",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 3, 0.2, 1, 4282417344],
+              [7, 3, 0.8, 1, 4282417344]
+            ],
+            "count": 1,
+            "states": [[7, 1]]
+          },
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 3, 0.5, 1, 4278255360],
+              [7, 3, 0.5, 1, 4278255360]
+            ],
+            "count": 1,
+            "states": [[7, 1]]
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/wD/AP8A/wD/AP8A/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "760539cf3af47728432acbe06db0a01f53fe09e53385477617fbd6011b4b5d58"
+    },
+    {
+      "name": "line-strip",
+      "probe": {
+        "name": "line-strip",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 3,
+            "vertices": [
+              [1, 1, 0.5, 1, 4282417344],
+              [6, 4, 0.5, 1, 4282417344],
+              [1, 7, 0.5, 1, 4282417344],
+              [1, 1, 0.5, 1, 4282417344]
+            ],
+            "count": 3
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/0CAwP9AgMD/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv9AgMD/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "a3ab3aba7a710a58a696fb2f6818d0be7c5f61582f95f3e88ba75f8200e0f3ff"
+    },
+    {
+      "name": "line-antialias",
+      "probe": {
+        "name": "line-antialias",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1, 1, 0.5, 1, 2151710912],
+              [6, 4, 0.5, 1, 2151710912]
+            ],
+            "count": 1,
+            "states": [
+              [19, 5],
+              [20, 6],
+              [27, 1],
+              [176, 1]
+            ]
+          }
+        ],
+        "channelRounding": 1
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/IkFezyJAXtAYLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8bMkjuJUhpxylPdMEeOVLdGCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/HjlS3SlPdMElSGnHGzJI7hgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/yJAXtAiQV7PGCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "d03ed4c37da78b5c4837a41e2337e5eb4deaaa0a4550c73045de11ba57e4718a",
+      "channelRounding": 1
+    },
+    {
+      "name": "viewport",
+      "probe": {
+        "name": "viewport",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-1, 4, 0.5, 1, 4282417344],
+              [9, 4, 0.5, 1, 4282417344]
+            ],
+            "count": 1,
+            "viewport": [2, 1, 4, 5]
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e1eeaafbc2d17fd1de7d2a0887283f056ff4da7f07bfa163d3c716bd39bd74e9"
+    },
+    {
+      "name": "scissor",
+      "probe": {
+        "name": "scissor",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-1, 4, 0.5, 1, 4282417344],
+              [9, 4, 0.5, 1, 4282417344]
+            ],
+            "count": 1,
+            "states": [[174, 1]],
+            "scissor": [2, 2, 6, 5]
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e1eeaafbc2d17fd1de7d2a0887283f056ff4da7f07bfa163d3c716bd39bd74e9"
+    },
+    {
+      "name": "indexed-101",
+      "probe": {
+        "name": "indexed-101",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0, 0, 0.5, 1, 4282417344],
+              [1, 1, 0.5, 1, 4282417344],
+              [1, 6, 0.5, 1, 4282417344],
+              [6, 6, 0.5, 1, 4282417344]
+            ],
+            "count": 2,
+            "indices": [1, 3, 2, 1],
+            "indexFormat": 101,
+            "minimum": 1,
+            "vertexCount": 3
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "6ccd5102a9cf58708623114e9a8c05bc1d6ae3de40520e61bc895080bbb33ce8"
+    },
+    {
+      "name": "indexed-102",
+      "probe": {
+        "name": "indexed-102",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0, 0, 0.5, 1, 4282417344],
+              [1, 1, 0.5, 1, 4282417344],
+              [1, 6, 0.5, 1, 4282417344],
+              [6, 6, 0.5, 1, 4282417344]
+            ],
+            "count": 2,
+            "indices": [1, 3, 2, 1],
+            "indexFormat": 102,
+            "minimum": 1,
+            "vertexCount": 3
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "6ccd5102a9cf58708623114e9a8c05bc1d6ae3de40520e61bc895080bbb33ce8"
+    },
+    {
+      "name": "random-000",
+      "probe": {
+        "name": "random-000",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.875, -1.6875, 0.5, 1, 4282417344],
+              [2.875, 9.875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "96a23f897818c0a19d3d1703cbd34279553480fc5e665e09c9b1b8adf5d3e25b"
+    },
+    {
+      "name": "random-001",
+      "probe": {
+        "name": "random-001",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-1.25, 5.8125, 0.5, 1, 4282417344],
+              [6.875, 3.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP9AgMD/GCw+/0CAwP9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "80fa4fae97ddf9c1c844fb41122d064058b6b32db074f739527371444794be7a"
+    },
+    {
+      "name": "random-002",
+      "probe": {
+        "name": "random-002",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.375, 6.625, 0.5, 1, 4282417344],
+              [7.125, 6.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-003",
+      "probe": {
+        "name": "random-003",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.6875, 4.375, 0.5, 1, 4282417344],
+              [7.8125, 0.4375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "97808aba3c87eea209df9695cc0b400bc6e56b3ce20d99ab9dd08477c75621ea"
+    },
+    {
+      "name": "random-004",
+      "probe": {
+        "name": "random-004",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.25, 5.375, 0.5, 1, 4282417344],
+              [0.25, -1.4375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "391413230cb1fb3321683a89b1245c36aabc85456a4ce6140f1d7860d39ffbb6"
+    },
+    {
+      "name": "random-005",
+      "probe": {
+        "name": "random-005",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.375, 7.0625, 0.5, 1, 4282417344],
+              [0.0, 7.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP9AgMD/QIDA/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "db7bf87f800de59cfe8afec7f9175d8054e56d4232382f686198e2617d06904d"
+    },
+    {
+      "name": "random-006",
+      "probe": {
+        "name": "random-006",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.9375, 6.125, 0.5, 1, 4282417344],
+              [-0.0625, 7.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "ab00e7d5f619e5a12ab8ef9431faaea034a7c681043a99bbd9d8f9497fc8466b"
+    },
+    {
+      "name": "random-007",
+      "probe": {
+        "name": "random-007",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [3.125, 5.5, 0.5, 1, 4282417344],
+              [1.75, -0.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "46e4ba1d9c0c3cc61a5df4eaa45e7126d4c9d7244dafc13216434a166fdfd42b"
+    },
+    {
+      "name": "random-008",
+      "probe": {
+        "name": "random-008",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [3.375, 9.9375, 0.5, 1, 4282417344],
+              [8.5, 7.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-009",
+      "probe": {
+        "name": "random-009",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.375, 10.0, 0.5, 1, 4282417344],
+              [4.5625, 9.3125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-010",
+      "probe": {
+        "name": "random-010",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.625, -1.5, 0.5, 1, 4282417344],
+              [5.125, 5.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "04ba3db60e3be4f98c01b1fb2a091f92a34bd66dd8e96d06fa623919200da285"
+    },
+    {
+      "name": "random-011",
+      "probe": {
+        "name": "random-011",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.375, 9.5, 0.5, 1, 4282417344],
+              [7.25, 2.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/w==",
+      "rgbaSHA256": "74c124d390939846b405f15c3c5e3afbd2b2a0b3d1efdc4ddcaf4491d77169b6"
+    },
+    {
+      "name": "random-012",
+      "probe": {
+        "name": "random-012",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-2.0, 4.1875, 0.5, 1, 4282417344],
+              [0.125, 8.9375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-013",
+      "probe": {
+        "name": "random-013",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.0625, 2.0, 0.5, 1, 4282417344],
+              [9.125, -0.4375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-014",
+      "probe": {
+        "name": "random-014",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.8125, 9.1875, 0.5, 1, 4282417344],
+              [-1.625, -1.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/w==",
+      "rgbaSHA256": "b50bd0fa052f471132887c83f2d06dc70de4951cb33702d6125c42c594f822bb"
+    },
+    {
+      "name": "random-015",
+      "probe": {
+        "name": "random-015",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [5.0, -0.75, 0.5, 1, 4282417344],
+              [1.875, 6.875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "782d89150f8cdaf9cbf975a3b509f9540cc43f067ea49cc31a0d6765c75ea11f"
+    },
+    {
+      "name": "random-016",
+      "probe": {
+        "name": "random-016",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.5625, -1.875, 0.5, 1, 4282417344],
+              [2.1875, 5.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "2dca8f33c1018afc9936422a602e304dbcbd3addf03fcb3eeb283f0ae448e90a"
+    },
+    {
+      "name": "random-017",
+      "probe": {
+        "name": "random-017",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.0625, 0.3125, 0.5, 1, 4282417344],
+              [3.6875, 4.125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "1f9ac524a171d2639922ca032c3bf1289b828255b7e5068d5173a8526df7ee68"
+    },
+    {
+      "name": "random-018",
+      "probe": {
+        "name": "random-018",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.4375, -0.1875, 0.5, 1, 4282417344],
+              [9.6875, 8.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-019",
+      "probe": {
+        "name": "random-019",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.125, 8.3125, 0.5, 1, 4282417344],
+              [9.875, 9.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-020",
+      "probe": {
+        "name": "random-020",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.0, 6.375, 0.5, 1, 4282417344],
+              [7.375, 2.875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "f54b1e17f8499bc1fb9f7fac8e44b2d11c584ed8d1dfd17da00b4a5cfe8166cb"
+    },
+    {
+      "name": "random-021",
+      "probe": {
+        "name": "random-021",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.0, 9.375, 0.5, 1, 4282417344],
+              [8.75, 1.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "0072e988156754296f249c1cdab570f27ee08b0ab68e7bb657f15b11c40a19a4"
+    },
+    {
+      "name": "random-022",
+      "probe": {
+        "name": "random-022",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.3125, 1.5625, 0.5, 1, 4282417344],
+              [3.5625, 0.25, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "4abd5acf36f7da32d390c01d9f9ee886ba8a5a7769a6e3ee9603f580aea4ffe4"
+    },
+    {
+      "name": "random-023",
+      "probe": {
+        "name": "random-023",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.25, 9.6875, 0.5, 1, 4282417344],
+              [9.3125, 1.1875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-024",
+      "probe": {
+        "name": "random-024",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.1875, -1.0625, 0.5, 1, 4282417344],
+              [9.6875, -1.3125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-025",
+      "probe": {
+        "name": "random-025",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.6875, 9.1875, 0.5, 1, 4282417344],
+              [7.6875, 6.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/w==",
+      "rgbaSHA256": "a1460f300132e44345767fd3e278e24c264f57ffaf1e2327d0a67326a5054815"
+    },
+    {
+      "name": "random-026",
+      "probe": {
+        "name": "random-026",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.25, 6.625, 0.5, 1, 4282417344],
+              [-0.6875, 5.3125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/w==",
+      "rgbaSHA256": "69a0958e60212a460fa24384fd52fe194b8c828baed9f0b49e7ca8335ca1804f"
+    },
+    {
+      "name": "random-027",
+      "probe": {
+        "name": "random-027",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.8125, -0.8125, 0.5, 1, 4282417344],
+              [2.5625, 5.125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "2dca8f33c1018afc9936422a602e304dbcbd3addf03fcb3eeb283f0ae448e90a"
+    },
+    {
+      "name": "random-028",
+      "probe": {
+        "name": "random-028",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.75, 0.5625, 0.5, 1, 4282417344],
+              [7.125, 4.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "fdd0e714118572ca5e6041805027aa378f1ee06debb0c9f2b1b85709b1eeb07d"
+    },
+    {
+      "name": "random-029",
+      "probe": {
+        "name": "random-029",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.4375, 0.125, 0.5, 1, 4282417344],
+              [9.5625, 2.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "06abbfc224113a002fc3025f1c1591e2ef4c308b898939656a64bae71871cb37"
+    },
+    {
+      "name": "random-030",
+      "probe": {
+        "name": "random-030",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.0625, -0.25, 0.5, 1, 4282417344],
+              [-0.8125, 2.875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e3555e2763671772acb27865327f5d9bf4bff00c54edaaa14aed01f9782c2772"
+    },
+    {
+      "name": "random-031",
+      "probe": {
+        "name": "random-031",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.5625, 9.75, 0.5, 1, 4282417344],
+              [0.3125, -1.4375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "ad88e93c5bba185d1809da859818c264adf302c699e6036ce115e5de326bf3b6"
+    },
+    {
+      "name": "random-032",
+      "probe": {
+        "name": "random-032",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.0625, 8.25, 0.5, 1, 4282417344],
+              [9.875, 8.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-033",
+      "probe": {
+        "name": "random-033",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.3125, 4.6875, 0.5, 1, 4282417344],
+              [2.6875, -0.25, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "c210f7866b914817a78717ec4c0537b11840315be1386b162b0e8ac4894c9c29"
+    },
+    {
+      "name": "random-034",
+      "probe": {
+        "name": "random-034",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.375, 7.8125, 0.5, 1, 4282417344],
+              [1.8125, 0.75, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "c66a4b1b600daed13813809bb185301fa9e1fbd1213e78148d198f1b92b2c828"
+    },
+    {
+      "name": "random-035",
+      "probe": {
+        "name": "random-035",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.875, 6.6875, 0.5, 1, 4282417344],
+              [-1.0625, 3.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "d2ce84150a13b00e0e14f41bcdcd84f7271b1592acfb0efcac63eb3231fcb85f"
+    },
+    {
+      "name": "random-036",
+      "probe": {
+        "name": "random-036",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.75, 1.25, 0.5, 1, 4282417344],
+              [-1.875, -1.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "4fdb51a483c02033d77d431c9091ae5d9cf51428fbf619fcacba6d338a25a337"
+    },
+    {
+      "name": "random-037",
+      "probe": {
+        "name": "random-037",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.875, -1.25, 0.5, 1, 4282417344],
+              [-0.5, 3.3125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "0196a6e9460a32b59dbb94fe75756e8a1943961cde218b6e315ae84a585250b9"
+    },
+    {
+      "name": "random-038",
+      "probe": {
+        "name": "random-038",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.5, 2.8125, 0.5, 1, 4282417344],
+              [-0.625, 9.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "cb77cafe9f23db71b0e305b713d4f222d0d415ade88e75e137d35a1e07823f7d"
+    },
+    {
+      "name": "random-039",
+      "probe": {
+        "name": "random-039",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.875, 2.125, 0.5, 1, 4282417344],
+              [-1.125, 3.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-040",
+      "probe": {
+        "name": "random-040",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.625, 0.5625, 0.5, 1, 4282417344],
+              [3.3125, 2.6875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "b991edaff3692e1f0910f2022efad4128baed521979d11e24d854ca60dd33379"
+    },
+    {
+      "name": "random-041",
+      "probe": {
+        "name": "random-041",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.375, 3.3125, 0.5, 1, 4282417344],
+              [2.25, 3.4375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "48865847d885ad4974b8e4f80f559534547cd68e63ad33d5868f3fb3ec61ff25"
+    },
+    {
+      "name": "random-042",
+      "probe": {
+        "name": "random-042",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.625, -1.1875, 0.5, 1, 4282417344],
+              [6.8125, 7.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/w==",
+      "rgbaSHA256": "301c0cd286c1120aa91fcd484788e3aaa2122d9ca0f26a9f72e88581beaaed24"
+    },
+    {
+      "name": "random-043",
+      "probe": {
+        "name": "random-043",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.4375, -1.5, 0.5, 1, 4282417344],
+              [-1.125, 0.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/0CAwP9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "b77d575c93f080d202f03e166f5c939c7cfaf3ee73ade3676b39e00e0b0869da"
+    },
+    {
+      "name": "random-044",
+      "probe": {
+        "name": "random-044",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-1.5625, 9.1875, 0.5, 1, 4282417344],
+              [1.9375, 9.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-045",
+      "probe": {
+        "name": "random-045",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.4375, 1.8125, 0.5, 1, 4282417344],
+              [8.0625, 4.4375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "5e60e5439452c1635cccb325ac4a0a95fe572a8446e81f0a145c8dfb62e54ee0"
+    },
+    {
+      "name": "random-046",
+      "probe": {
+        "name": "random-046",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.0625, 7.6875, 0.5, 1, 4282417344],
+              [-1.1875, 1.6875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/w==",
+      "rgbaSHA256": "5ca70b9779e54f53a6122f6ff7cd438fa3661fbef75f8fa78d6eab23832e94da"
+    },
+    {
+      "name": "random-047",
+      "probe": {
+        "name": "random-047",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.5625, -0.625, 0.5, 1, 4282417344],
+              [6.25, -0.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-048",
+      "probe": {
+        "name": "random-048",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.125, 4.5625, 0.5, 1, 4282417344],
+              [3.5, 2.5625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e9ee1b0d53af8ab102cdae5e1e8a5765978ad6c550a33df1abb786a17ec4241d"
+    },
+    {
+      "name": "random-049",
+      "probe": {
+        "name": "random-049",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.375, 2.5, 0.5, 1, 4282417344],
+              [0.5625, 9.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e6424a515a139230d9d874f2bd33d20bf9c46c38dfbeb492b8b0e81376618d2b"
+    },
+    {
+      "name": "random-050",
+      "probe": {
+        "name": "random-050",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.25, -0.375, 0.5, 1, 4282417344],
+              [9.6875, -0.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/0CAwP9AgMD/QIDA/0CAwP9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "4cfcbd2075cdd33f9e9fadcd159aa09bb74b382a25a4c79fb5460d87a1e6ec24"
+    },
+    {
+      "name": "random-051",
+      "probe": {
+        "name": "random-051",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.5, 9.0, 0.5, 1, 4282417344],
+              [0.3125, 1.1875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eea903811df7bef202d164548a6dcf44fc03d81570cd5dd489947dcbf04f965d"
+    },
+    {
+      "name": "random-052",
+      "probe": {
+        "name": "random-052",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.9375, -1.75, 0.5, 1, 4282417344],
+              [6.875, 9.875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-053",
+      "probe": {
+        "name": "random-053",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [5.8125, 8.3125, 0.5, 1, 4282417344],
+              [3.5, 9.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-054",
+      "probe": {
+        "name": "random-054",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.4375, 0.5, 0.5, 1, 4282417344],
+              [5.0625, 7.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "bed2901eefe6c9ac735868a84bc748f90be405e79d2571a35f03f21e4385629c"
+    },
+    {
+      "name": "random-055",
+      "probe": {
+        "name": "random-055",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.9375, 7.3125, 0.5, 1, 4282417344],
+              [8.3125, 5.75, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-056",
+      "probe": {
+        "name": "random-056",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.1875, -1.9375, 0.5, 1, 4282417344],
+              [7.875, -1.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-057",
+      "probe": {
+        "name": "random-057",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.0625, 6.125, 0.5, 1, 4282417344],
+              [3.625, 3.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "9ae24d3bbedc4260490120d949e861f8ad09a5d34bbd475d1196cdab6d02496b"
+    },
+    {
+      "name": "random-058",
+      "probe": {
+        "name": "random-058",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.8125, 0.75, 0.5, 1, 4282417344],
+              [5.9375, 0.875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "7830098100acf4ed3a8d8a3674a91c15c3e28d2281bf1d1eb1f2b88110b86648"
+    },
+    {
+      "name": "random-059",
+      "probe": {
+        "name": "random-059",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.4375, 3.0, 0.5, 1, 4282417344],
+              [0.9375, -1.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "727fe9cd407b6bef929cb4bb642724ac28a748dc976b496d8ab5f5d493ac5a4b"
+    },
+    {
+      "name": "random-060",
+      "probe": {
+        "name": "random-060",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.75, 7.0, 0.5, 1, 4282417344],
+              [-1.3125, 3.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "8651d83bff3a610302ad911031b1bc79f06aa2973c43cf1ba54cf9fc809ef5f7"
+    },
+    {
+      "name": "random-061",
+      "probe": {
+        "name": "random-061",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.875, 3.0625, 0.5, 1, 4282417344],
+              [6.25, 9.125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/w==",
+      "rgbaSHA256": "547bdc4df741fed63bd3efdcfb049837bca72d3a79b04ac84b40f9e5d7e46557"
+    },
+    {
+      "name": "random-062",
+      "probe": {
+        "name": "random-062",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-1.6875, -1.875, 0.5, 1, 4282417344],
+              [10.0, 8.75, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "dc5450da100e261a95def7ca6d6880f4dfa3fc3c40f6baee472ad65810385e9b"
+    },
+    {
+      "name": "random-063",
+      "probe": {
+        "name": "random-063",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.0, 8.375, 0.5, 1, 4282417344],
+              [9.125, 9.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-064",
+      "probe": {
+        "name": "random-064",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.5, -1.75, 0.5, 1, 4282417344],
+              [1.6875, -0.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-065",
+      "probe": {
+        "name": "random-065",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.8125, 7.3125, 0.5, 1, 4282417344],
+              [8.8125, 8.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "9f62bbd7b177523ac0dc147e92753a44258050b72abbd61adea1c62cfa587328"
+    },
+    {
+      "name": "random-066",
+      "probe": {
+        "name": "random-066",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [2.875, -0.5625, 0.5, 1, 4282417344],
+              [6.1875, 9.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/w==",
+      "rgbaSHA256": "f8a2306dc5095140269d022933194749762297d2aa085dfd4f3d354d8a593648"
+    },
+    {
+      "name": "random-067",
+      "probe": {
+        "name": "random-067",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.5, -1.0625, 0.5, 1, 4282417344],
+              [9.375, 4.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "6449aa53a42d3272cbce6712863f6dca9498f1455391ffc48a30679c592b70a4"
+    },
+    {
+      "name": "random-068",
+      "probe": {
+        "name": "random-068",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.0625, 3.8125, 0.5, 1, 4282417344],
+              [2.1875, -0.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "5513c24b24138fefe1adc73b5c1e97ca2662ca120df39786380ec673f1ddb86a"
+    },
+    {
+      "name": "random-069",
+      "probe": {
+        "name": "random-069",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.125, 4.4375, 0.5, 1, 4282417344],
+              [-0.75, 2.9375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "1134527e8e1909cf3795010e81b9cda13d3c99e2b5fa6c266269d1f7b9d9b57a"
+    },
+    {
+      "name": "random-070",
+      "probe": {
+        "name": "random-070",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.4375, 3.5, 0.5, 1, 4282417344],
+              [-1.75, 2.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "810417b2d8958b76d5a52a613a6a2a6dedb582db8d695bb325116aecfa9610ed"
+    },
+    {
+      "name": "random-071",
+      "probe": {
+        "name": "random-071",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.5, 2.125, 0.5, 1, 4282417344],
+              [0.3125, 6.125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "8f41b2470a19023862a011f1be11140671a9863cb8396cd8e1b93fa9eb3fd3b9"
+    },
+    {
+      "name": "random-072",
+      "probe": {
+        "name": "random-072",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [3.375, 9.125, 0.5, 1, 4282417344],
+              [5.9375, 8.875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-073",
+      "probe": {
+        "name": "random-073",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.3125, 7.5625, 0.5, 1, 4282417344],
+              [9.0625, 8.9375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-074",
+      "probe": {
+        "name": "random-074",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.1875, 9.875, 0.5, 1, 4282417344],
+              [4.5, 7.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "6f202620331d3a439d645af54804c801220daa58e3044ae739cb9c5386bfb159"
+    },
+    {
+      "name": "random-075",
+      "probe": {
+        "name": "random-075",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.8125, 5.25, 0.5, 1, 4282417344],
+              [6.1875, 4.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "f8a4a00df8559ccef5c790d528ce278a3ecd274050b18c175bcf5439c7c16084"
+    },
+    {
+      "name": "random-076",
+      "probe": {
+        "name": "random-076",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.375, 8.8125, 0.5, 1, 4282417344],
+              [3.625, 3.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/w==",
+      "rgbaSHA256": "d30bba149f8484f5a0f3ee0e50974563bd7fd8e5731e993f70435f1fb4736058"
+    },
+    {
+      "name": "random-077",
+      "probe": {
+        "name": "random-077",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-1.875, 1.9375, 0.5, 1, 4282417344],
+              [4.9375, 8.9375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "9a00e5522de397f85273f5f3e3e1c39ec790771faa7676bc0252de674cab150d"
+    },
+    {
+      "name": "random-078",
+      "probe": {
+        "name": "random-078",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [3.75, 7.0625, 0.5, 1, 4282417344],
+              [6.6875, 2.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "35e43e1dbf4153dc43eb28221f559dba3d9be67cb9d072e06efff081138885e1"
+    },
+    {
+      "name": "random-079",
+      "probe": {
+        "name": "random-079",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.0, 8.75, 0.5, 1, 4282417344],
+              [7.0, 4.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "e81dc9269f013e831fe5c84eb98a565ca8f49a959b7e0feb3be997e1da82b5c3"
+    },
+    {
+      "name": "random-080",
+      "probe": {
+        "name": "random-080",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [3.4375, 1.9375, 0.5, 1, 4282417344],
+              [-1.1875, 8.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "2ebdd3d532fe07d3994f8faf3fb51f1b43599019187728911f8f62d58a0091ab"
+    },
+    {
+      "name": "random-081",
+      "probe": {
+        "name": "random-081",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.5625, 9.1875, 0.5, 1, 4282417344],
+              [0.4375, 3.125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "d3dd5cad6f80d4a8593cb81829c75c404f27aecc8f9ebcc63aeeff189d2a2f8c"
+    },
+    {
+      "name": "random-082",
+      "probe": {
+        "name": "random-082",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-1.75, 8.5625, 0.5, 1, 4282417344],
+              [0.3125, 3.1875, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "3c6f9a7a756bcd2d38cd05d6514a7aa262fdd991e230ba6700229b00123fbfd4"
+    },
+    {
+      "name": "random-083",
+      "probe": {
+        "name": "random-083",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [-0.75, 9.5625, 0.5, 1, 4282417344],
+              [2.875, 0.625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "30235f92b9ba85fccf75b8c102b5309c5c673da11c3f63b038d56a184aa4cb62"
+    },
+    {
+      "name": "random-084",
+      "probe": {
+        "name": "random-084",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [8.5, 3.4375, 0.5, 1, 4282417344],
+              [6.625, 3.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "b326c7efb80fd4245aa59a7d17c45f42c3c6bde323099046c621a7f5cc63720c"
+    },
+    {
+      "name": "random-085",
+      "probe": {
+        "name": "random-085",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.6875, -1.8125, 0.5, 1, 4282417344],
+              [-0.875, -1.0625, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "eeff2b9dcd1b815f955c4676f23c6c023b0256e36640fad8f1171e9a7da5dfff"
+    },
+    {
+      "name": "random-086",
+      "probe": {
+        "name": "random-086",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.125, 4.8125, 0.5, 1, 4282417344],
+              [6.0625, 8.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/w==",
+      "rgbaSHA256": "b438e68d1735b921e31b68cc2fdcfa0a46dc20d6459da045ecb41b76ed2ea79d"
+    },
+    {
+      "name": "random-087",
+      "probe": {
+        "name": "random-087",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.1875, 8.875, 0.5, 1, 4282417344],
+              [1.25, 0.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "9961136408a22fe19c46c92cc78ca7a08cd8c541b95b94e9051c1bacf429136c"
+    },
+    {
+      "name": "random-088",
+      "probe": {
+        "name": "random-088",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.75, 0.1875, 0.5, 1, 4282417344],
+              [2.875, 4.3125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "ef39861cab5f6b8e56c4c82b7855ed1e6f91046a59678b49e88a98dd1ddcd342"
+    },
+    {
+      "name": "random-089",
+      "probe": {
+        "name": "random-089",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [1.3125, 0.1875, 0.5, 1, 4282417344],
+              [9.0, 9.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/w==",
+      "rgbaSHA256": "970e0b50a077bb2d8e802191cb69f64bdbeefca2c173b4fd13ce1e94e207400a"
+    },
+    {
+      "name": "random-090",
+      "probe": {
+        "name": "random-090",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [6.625, -1.125, 0.5, 1, 4282417344],
+              [5.125, 3.375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "c0a1cf3dafbebc1f7f93965883c547c3266fb27780483da3d81f980db8c9bea2"
+    },
+    {
+      "name": "random-091",
+      "probe": {
+        "name": "random-091",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [4.3125, 3.5625, 0.5, 1, 4282417344],
+              [7.625, 0.0, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "1f45d2a06ca99cfcc8adeb35a5883a60370b97c607868bec9947187536c05994"
+    },
+    {
+      "name": "random-092",
+      "probe": {
+        "name": "random-092",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.25, 4.5625, 0.5, 1, 4282417344],
+              [2.5, 0.5, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "2af9fe7fcf07b101fd02b63c3913d5cd9124bc8b7fbbfc052d9488589b498155"
+    },
+    {
+      "name": "random-093",
+      "probe": {
+        "name": "random-093",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [7.9375, 8.75, 0.5, 1, 4282417344],
+              [-1.9375, 2.9375, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/w==",
+      "rgbaSHA256": "2ea72a8e2b6a9c893076641309704a45c22d36afd01e51d84b253099d7b8a137"
+    },
+    {
+      "name": "random-094",
+      "probe": {
+        "name": "random-094",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [0.25, 3.3125, 0.5, 1, 4282417344],
+              [9.875, 6.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/0CAwP9AgMD/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv9AgMD/QIDA/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "ab3680c4db93e26d58d8cc8e2906cbc15b1fc60bdd98c104a5ed2cdf121bd038"
+    },
+    {
+      "name": "random-095",
+      "probe": {
+        "name": "random-095",
+        "clear": 4279774270,
+        "draws": [
+          {
+            "primitive": 2,
+            "vertices": [
+              [9.75, 1.0, 0.5, 1, 4282417344],
+              [5.5625, 5.8125, 0.5, 1, 4282417344]
+            ],
+            "count": 1
+          }
+        ]
+      },
+      "rgbaBase64": "GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/QIDA/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/0CAwP8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/xgsPv8YLD7/GCw+/w==",
+      "rgbaSHA256": "115c20204187f6334e24c0f8f14a06d6682bd978c2f772b44f3500c808f5a640"
+    }
+  ],
+  "lineRenderStates": [
+    [7, 0],
+    [8, 3],
+    [9, 2],
+    [14, 1],
+    [15, 0],
+    [16, 0],
+    [19, 2],
+    [20, 1],
+    [22, 1],
+    [23, 4],
+    [24, 0],
+    [25, 8],
+    [26, 0],
+    [27, 0],
+    [28, 0],
+    [52, 0],
+    [137, 0],
+    [140, 0],
+    [168, 15],
+    [171, 1],
+    [174, 0],
+    [176, 0],
+    [185, 0],
+    [193, 4294967295],
+    [194, 0],
+    [206, 0]
+  ]
+}

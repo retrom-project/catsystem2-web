@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "forkRepository": "https://github.com/retrom-project/catsystem2-web",
+  "defaultBranch": "main",
+  "adapterAbi": "catsystem2-web-standalone",
+  "candidateAssets": ["catsystem2-web.tar.gz", "catsystem2-web-LICENSE.txt"]
+}

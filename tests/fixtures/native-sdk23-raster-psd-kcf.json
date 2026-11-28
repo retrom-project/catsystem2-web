@@ -1,0 +1,568 @@
+{
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "producerSha256": "242a922ec3232100ce7601a523063807b72f3c54a7b41eab06ef436c8a5c7194",
+  "helperSha256": "0b4fb98b0b02e4fcefe0e17e364db59c0add90ca2075358f87b8c4d0bef82294",
+  "resources": [
+    {
+      "name": "primary.psd",
+      "base64": "OEJQUwABAAAAAAAAAAQAAAACAAAAAwAIAAMAAAAAAAAAAAAAAAAAAB87U2V/l0lhcYudrX+Vp7XH3/+AAP9A/w==",
+      "sha256": "1c6790213b229f8793b800a1e873a2e932988f585ad9881964f646299561610c"
+    },
+    {
+      "name": "primary-rle.psd",
+      "base64": "OEJQUwABAAAAAAAAAAQAAAACAAAAAwAIAAMAAAAAAAAAAAAAAAAAAQAEAAQABAAEAAQABAAEAAQCHztTAmV/lwJJYXECi52tAn+VpwK1x98C/4AAAv9A/w==",
+      "sha256": "d5b93ad49379ace08dd5452bb55c86a82ae413a9fbdd5e161ce04a549e028206"
+    },
+    {
+      "name": "primary.kcf",
+      "base64": "S0NGAAMAAgAMAAQAS0NMWgAAAAAYAAAAAAAAAAAAAAAcAAAAHwAAAAAAALWLZf/HnX9A362X/39JH/+VYTuAp3FTAA==",
+      "sha256": "919e7e693c6ab9be89ead37bcdf533e10f691b6101e2f976688e990479d8ba56"
+    },
+    {
+      "name": "primary24.kcf",
+      "base64": "S0NGAAMAAgAMAAMAS0NMWgAAAAAYAAAAAAAAAAAAAAAcAAAAHwAAAAAAALWLZcedf9+tlwAAAH9JH5VhO6dxUwAAAA==",
+      "sha256": "971320b01c52e04335e2901b509d4f52d90c31cbf74470e75dd61361e1ccccd5"
+    }
+  ],
+  "scope": "Valid authored PSD RGB8 raw/RLE with discarded merged alpha, KCF3/4 literal KCLZ. Actual primary +4 and ordinal +8 are distinct. All positive resource inputs; no malformed/reject probe. Actual initialized platform/Script VM through Main365/428/648/460/703 and normal release. Observe distinct complete-wrapper results, third output, real typed null-storage owner and Script list. No unsafe native argument, malformed image, text patch, OS desktop action or GPU output.",
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/draw16-20261127/ORIGINAL-RASTER-PSD-KCF-COMMON.json",
+  "originalReceiptSha256": "77e2b987dc3155e010806b31e5cc8046e1f71e5fb3582273b5f66643b113d4e0",
+  "rows": [
+    {
+      "source": "primary.psd",
+      "id": 365,
+      "args": [256],
+      "resultAddress": 32,
+      "result": 537111728,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.psd",
+      "id": 428,
+      "args": [[19, 32], 0, 100],
+      "resultAddress": 36,
+      "result": 0,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.psd",
+      "id": 648,
+      "args": [[19, 32], 8, 6],
+      "resultAddress": 40,
+      "result": 537130416,
+      "thirdOutput": 305419896,
+      "list": 1,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "empty": true
+      }
+    },
+    {
+      "source": "primary.psd",
+      "id": 114,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.psd",
+      "id": 366,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.psd",
+      "id": 460,
+      "args": [256],
+      "resultAddress": 36,
+      "result": 537130416,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//"
+      }
+    },
+    {
+      "source": "primary.psd",
+      "id": 114,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.psd",
+      "id": 703,
+      "args": [256, 512, 2],
+      "resultAddress": 44,
+      "result": 1,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        1, 537130416, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//"
+      }
+    },
+    {
+      "source": "primary.psd",
+      "id": 704,
+      "args": [512, 1],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 365,
+      "args": [256],
+      "resultAddress": 32,
+      "result": 537143648,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 428,
+      "args": [[19, 32], 0, 100],
+      "resultAddress": 36,
+      "result": 0,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 648,
+      "args": [[19, 32], 8, 6],
+      "resultAddress": 40,
+      "result": 537162368,
+      "thirdOutput": 305419896,
+      "list": 1,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "empty": true
+      }
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 114,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 366,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 460,
+      "args": [256],
+      "resultAddress": 36,
+      "result": 537162368,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "BEl//wRhlf8fcaf/ZYu1/3+dx/+Xrd//"
+      }
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 114,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 703,
+      "args": [256, 512, 2],
+      "resultAddress": 44,
+      "result": 1,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        1, 537162368, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "BEl//wRhlf8fcaf/ZYu1/3+dx/+Xrd//"
+      }
+    },
+    {
+      "source": "primary-rle.psd",
+      "id": 704,
+      "args": [512, 1],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.kcf",
+      "id": 365,
+      "args": [256],
+      "resultAddress": 32,
+      "result": 537175600,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.kcf",
+      "id": 428,
+      "args": [[19, 32], 0, 100],
+      "resultAddress": 36,
+      "result": 0,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.kcf",
+      "id": 648,
+      "args": [[19, 32], 8, 6],
+      "resultAddress": 40,
+      "result": 537194288,
+      "thirdOutput": 305419896,
+      "list": 1,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "empty": true
+      }
+    },
+    {
+      "source": "primary.kcf",
+      "id": 114,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.kcf",
+      "id": 366,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.kcf",
+      "id": 460,
+      "args": [256],
+      "resultAddress": 36,
+      "result": 537194288,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//"
+      }
+    },
+    {
+      "source": "primary.kcf",
+      "id": 114,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary.kcf",
+      "id": 703,
+      "args": [256, 512, 2],
+      "resultAddress": 44,
+      "result": 1,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        1, 537194288, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//"
+      }
+    },
+    {
+      "source": "primary.kcf",
+      "id": 704,
+      "args": [512, 1],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 365,
+      "args": [256],
+      "resultAddress": 32,
+      "result": 537207472,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 428,
+      "args": [[19, 32], 0, 100],
+      "resultAddress": 36,
+      "result": 0,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 648,
+      "args": [[19, 32], 8, 6],
+      "resultAddress": 40,
+      "result": 537226208,
+      "thirdOutput": 305419896,
+      "list": 1,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "empty": true
+      }
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 114,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 366,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 460,
+      "args": [256],
+      "resultAddress": 36,
+      "result": 537226208,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//"
+      }
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 114,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 703,
+      "args": [256, 512, 2],
+      "resultAddress": 44,
+      "result": 1,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        1, 537226208, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "bitmap": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//"
+      }
+    },
+    {
+      "source": "primary24.kcf",
+      "id": 704,
+      "args": [512, 1],
+      "resultAddress": null,
+      "result": null,
+      "thirdOutput": 305419896,
+      "list": 0,
+      "records": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0
+      ],
+      "bitmap": null
+    }
+  ]
+}

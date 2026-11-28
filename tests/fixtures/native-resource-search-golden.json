@@ -1,0 +1,1223 @@
+{
+  "provenance": "Authored synthetic mounts. Both complete original dispatchers agree on every value and IFile open attempt; scripts/verify-native-resource-search.mjs supplies only physical/archive I/O, cache disabled and alias map empty. Update priorities execute the actual WinMain extraction block, not WinMain itself.",
+  "results": [
+    {
+      "override": false,
+      "mode": 0,
+      "path": "same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "a.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "b.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "images.lst/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "images.lst/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "missing.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 0,
+      "path": "loose-a/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "same.bin",
+      "value": 100,
+      "attempts": [[-1, "same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": [[-1, "only-a.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "a.int/same.bin",
+      "value": null,
+      "attempts": [[-1, "a.int/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [[-1, "a.int/only-b.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "b.int/same.bin",
+      "value": null,
+      "attempts": [[-1, "b.int/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "images.lst/same.bin",
+      "value": null,
+      "attempts": [[-1, "images.lst/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "images.lst/only-b.bin",
+      "value": null,
+      "attempts": [[-1, "images.lst/only-b.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "missing.int/same.bin",
+      "value": null,
+      "attempts": [[-1, "missing.int/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 1,
+      "path": "loose-a/same.bin",
+      "value": 101,
+      "attempts": [[-1, "loose-a/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "a.int/same.bin",
+      "value": 11,
+      "attempts": [[0, "same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [[0, "only-b.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "b.int/same.bin",
+      "value": 21,
+      "attempts": [[1, "same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "images.lst/same.bin",
+      "value": 11,
+      "attempts": [[0, "same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "images.lst/only-b.bin",
+      "value": 22,
+      "attempts": [
+        [0, "only-b.bin"],
+        [1, "only-b.bin"]
+      ]
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "missing.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 2,
+      "path": "loose-a/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "same.bin",
+      "value": 101,
+      "attempts": [[-1, "loose-a/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "only-a.bin",
+      "value": 12,
+      "attempts": [
+        [-1, "loose-a/only-a.bin"],
+        [0, "only-a.bin"]
+      ]
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "a.int/same.bin",
+      "value": 101,
+      "attempts": [[-1, "loose-a/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [
+        [-1, "loose-a/only-b.bin"],
+        [0, "only-b.bin"]
+      ]
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "b.int/same.bin",
+      "value": 102,
+      "attempts": [[-1, "loose-b/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "images.lst/same.bin",
+      "value": 111,
+      "attempts": [[-1, "list-a/same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "images.lst/only-b.bin",
+      "value": 113,
+      "attempts": [
+        [-1, "list-a/only-b.bin"],
+        [0, "only-b.bin"],
+        [-1, "list-b/only-b.bin"]
+      ]
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "missing.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 3,
+      "path": "loose-a/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "a.int/same.bin",
+      "value": 11,
+      "attempts": [[0, "same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [
+        [0, "only-b.bin"],
+        [-1, "loose-a/only-b.bin"]
+      ]
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "b.int/same.bin",
+      "value": 21,
+      "attempts": [[1, "same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "images.lst/same.bin",
+      "value": 11,
+      "attempts": [[0, "same.bin"]]
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "images.lst/only-b.bin",
+      "value": 22,
+      "attempts": [
+        [0, "only-b.bin"],
+        [-1, "list-a/only-b.bin"],
+        [1, "only-b.bin"]
+      ]
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "missing.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 4,
+      "path": "loose-a/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "a.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "b.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "images.lst/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "images.lst/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "missing.int/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": false,
+      "mode": 5,
+      "path": "loose-a/same.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "a.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "b.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "images.lst/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "images.lst/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "missing.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 0,
+      "path": "loose-a/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": [[-1, "only-a.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "a.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [[-1, "a.int/only-b.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "b.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "images.lst/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "images.lst/only-b.bin",
+      "value": null,
+      "attempts": [[-1, "images.lst/only-b.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "missing.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 1,
+      "path": "loose-a/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "a.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [[0, "only-b.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "b.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "images.lst/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "images.lst/only-b.bin",
+      "value": 22,
+      "attempts": [
+        [0, "only-b.bin"],
+        [1, "only-b.bin"]
+      ]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "missing.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 2,
+      "path": "loose-a/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "only-a.bin",
+      "value": 12,
+      "attempts": [
+        [-1, "loose-a/only-a.bin"],
+        [0, "only-a.bin"]
+      ]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "a.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [
+        [-1, "loose-a/only-b.bin"],
+        [0, "only-b.bin"]
+      ]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "b.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "images.lst/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "images.lst/only-b.bin",
+      "value": 113,
+      "attempts": [
+        [-1, "list-a/only-b.bin"],
+        [0, "only-b.bin"],
+        [-1, "list-b/only-b.bin"]
+      ]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "missing.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 3,
+      "path": "loose-a/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "a.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": [
+        [0, "only-b.bin"],
+        [-1, "loose-a/only-b.bin"]
+      ]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "b.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "images.lst/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "images.lst/only-b.bin",
+      "value": 22,
+      "attempts": [
+        [0, "only-b.bin"],
+        [-1, "list-a/only-b.bin"],
+        [1, "only-b.bin"]
+      ]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "missing.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 4,
+      "path": "loose-a/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "only-a.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "a.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "a.int/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "b.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "images.lst/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "images.lst/only-b.bin",
+      "value": null,
+      "attempts": []
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "missing.int/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    },
+    {
+      "override": true,
+      "mode": 5,
+      "path": "loose-a/same.bin",
+      "value": 31,
+      "attempts": [[2, "same.bin"]]
+    }
+  ],
+  "priorities": [
+    {
+      "name": "update00.INT",
+      "value": 0
+    },
+    {
+      "name": "update01.INT",
+      "value": 1
+    },
+    {
+      "name": "update02.INT",
+      "value": 2
+    },
+    {
+      "name": "update03.INT",
+      "value": 3
+    },
+    {
+      "name": "update04.INT",
+      "value": 4
+    },
+    {
+      "name": "update05.INT",
+      "value": 5
+    },
+    {
+      "name": "update06.INT",
+      "value": 6
+    },
+    {
+      "name": "update07.INT",
+      "value": 7
+    },
+    {
+      "name": "update08.INT",
+      "value": 8
+    },
+    {
+      "name": "update09.INT",
+      "value": 9
+    },
+    {
+      "name": "update10.INT",
+      "value": 10
+    },
+    {
+      "name": "update11.INT",
+      "value": 11
+    },
+    {
+      "name": "update12.INT",
+      "value": 12
+    },
+    {
+      "name": "update13.INT",
+      "value": 13
+    },
+    {
+      "name": "update14.INT",
+      "value": 14
+    },
+    {
+      "name": "update15.INT",
+      "value": 15
+    },
+    {
+      "name": "update16.INT",
+      "value": 16
+    },
+    {
+      "name": "update17.INT",
+      "value": 17
+    },
+    {
+      "name": "update18.INT",
+      "value": 18
+    },
+    {
+      "name": "update19.INT",
+      "value": 19
+    },
+    {
+      "name": "update20.INT",
+      "value": 20
+    },
+    {
+      "name": "update21.INT",
+      "value": 21
+    },
+    {
+      "name": "update22.INT",
+      "value": 22
+    },
+    {
+      "name": "update23.INT",
+      "value": 23
+    },
+    {
+      "name": "update24.INT",
+      "value": 24
+    },
+    {
+      "name": "update25.INT",
+      "value": 25
+    },
+    {
+      "name": "update26.INT",
+      "value": 26
+    },
+    {
+      "name": "update27.INT",
+      "value": 27
+    },
+    {
+      "name": "update28.INT",
+      "value": 28
+    },
+    {
+      "name": "update29.INT",
+      "value": 29
+    },
+    {
+      "name": "update30.INT",
+      "value": 30
+    },
+    {
+      "name": "update31.INT",
+      "value": 31
+    },
+    {
+      "name": "update32.INT",
+      "value": 32
+    },
+    {
+      "name": "update33.INT",
+      "value": 33
+    },
+    {
+      "name": "update34.INT",
+      "value": 34
+    },
+    {
+      "name": "update35.INT",
+      "value": 35
+    },
+    {
+      "name": "update36.INT",
+      "value": 36
+    },
+    {
+      "name": "update37.INT",
+      "value": 37
+    },
+    {
+      "name": "update38.INT",
+      "value": 38
+    },
+    {
+      "name": "update39.INT",
+      "value": 39
+    },
+    {
+      "name": "update40.INT",
+      "value": 40
+    },
+    {
+      "name": "update41.INT",
+      "value": 41
+    },
+    {
+      "name": "update42.INT",
+      "value": 42
+    },
+    {
+      "name": "update43.INT",
+      "value": 43
+    },
+    {
+      "name": "update44.INT",
+      "value": 44
+    },
+    {
+      "name": "update45.INT",
+      "value": 45
+    },
+    {
+      "name": "update46.INT",
+      "value": 46
+    },
+    {
+      "name": "update47.INT",
+      "value": 47
+    },
+    {
+      "name": "update48.INT",
+      "value": 48
+    },
+    {
+      "name": "update49.INT",
+      "value": 49
+    },
+    {
+      "name": "update50.INT",
+      "value": 50
+    },
+    {
+      "name": "update51.INT",
+      "value": 51
+    },
+    {
+      "name": "update52.INT",
+      "value": 52
+    },
+    {
+      "name": "update53.INT",
+      "value": 53
+    },
+    {
+      "name": "update54.INT",
+      "value": 54
+    },
+    {
+      "name": "update55.INT",
+      "value": 55
+    },
+    {
+      "name": "update56.INT",
+      "value": 56
+    },
+    {
+      "name": "update57.INT",
+      "value": 57
+    },
+    {
+      "name": "update58.INT",
+      "value": 58
+    },
+    {
+      "name": "update59.INT",
+      "value": 59
+    },
+    {
+      "name": "update60.INT",
+      "value": 60
+    },
+    {
+      "name": "update61.INT",
+      "value": 61
+    },
+    {
+      "name": "update62.INT",
+      "value": 62
+    },
+    {
+      "name": "update63.INT",
+      "value": 63
+    },
+    {
+      "name": "update64.INT",
+      "value": 64
+    },
+    {
+      "name": "update65.INT",
+      "value": 65
+    },
+    {
+      "name": "update66.INT",
+      "value": 66
+    },
+    {
+      "name": "update67.INT",
+      "value": 67
+    },
+    {
+      "name": "update68.INT",
+      "value": 68
+    },
+    {
+      "name": "update69.INT",
+      "value": 69
+    },
+    {
+      "name": "update70.INT",
+      "value": 70
+    },
+    {
+      "name": "update71.INT",
+      "value": 71
+    },
+    {
+      "name": "update72.INT",
+      "value": 72
+    },
+    {
+      "name": "update73.INT",
+      "value": 73
+    },
+    {
+      "name": "update74.INT",
+      "value": 74
+    },
+    {
+      "name": "update75.INT",
+      "value": 75
+    },
+    {
+      "name": "update76.INT",
+      "value": 76
+    },
+    {
+      "name": "update77.INT",
+      "value": 77
+    },
+    {
+      "name": "update78.INT",
+      "value": 78
+    },
+    {
+      "name": "update79.INT",
+      "value": 79
+    },
+    {
+      "name": "update80.INT",
+      "value": 80
+    },
+    {
+      "name": "update81.INT",
+      "value": 81
+    },
+    {
+      "name": "update82.INT",
+      "value": 82
+    },
+    {
+      "name": "update83.INT",
+      "value": 83
+    },
+    {
+      "name": "update84.INT",
+      "value": 84
+    },
+    {
+      "name": "update85.INT",
+      "value": 85
+    },
+    {
+      "name": "update86.INT",
+      "value": 86
+    },
+    {
+      "name": "update87.INT",
+      "value": 87
+    },
+    {
+      "name": "update88.INT",
+      "value": 88
+    },
+    {
+      "name": "update89.INT",
+      "value": 89
+    },
+    {
+      "name": "update90.INT",
+      "value": 90
+    },
+    {
+      "name": "update91.INT",
+      "value": 91
+    },
+    {
+      "name": "update92.INT",
+      "value": 92
+    },
+    {
+      "name": "update93.INT",
+      "value": 93
+    },
+    {
+      "name": "update94.INT",
+      "value": 94
+    },
+    {
+      "name": "update95.INT",
+      "value": 95
+    },
+    {
+      "name": "update96.INT",
+      "value": 96
+    },
+    {
+      "name": "update97.INT",
+      "value": 97
+    },
+    {
+      "name": "update98.INT",
+      "value": 98
+    },
+    {
+      "name": "update99.INT",
+      "value": 99
+    },
+    {
+      "name": "update1x.INT",
+      "value": 1
+    },
+    {
+      "name": "updatea1.INT",
+      "value": 0
+    },
+    {
+      "name": "updatezz.INT",
+      "value": 0
+    },
+    {
+      "name": "update0x.INT",
+      "value": 0
+    },
+    {
+      "name": "update-1.INT",
+      "value": 0
+    }
+  ]
+}

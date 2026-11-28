@@ -1,0 +1,584 @@
+{
+  "scope": "Own inline ShellExecute error helpers. Original MessageBoxA is captured, not displayed. Full FES and browser integration are verified separately.",
+  "builds": [
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "receiptSha256": "5f161a0406e83227c2efe8ee72188472bfb562fa44cd54679661bf8609df36d5",
+      "rows": [
+        {
+          "code": 0,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "メモリまたはリソースが不足しています。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 2,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "指定されたファイルが見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 3,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "指定されたパスが見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 5,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 8,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "操作を完了するのに十分なメモリがありません。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 11,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": ".exe ファイルが無効です。Win32 の .exe ではないか、.exe イメージ内にエラーがあります。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 26,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "共有違反が発生しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 27,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "ファイル名の関連付けが不完全または無効です。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 28,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "要求がタイムアウトしたので、DDE トランザクションを完了できませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 29,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "DDE トランザクションが失敗しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 30,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "ほかの DDE トランザクションが現在処理中なので、DDE トランザクションを完了できませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 31,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "指定されたファイル拡張子に関連付けられたアプリケーションがありません。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 32,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "指定されたダイナミックリンクライブラリ（DLL）が見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 1,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 4,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 33,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 4294967295,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 5,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 5,
+          "reply": 0,
+          "messages": [
+            {
+              "caption": "エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "receiptSha256": "d31283203e4733f21302d0c357465b7f0d9612e47fa2959fd38abdc44eb54945",
+      "rows": [
+        {
+          "code": 0,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "メモリまたはリソースが不足しています。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 2,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたファイルが見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 3,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたパスが見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 5,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 8,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "操作を完了するのに十分なメモリがありません。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 11,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": ".exe ファイルが無効です。Win32 の .exe ではないか、.exe イメージ内にエラーがあります。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 26,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "共有違反が発生しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 27,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "ファイル名の関連付けが不完全または無効です。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 28,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "要求がタイムアウトしたので、DDE トランザクションを完了できませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 29,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "DDE トランザクションが失敗しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 30,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "ほかの DDE トランザクションが現在処理中なので、DDE トランザクションを完了できませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 31,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたファイル拡張子に関連付けられたアプリケーションがありません。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 32,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたダイナミックリンクライブラリ（DLL）が見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 1,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 4,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 33,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 4294967295,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 5,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 5,
+          "reply": 0,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "receiptSha256": "7c57c6c3703ca4b5bccd74bfd3d1b0a061f7ec4c0a075cd05b24609797e3d532",
+      "rows": [
+        {
+          "code": 0,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "メモリまたはリソースが不足しています。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 2,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたファイルが見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 3,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたパスが見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 5,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 8,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "操作を完了するのに十分なメモリがありません。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 11,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": ".exe ファイルが無効です。Win32 の .exe ではないか、.exe イメージ内にエラーがあります。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 26,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "共有違反が発生しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 27,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "ファイル名の関連付けが不完全または無効です。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 28,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "要求がタイムアウトしたので、DDE トランザクションを完了できませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 29,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "DDE トランザクションが失敗しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 30,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "ほかの DDE トランザクションが現在処理中なので、DDE トランザクションを完了できませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 31,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたファイル拡張子に関連付けられたアプリケーションがありません。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 32,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "指定されたダイナミックリンクライブラリ（DLL）が見つかりませんでした。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 1,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 4,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 33,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 4294967295,
+          "reply": 1,
+          "messages": []
+        },
+        {
+          "code": 5,
+          "reply": 1,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        },
+        {
+          "code": 5,
+          "reply": 0,
+          "messages": [
+            {
+              "caption": "実行エラー",
+              "message": "オペレーティングシステムが、指定されたファイルへのアクセスを拒否しました。",
+              "buttons": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

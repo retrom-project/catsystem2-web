@@ -1,0 +1,73 @@
+{
+  "scope": "Own within-build complete-wrapper/callee bridge. No cross-build assumption or repeated original MT vector. Existing full original stream golden is immutable at its original Git source.",
+  "originalGolden": {
+    "path": "tests/fixtures/random-golden.json",
+    "artifactSourceCore": "5822eebb7c06a9e4aed1a736c53ce8e08d4a2e8d",
+    "sha256": "d83f32da97cba0f1186d624949edb76547409e12576e6202e9747127f43aaebd",
+    "bytes": 33850
+  },
+  "records": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "executableSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "rows": [
+        {
+          "particleId": 33,
+          "genericId": 39,
+          "particleAddress": 5387104,
+          "genericAddress": 6438176,
+          "callee": 6647312,
+          "particleBytes": "8b0d247ac900e8a53a13008b4c24108901b801000000c21000",
+          "genericBytes": "8b0d247ac900e8e53003008b4c24108901b801000000c21000",
+          "normalizedSha256": "03469558e81774831786dc4ea06929187ebbb289dcb5b200cf3f602b40a467c7",
+          "commonParticlePointers": true,
+          "scope": "Complete own25-byte wrappers are identical except the relative-call displacement, with the exact same own callee and global object address. Neither wrapper reads argv or the receiver. First44 Particle v1/v2 pointers are equal."
+        },
+        {
+          "particleId": 34,
+          "genericId": 40,
+          "particleAddress": 5386288,
+          "genericAddress": 6438208,
+          "callee": 6647296,
+          "particleBytes": "8b0d247ac900e8c53d13008b442410d918b801000000c21000",
+          "genericBytes": "8b0d247ac900e8b53003008b442410d918b801000000c21000",
+          "normalizedSha256": "593afead75a263458a91c49fcf240b75ff48d603b2cb90800917493fcb873e42",
+          "commonParticlePointers": true,
+          "scope": "Complete own25-byte wrappers are identical except the relative-call displacement, with the exact same own callee and global object address. Neither wrapper reads argv or the receiver. First44 Particle v1/v2 pointers are equal."
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "executableSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "rows": [
+        {
+          "particleId": 33,
+          "genericId": 39,
+          "particleAddress": 6642896,
+          "genericAddress": 7912544,
+          "callee": 8144352,
+          "particleBytes": "8b0d5031b900e805e916008b4c24108901b801000000c21000",
+          "genericBytes": "8b0d5031b900e8758903008b4c24108901b801000000c21000",
+          "normalizedSha256": "8c05a2f68784abd2c3fc2f89ca2035c17c7fde8cb843b5d5b8b38c9f945e1f50",
+          "commonParticlePointers": true,
+          "scope": "Complete own25-byte wrappers are identical except the relative-call displacement, with the exact same own callee and global object address. Neither wrapper reads argv or the receiver. First44 Particle v1/v2 pointers are equal."
+        },
+        {
+          "particleId": 34,
+          "genericId": 40,
+          "particleAddress": 6665840,
+          "genericAddress": 7912576,
+          "callee": 8144336,
+          "particleBytes": "8b0d5031b900e8558f16008b442410d918b801000000c21000",
+          "genericBytes": "8b0d5031b900e8458903008b442410d918b801000000c21000",
+          "normalizedSha256": "afd9638e19c82684c1f965e2a76c2cf19b77d184d8414c8930237e79b38f0710",
+          "commonParticlePointers": true,
+          "scope": "Complete own25-byte wrappers are identical except the relative-call displacement, with the exact same own callee and global object address. Neither wrapper reads argv or the receiver. First44 Particle v1/v2 pointers are equal."
+        }
+      ]
+    }
+  ]
+}

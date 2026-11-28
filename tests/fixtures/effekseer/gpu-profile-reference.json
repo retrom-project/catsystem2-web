@@ -1,0 +1,108 @@
+{
+  "license": "CC0-1.0",
+  "kind": "authored normal programmable shader/D3D9 API golden",
+  "width": 64,
+  "height": 48,
+  "clearRGBA": [17, 29, 43, 255],
+  "camera": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+  "projection": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+  "viewport": [8, 6, 32, 24, 0, 1],
+  "geometry": {
+    "positions": [-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+    "uv": [0, 1, 1, 1, 0, 0, 1, 0],
+    "colors": [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+    "indices": [3, 1, 0, 3, 0, 2]
+  },
+  "texture": {
+    "width": 2,
+    "height": 2,
+    "rgba": [255, 0, 0, 127, 0, 255, 0, 128, 0, 0, 255, 255, 255, 255, 255, 0]
+  },
+  "cases": [
+    {
+      "name": "textured-greater127",
+      "textured": true,
+      "vertexRGBA": [255, 255, 255, 255],
+      "alphaEnable": 1,
+      "alphaReference": 127,
+      "alphaFunction": 5,
+      "rgbaDeflate": "eNrt1TEVgDAQBcFvIQKiICLB+cXBPUogU4yArXbMVQMAAOCBSq5OKndHv379+vV/U1Ktv/9Pv379+k/tBwAAAAAA3mcDOEVOgQ==",
+      "rgbaSHA256": "b348f64d6d3529a8547c4dc122c1b536f755c5a9cf144eb841104b354f5653b6",
+      "changedPixels": 144
+    },
+    {
+      "name": "alpha-off-126",
+      "textured": false,
+      "vertexRGBA": [255, 0, 0, 126],
+      "alphaEnable": 0,
+      "alphaReference": 127,
+      "alphaFunction": 5,
+      "rgbaDeflate": "eNrtz0ERACAIADAqEIAEdrQ6VOD0u8cCLOt0AgAALHTE/eHv7+/v7+/v7+/vDwAAAAAA8G4Att08sQ==",
+      "rgbaSHA256": "b6d730fbd0e7f651cc4d2d303927f3fc371d3f77ab4b4aa3ea7fac70b24bd5e0",
+      "changedPixels": 192
+    },
+    {
+      "name": "greater-127-vertex-126",
+      "textured": false,
+      "vertexRGBA": [255, 0, 0, 126],
+      "alphaEnable": 1,
+      "alphaReference": 127,
+      "alphaFunction": 5,
+      "rgbaDeflate": "eNrtwzENAAAIAzANE4AC/OsbNjjapJltVFVVVVVVVVVVVVXV1w/dwyDx",
+      "rgbaSHA256": "b4e2e0e440ea4fe110fb8d6e091d8faa5413bd499de67289feca68a413cee767",
+      "changedPixels": 0
+    },
+    {
+      "name": "alpha-off-127",
+      "textured": false,
+      "vertexRGBA": [255, 0, 0, 127],
+      "alphaEnable": 0,
+      "alphaReference": 127,
+      "alphaFunction": 5,
+      "rgbaDeflate": "eNrtz0ERACAIADAqEIAEhjQ6VOD0u8cCLOt0AgAALHTE/eHv7+/v7+/v7+/vDwAAAAAA8G4AT3Y9cQ==",
+      "rgbaSHA256": "05feea1abfb39a305cf8063dbb478e73aa8aedd6f5ad30f3cd1c743cd7b67ec4",
+      "changedPixels": 192
+    },
+    {
+      "name": "greater-127-vertex-127",
+      "textured": false,
+      "vertexRGBA": [255, 0, 0, 127],
+      "alphaEnable": 1,
+      "alphaReference": 127,
+      "alphaFunction": 5,
+      "rgbaDeflate": "eNrtz0ERACAIADAqEIAEhjQ6VOD0u8cCLOt0AgAALHTE/eHv7+/v7+/v7+/vDwAAAAAA8G4AT3Y9cQ==",
+      "rgbaSHA256": "05feea1abfb39a305cf8063dbb478e73aa8aedd6f5ad30f3cd1c743cd7b67ec4",
+      "changedPixels": 192
+    },
+    {
+      "name": "alpha-off-128",
+      "textured": false,
+      "vertexRGBA": [255, 0, 0, 128],
+      "alphaEnable": 0,
+      "alphaReference": 127,
+      "alphaFunction": 5,
+      "rgbaDeflate": "eNrtz0ERACAIADAqEIAElrQ5VOD0u8cCLOt0AgAALHTE/eHv7+/v7+/v7+/vDwAAAAAA8G4A6AA+MQ==",
+      "rgbaSHA256": "6a04b66b1d83f0d6a96f435062bba351707677c8cab0d467bce6fb84bb0b159a",
+      "changedPixels": 192
+    },
+    {
+      "name": "greater-127-vertex-128",
+      "textured": false,
+      "vertexRGBA": [255, 0, 0, 128],
+      "alphaEnable": 1,
+      "alphaReference": 127,
+      "alphaFunction": 5,
+      "rgbaDeflate": "eNrtz0ERACAIADAqEIAElrQ5VOD0u8cCLOt0AgAALHTE/eHv7+/v7+/v7+/vDwAAAAAA8G4A6AA+MQ==",
+      "rgbaSHA256": "6a04b66b1d83f0d6a96f435062bba351707677c8cab0d467bce6fb84bb0b159a",
+      "changedPixels": 192
+    }
+  ],
+  "maxRGBAError": 0,
+  "profile": {
+    "image": "sha256:9a6c60e2c760730b99a8ddbc94da318a8ba667e5f206972436bf3820fe0892b7",
+    "native": "Wine8.0 Debian8.0~repack-4 / llvmpipe",
+    "browser": "Chromium148.0.7778.96 / ANGLE SwiftShader",
+    "sourceShaderCommit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263"
+  },
+  "scope": "fixed shader/API pixels; no original EXE/DLL dependency or original manager/geometry/batch execution"
+}

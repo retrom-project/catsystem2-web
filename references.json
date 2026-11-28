@@ -1,0 +1,69 @@
+{
+  "sources": [
+    {
+      "repository": "https://github.com/OWCramer/CatSystemKit",
+      "commit": "02873f0becbdab5fd992cd9f3dcd50edd3937d78",
+      "license": "MPL-2.0",
+      "use": "format, VM, script and E-mote logic port"
+    },
+    {
+      "repository": "https://github.com/kokseen1/FelineSystem2",
+      "commit": "ce7aeafd7cc6e65763832f7414e4d69d2c9ba48d",
+      "use": "analysis only; no distributed source or assets"
+    },
+    {
+      "repository": "https://github.com/jpeg-js/jpeg-js",
+      "commit": "9ccd35fb5f55a6c4f1902ac5b0f270f675750c27",
+      "license": "Apache-2.0",
+      "use": "JPEG Huffman/scan parser, ESM and integer IFAST adaptation"
+    },
+    {
+      "repository": "https://github.com/libjpeg-turbo/libjpeg-turbo",
+      "commit": "4e151a4ad91001b3aa8c2ece2205c15f487ce320",
+      "license": "IJG",
+      "use": "Integer IFAST inverse DCT and quantizer scaling, JS port"
+    },
+    {
+      "repository": "https://github.com/effekseer/Effekseer",
+      "commit": "5239bb1e416cbf55b4d3c8170594cbdc7815f263",
+      "version": "1.23",
+      "license": "MIT (algorithms); CC0-1.0 (selected sample assets)",
+      "use": "Legacy SKFE reader JS adaptation; exact sample provenance in tests/fixtures/effekseer/public-1.23-manifest.json"
+    }
+  ],
+  "nativeReference": {
+    "sdk": "CatSystem2 4.01",
+    "archiveSha256": "411e9dbb86e3f81697327fafa4b2f3cad4e2719fbc3cc734234b75830f686b35",
+    "engine": "cs2_open.exe",
+    "engineVersion": "2.6.1.74",
+    "engineSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f"
+  },
+  "gameNativeReference": {
+    "title": "NEKOPARA Vol. 3",
+    "engineVersion": "2.6.1.76",
+    "preparedEngineSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+    "imageBase": "0x400000",
+    "anchors": {
+      "kcsNativeTable": "0xA2DD38",
+      "kcsOpcodeTable": "0xB49A00",
+      "kcsDecodeOperands": "0x876CA0",
+      "kcsGCALL": "0x87A330",
+      "kcsMemoryAddress": "0x8772A0",
+      "kcsReceiveMessage": "0x877440",
+      "kcsTaskFrame": "0x5E8CB0",
+      "kcsGetNumberedVariable": "0x643BD0",
+      "kcsSetNumberedVariable": "0x643CF0",
+      "kcsStartFES": "0x654EC0",
+      "fesFrameLoop": "0x756900",
+      "fesCommandDispatcher": "0x769860",
+      "fesNext": "0x77A580",
+      "fesCall": "0x77BA00"
+    },
+    "scope": "Static anchors for this exact prepared binary. Selected original x86 VM and particle numerical handlers also execute in private Linux ELF oracle harnesses; their precise substituted services and coverage are documented separately. This does not establish native game initialization, DLL execution or visual equivalence."
+  },
+  "manuals": [
+    "https://cs2.suki.jp/manual/fes/reference/cn/next.html",
+    "https://cs2.suki.jp/manual/fes/reference/cn/wait.html",
+    "https://cs2.suki.jp/manual/fes/code/sysvar.html"
+  ]
+}

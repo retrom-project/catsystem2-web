@@ -1,0 +1,2288 @@
+{
+  "profile": "bokutomo-engine-2.6.1.67",
+  "original": {
+    "path": ".local/phase11/sdk63-67-plane-input-20261127/ORIGINAL-P2-PRIMARY-ROOT-67.json",
+    "sha256": "9559786d874891e09dd24428b3a16347c36edce5870de3942181f7bb5ef054c3",
+    "pe": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+    "text": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6"
+  },
+  "scope": "Only qualified primary Root Input consumer. Nested Top lookup miss retained separately. Input record word10 is unwritten and excluded. Root ctor kind0 traversal and Main66 Plane ownership are separate from factory Top publication. No physical HID/GPU/output proof.",
+  "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><ETC><cache>0</cache></ETC><APP><imgcache>0</imgcache></APP><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp32y>0</bpp32y><bpp16y>1</bpp16y><bpp>32</bpp><filter_min>1</filter_min><filter_mag>1</filter_mag></TEXTURE><INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext><dir>scripts-loose</dir></int00><int01><name>scene</name><int>scene.int</int><ext>cst</ext><dir>scene-loose</dir></int01><int02><name>fes</name><int>tables.int</int><ext>tbl</ext><dir>tables-loose</dir></int02><int03><name>image</name><int>images.int</int><ext>hg3</ext><dir>images-loose</dir></int03></INT></document>",
+  "coldAfter": [5, 9, 12, 18, 23, 27, 29, 32],
+  "cases": [
+    {
+      "id": 66,
+      "args": [2, "caller", 128],
+      "dependency": true,
+      "save": "plane",
+      "text": "P2 actual button Plane",
+      "ordinal": 0,
+      "control": 1,
+      "result": "owned:plane",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": 66,
+      "args": [2, "caller", 128],
+      "dependency": true,
+      "save": "hint",
+      "text": "P2 actual hint Plane",
+      "ordinal": 1,
+      "control": 1,
+      "result": "owned:hint",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": 79,
+      "args": ["plane", 1102053376, 1099431936, 4280299584],
+      "dependency": true,
+      "ordinal": 2,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 1,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": 79,
+      "args": ["hint", 1077936128, 1073741824, 4283457648],
+      "dependency": true,
+      "ordinal": 3,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": 92,
+      "args": ["plane", 1],
+      "dependency": true,
+      "ordinal": 4,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ]
+      }
+    },
+    {
+      "id": 92,
+      "args": ["hint", 1],
+      "dependency": true,
+      "ordinal": 5,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 84,
+      "args": ["plane", 1082392576, 1081606144, 1091043328, 0],
+      "dependency": true,
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 85,
+      "args": ["plane", 1091043328, 3234332672, 0],
+      "dependency": true,
+      "ordinal": 7,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 88,
+      "args": ["plane", 1098645504],
+      "dependency": true,
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 96,
+      "args": ["plane", 115, 512],
+      "seed": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+      "seedAt": 512,
+      "ordinal": 9,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "args": ["plane", 0],
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 11,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "args": ["plane", 2147483649],
+      "ordinal": 12,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 13,
+      "control": 1,
+      "result": 2147483649,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 87,
+      "args": ["plane", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 224, 64, 0, 0, 4, 66, 0, 0, 8, 65]
+        }
+      ],
+      "ordinal": 14,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 224],
+        [1027, 64],
+        [1028, 0],
+        [1029, 0],
+        [1030, 4],
+        [1031, 66],
+        [1032, 0],
+        [1033, 0],
+        [1034, 8],
+        [1035, 65]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "args": ["plane", 3],
+      "ordinal": 15,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 16,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "args": ["plane", 4294901762],
+      "ordinal": 17,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 2,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 18,
+      "control": 1,
+      "result": 2147483650,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 2,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 115,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 96,
+      "args": ["plane", 7, 768],
+      "seed": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+      "seedAt": 768,
+      "ordinal": 19,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 20,
+      "control": 1,
+      "result": 2147483648,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 102,
+      "args": ["plane", "hint"],
+      "ordinal": 21,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": "hint",
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 103,
+      "args": ["plane", 3],
+      "ordinal": 22,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "args": ["plane", 1],
+      "ordinal": 23,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 24,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 87,
+      "args": ["hint", 1024, 1028, 1032, 0],
+      "dependency": true,
+      "outputs": [
+        {
+          "at": 1024,
+          "bytes": [0, 0, 116, 66, 0, 0, 0, 65, 0, 0, 0, 0]
+        }
+      ],
+      "ordinal": 25,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [1024, 0],
+        [1025, 0],
+        [1026, 116],
+        [1027, 66],
+        [1028, 0],
+        [1029, 0],
+        [1030, 0],
+        [1031, 65],
+        [1032, 0],
+        [1033, 0],
+        [1034, 0],
+        [1035, 0]
+      ],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 110,
+      "args": ["plane", "caller"],
+      "ordinal": 26,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [-4, 10, 17, 27],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 99,
+      "args": ["plane"],
+      "ordinal": 27,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 28,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 7,
+            "bindFlags": 115,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 96,
+      "args": ["plane", 5, 512],
+      "seed": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+      "seedAt": 512,
+      "ordinal": 29,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [8, 29, 30, 46],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "args": ["plane", 3],
+      "ordinal": 30,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [8, 29, 30, 46],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": ["plane"],
+      "ordinal": 31,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "plane",
+            "priority": 15,
+            "mask": 7,
+            "bounds": [8, 29, 30, 46],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 4294967265, 9, 1, 7, 33, 1, 0, 0, 0, 888, 4294967283],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": "caller",
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 99,
+      "args": ["plane"],
+      "ordinal": 32,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 96,
+      "args": [0, 7, 512],
+      "seed": [1, 11, 4294967287, 1, 17, 23, 0, 3, 4, 1, 4294967289, 8],
+      "seedAt": 512,
+      "ordinal": 33,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "args": [0, 1],
+      "ordinal": 34,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "args": [0],
+      "ordinal": 35,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 99,
+      "args": [0],
+      "ordinal": 36,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 67,
+      "args": ["plane"],
+      "dependency": true,
+      "ordinal": 37,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 1,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 67,
+      "args": ["hint"],
+      "dependency": true,
+      "ordinal": 38,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 69,
+      "args": ["caller", 157, 0, 0],
+      "dependency": true,
+      "ordinal": 39,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": true
+          },
+          {
+            "name": "hint",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "planes": [
+          {
+            "name": "plane",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": "hint",
+            "attribute": 3,
+            "receiver": -1,
+            "buttonFlags": 5,
+            "bindFlags": 5,
+            "shown": true
+          },
+          {
+            "name": "hint",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": false
+          }
+        ]
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 1,
+      "ordinal": 40,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "plane",
+            "alive": false
+          },
+          {
+            "name": "hint",
+            "alive": false
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "planes": []
+      }
+    }
+  ]
+}

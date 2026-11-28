@@ -1,0 +1,1532 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "original": {
+    "receipt": "ORIGINAL-A1-63.json",
+    "sha256": "59f36173aa90af42d58d1b9e3b00c5bf07afaeefa552b60c14ade97ad675c75e",
+    "executableSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+    "textSHA256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a"
+  },
+  "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><ETC><cache>0</cache></ETC><APP><imgcache>0</imgcache></APP><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp32y>0</bpp32y><bpp16y>1</bpp16y><bpp>32</bpp><filter_min>1</filter_min><filter_mag>1</filter_mag></TEXTURE><INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext><dir>scripts-loose</dir></int00><int01><name>scene</name><int>scene.int</int><ext>cst</ext><dir>scene-loose</dir></int01><int02><name>fes</name><int>tables.int</int><ext>tbl</ext><dir>tables-loose</dir></int02><int03><name>image</name><int>images.int</int><ext>hg3</ext><dir>images-loose</dir></int03></INT></document>",
+  "counts": {
+    "target": 17,
+    "allGCALL": 30,
+    "businessDirect": 4
+  },
+  "coldAfter": [8, 11, 13, 15, 16, 20, 23, 26],
+  "cases": [
+    {
+      "id": 66,
+      "args": [1, "caller", 128],
+      "dependency": true,
+      "save": "top",
+      "kind": 1,
+      "text": "Area Top",
+      "ordinal": 0,
+      "control": 1,
+      "result": "owned:top",
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          }
+        ]
+      }
+    },
+    {
+      "id": 66,
+      "args": [2, "top", 128],
+      "dependency": true,
+      "save": "plane",
+      "kind": 2,
+      "text": "Area Plane",
+      "ordinal": 1,
+      "control": 1,
+      "result": "owned:plane",
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 79,
+      "args": ["plane", 1082130432, 1077936128, 4288700448],
+      "dependency": true,
+      "ordinal": 2,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 92,
+      "args": ["plane", 1],
+      "dependency": true,
+      "ordinal": 3,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 66,
+      "args": [18, "top", 128],
+      "dependency": true,
+      "save": "raster",
+      "kind": 18,
+      "text": "Area raster",
+      "ordinal": 4,
+      "control": 1,
+      "result": "owned:raster",
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 66,
+      "args": [25, "top", 128],
+      "dependency": true,
+      "save": "hydro",
+      "kind": 25,
+      "text": "Area hydro",
+      "ordinal": 5,
+      "control": 1,
+      "result": "owned:hydro",
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "operation": "stopDriver",
+      "dependency": true,
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "operation": "logic",
+      "frame": 0,
+      "dependency": true,
+      "ordinal": 7,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 199,
+      "args": ["top", 1024],
+      "matrix": [
+        1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1069547520, 3221225472, 0,
+        1065353216
+      ],
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "top",
+          "kind": 1,
+          "rawMessage": 250,
+          "payloadRole": "private64B-copy",
+          "payloadWords": [
+            1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1069547520, 3221225472,
+            0, 1065353216
+          ],
+          "separateFromVM": true,
+          "receiverUnhandled": false,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 199,
+      "args": ["caller", 1024],
+      "matrix": [
+        1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1069547520, 3221225472, 0,
+        1065353216
+      ],
+      "ordinal": 9,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "caller",
+          "kind": 12,
+          "rawMessage": 250,
+          "payloadRole": "private64B-copy",
+          "payloadWords": [
+            1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1069547520, 3221225472,
+            0, 1065353216
+          ],
+          "separateFromVM": true,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 199,
+      "args": ["raster", 1024],
+      "matrix": [
+        1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1069547520, 3221225472, 0,
+        1065353216
+      ],
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 250,
+          "payloadRole": "private64B-copy",
+          "payloadWords": [
+            1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1069547520, 3221225472,
+            0, 1065353216
+          ],
+          "separateFromVM": true,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 196,
+      "args": ["raster", 640],
+      "packet": ["plane", 0, 1067450368, 1094713344, 1073741824],
+      "ordinal": 11,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 13,
+          "payloadRole": null,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        },
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 251,
+          "payloadRole": "borrowed-VM",
+          "payloadWords": ["plane", 0, 1067450368, 1094713344, 1073741824],
+          "separateFromVM": false,
+          "receiverUnhandled": false,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1067450368, 1094713344, 1073741824],
+            "converted": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 200,
+      "args": ["raster"],
+      "ordinal": 12,
+      "control": 1,
+      "result": 0,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 247,
+          "payloadRole": null,
+          "receiverUnhandled": false,
+          "replyWritten": true,
+          "reply": 0
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1067450368, 1094713344, 1073741824],
+            "converted": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 197,
+      "args": ["raster"],
+      "ordinal": 13,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 245,
+          "payloadRole": null,
+          "receiverUnhandled": false,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 1,
+            "params": ["plane", 0, 1067450368, 1094713344, 1073741824],
+            "converted": 0,
+            "lastClock": 0,
+            "elapsed": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 200,
+      "args": ["raster"],
+      "ordinal": 14,
+      "control": 1,
+      "result": 1,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 247,
+          "payloadRole": null,
+          "receiverUnhandled": false,
+          "replyWritten": true,
+          "reply": 1
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 1,
+            "params": ["plane", 0, 1067450368, 1094713344, 1073741824],
+            "converted": 0,
+            "lastClock": 0,
+            "elapsed": 0
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "operation": "logic",
+      "frame": 1,
+      "dependency": true,
+      "ordinal": 15,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 1,
+            "params": ["plane", 0, 1067450368, 1094713344, 1073741824],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 201,
+      "args": ["raster", 0, 640],
+      "packet": ["plane", 1, 1061158912, 1092616192, 1077936128],
+      "ordinal": 16,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 13,
+          "payloadRole": null,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        },
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 252,
+          "payloadRole": "borrowed-VM",
+          "payloadWords": ["plane", 1, 1061158912, 1092616192, 1077936128],
+          "separateFromVM": false,
+          "receiverUnhandled": false,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 1,
+            "params": ["plane", 0, 1061158912, 1092616192, 1077936128],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 201,
+      "args": ["raster", 1, 640],
+      "packet": ["plane", 0, 1091567616, 1091567616, 1091567616],
+      "ordinal": 17,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 13,
+          "payloadRole": null,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 1,
+            "params": ["plane", 0, 1061158912, 1092616192, 1077936128],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 199,
+      "args": ["raster", 1024],
+      "matrix": [
+        1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1077936128, 3221225472, 0,
+        1065353216
+      ],
+      "ordinal": 18,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 250,
+          "payloadRole": "private64B-copy",
+          "payloadWords": [
+            1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 1077936128, 3221225472,
+            0, 1065353216
+          ],
+          "separateFromVM": true,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 1,
+            "params": ["plane", 0, 1061158912, 1092616192, 1077936128],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 200,
+      "args": ["raster"],
+      "ordinal": 19,
+      "control": 1,
+      "result": 1,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 247,
+          "payloadRole": null,
+          "receiverUnhandled": false,
+          "replyWritten": true,
+          "reply": 1
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 1,
+            "params": ["plane", 0, 1061158912, 1092616192, 1077936128],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 198,
+      "args": ["raster"],
+      "ordinal": 20,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 246,
+          "payloadRole": null,
+          "receiverUnhandled": false,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1061158912, 1092616192, 1077936128],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 200,
+      "args": ["raster"],
+      "ordinal": 21,
+      "control": 1,
+      "result": 0,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 247,
+          "payloadRole": null,
+          "receiverUnhandled": false,
+          "replyWritten": true,
+          "reply": 0
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1061158912, 1092616192, 1077936128],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 201,
+      "args": ["raster", 0, 640],
+      "packet": ["plane", 1, 1056964608, 1090519040, 1069547520],
+      "ordinal": 22,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 13,
+          "payloadRole": null,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        },
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 252,
+          "payloadRole": "borrowed-VM",
+          "payloadWords": ["plane", 1, 1056964608, 1090519040, 1069547520],
+          "separateFromVM": false,
+          "receiverUnhandled": false,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1056964608, 1090519040, 1069547520],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 201,
+      "args": ["hydro", 0, 640],
+      "packet": [0, 0, 1065353216, 1065353216, 1065353216],
+      "ordinal": 23,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "hydro",
+          "kind": 25,
+          "rawMessage": 13,
+          "payloadRole": null,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        },
+        {
+          "name": "hydro",
+          "kind": 25,
+          "rawMessage": 261,
+          "payloadRole": "borrowed-VM",
+          "payloadWords": [0, 0, 1065353216, 1065353216, 1065353216],
+          "separateFromVM": false,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1056964608, 1090519040, 1069547520],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 201,
+      "args": ["top", 0, 640],
+      "packet": [0, 0, 1065353216, 1065353216, 1065353216],
+      "ordinal": 24,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "top",
+          "kind": 1,
+          "rawMessage": 13,
+          "payloadRole": null,
+          "receiverUnhandled": false,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1056964608, 1090519040, 1069547520],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 202,
+      "args": ["raster", 640],
+      "packet": [0, 0, 0, 0, 0],
+      "ordinal": 25,
+      "control": 2,
+      "result": null,
+      "packets": [
+        {
+          "name": "raster",
+          "kind": 18,
+          "rawMessage": 13,
+          "payloadRole": null,
+          "receiverUnhandled": true,
+          "replyWritten": false,
+          "reply": null
+        }
+      ],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1056964608, 1090519040, 1069547520],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 67,
+      "args": ["raster"],
+      "dependency": true,
+      "ordinal": 26,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1056964608, 1090519040, 1069547520],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 67,
+      "args": ["hydro"],
+      "dependency": true,
+      "ordinal": 27,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1056964608, 1090519040, 1069547520],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 67,
+      "args": ["plane"],
+      "dependency": true,
+      "ordinal": 28,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": true,
+            "parent": "top"
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": true,
+            "parent": "top",
+            "capability": true,
+            "active": 0,
+            "params": ["plane", 0, 1056964608, 1090519040, 1069547520],
+            "converted": 0,
+            "lastClock": 1,
+            "elapsed": 1
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "operation": "logic",
+      "frame": 2,
+      "dependency": true,
+      "ordinal": 29,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": false
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": false
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 67,
+      "args": ["top"],
+      "dependency": true,
+      "ordinal": 30,
+      "control": 2,
+      "result": null,
+      "packets": [],
+      "changed": [],
+      "state": {
+        "bitmaps": [],
+        "actors": [
+          {
+            "name": "top",
+            "kind": 1,
+            "alive": true,
+            "parent": "caller"
+          },
+          {
+            "name": "plane",
+            "kind": 2,
+            "alive": false
+          },
+          {
+            "name": "raster",
+            "kind": 18,
+            "alive": false
+          },
+          {
+            "name": "hydro",
+            "kind": 25,
+            "alive": true,
+            "parent": "top"
+          }
+        ]
+      }
+    }
+  ]
+}

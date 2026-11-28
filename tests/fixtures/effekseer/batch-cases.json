@@ -1,0 +1,1022 @@
+[
+  {
+    "name": "empty-reset",
+    "ops": [
+      {
+        "op": "reset"
+      },
+      {
+        "op": "flush"
+      }
+    ]
+  },
+  {
+    "name": "same-state-coalesces",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "reserve",
+        "vertices": 8
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "flush"
+      }
+    ]
+  },
+  {
+    "name": "texture-change-flushes-old",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 11
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 96,
+        "value": 3
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 12
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 96,
+        "value": 4
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "zero-reservation-prefix",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 8
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 96,
+        "value": 7
+      },
+      {
+        "op": "flush"
+      }
+    ]
+  },
+  {
+    "name": "byte-threshold-flush-before3334",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 96,
+        "value": 9
+      },
+      {
+        "op": "reserve",
+        "vertices": 13336
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 5
+      },
+      {
+        "op": "flush"
+      }
+    ]
+  },
+  {
+    "name": "VB3334-precheck-before-IB-policy",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 13336
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 6
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "unsafe2001-policy-at-DIP",
+    "policy": "unsafe-index-domain",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 8004
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 8
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "valid-old-before-unsafe3333",
+    "policy": "unsafe-index-domain",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 96,
+        "value": 3
+      },
+      {
+        "op": "reserve",
+        "vertices": 13332
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 8
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "distortion-no-background-before-lock",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": true,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 13336
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 11
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "single-Ring-reset-boundaries",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 96,
+        "value": 1
+      },
+      {
+        "op": "reset"
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 8
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 192,
+        "value": 2
+      },
+      {
+        "op": "flush"
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 96,
+        "value": 3
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "normal-ring-cursor-wrap",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4000
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "flush"
+      },
+      {
+        "op": "reserve",
+        "vertices": 4000
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "flush"
+      },
+      {
+        "op": "reserve",
+        "vertices": 4000
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 3
+      },
+      {
+        "op": "flush"
+      },
+      {
+        "op": "reserve",
+        "vertices": 4000
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 4
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "valid2000-one-submit",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 8000
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-depthTest",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": true,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-depthWrite",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": true,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-distortion",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": true,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-distortionIntensity",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 0.5,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-alphaBlend",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 3,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-culling",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 0,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-filter",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 1,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-wrap",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 1,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  },
+  {
+    "name": "state-change-texture",
+    "ops": [
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 0
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 1
+      },
+      {
+        "op": "state",
+        "value": {
+          "depthTest": false,
+          "depthWrite": false,
+          "distortion": false,
+          "distortionIntensity": 1.0,
+          "alphaBlend": 1,
+          "culling": 2,
+          "filter": 0,
+          "wrap": 0,
+          "texture": 99
+        }
+      },
+      {
+        "op": "reserve",
+        "vertices": 4
+      },
+      {
+        "op": "fill",
+        "start": 0,
+        "length": 24,
+        "value": 2
+      },
+      {
+        "op": "reset"
+      }
+    ]
+  }
+]

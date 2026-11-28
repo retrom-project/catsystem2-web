@@ -1,0 +1,51 @@
+{
+  "plugin": "filmnoise.ppi",
+  "pluginSHA256": "7aff22d2b0389c32cfa6c4edd06e3ab43d4ce5f30a53c27f933f73dba9bb2da8",
+  "engineSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+  "pluginOracle": "sha256:81080f23de3472eb80c335daad91f187fdd1d78e678a0a630fee90677d3359a8",
+  "d3dOracle": "sha256:9a6c60e2c760730b99a8ddbc94da318a8ba667e5f206972436bf3820fe0892b7",
+  "initialRecordsSHA256": "0d56d27b6697d698c609298586a66ee9bfc68e393461f406245542bf34b836d7",
+  "frames": [
+    {
+      "frame": 0,
+      "recordsSHA256": "0d56d27b6697d698c609298586a66ee9bfc68e393461f406245542bf34b836d7",
+      "verticesSHA256": "0dcafd6aa77b8a7a3f8511bc1a454329d9600eacff37225437cf9030aa3c835f"
+    },
+    {
+      "frame": 1,
+      "recordsSHA256": "0d56d27b6697d698c609298586a66ee9bfc68e393461f406245542bf34b836d7",
+      "verticesSHA256": "0dcafd6aa77b8a7a3f8511bc1a454329d9600eacff37225437cf9030aa3c835f"
+    },
+    {
+      "frame": 2,
+      "recordsSHA256": "0d56d27b6697d698c609298586a66ee9bfc68e393461f406245542bf34b836d7",
+      "verticesSHA256": "0dcafd6aa77b8a7a3f8511bc1a454329d9600eacff37225437cf9030aa3c835f"
+    },
+    {
+      "frame": 15,
+      "recordsSHA256": "f4e91afab301d920baecce6eebfcaa3e1d46d1a84928ee075a2a7b0b2f0b38a9",
+      "verticesSHA256": "342e63e37d3ce47d271748dafe4d5c577950915fde131d2759c388eb6deb40c0"
+    },
+    {
+      "frame": 60,
+      "recordsSHA256": "f4e91afab301d920baecce6eebfcaa3e1d46d1a84928ee075a2a7b0b2f0b38a9",
+      "verticesSHA256": "342e63e37d3ce47d271748dafe4d5c577950915fde131d2759c388eb6deb40c0"
+    },
+    {
+      "frame": 61,
+      "recordsSHA256": "626d30a8d3d8e2460f347427bca62616bb50cae1744201287242068012ab98d6",
+      "verticesSHA256": "b25914f254abc1c8e19612b59dc6ac75c0131159648b02bdcd29c7e666fe046b"
+    }
+  ],
+  "origins": [
+    [585, 350],
+    [620, 350],
+    [648, 350],
+    [696, 350],
+    [853, 190],
+    [340, 190]
+  ],
+  "cropSize": 8,
+  "tieCrop": 1,
+  "rgbaDeflate": "eNrtmEtOAkEURcfQXaAwAQ0CCkIiiSaQ4AKMCWEjuAG2gI50ho78jfAXP3xEbNAJ4qqer7uKttM0K6g7OKNzh5XzkkocNigBtKVWaQKNMTJDZkRG+pPCG2NmQuHUt4uRHSzZfDmYm33evPs2ltqNydzqBmzkzkhb7N/Y93ybD8WIzNzL4iY7lPBW5J958+rbDFxE/ilgI3c2aABA/wH6j/4DgP4D9B/9B3qQOjjSmnq5qTXoP/oP0H/0H/1H/9F/APD/A3RB9/cfSv66d0xsP1J055ZWdi8oVj6jePVEer530j+wv/H4YwqtzeSd45siCsrvnVOsMvc/7h0UhXv21wHeUv6OoiXbt5VvOX5+JyNF218pf6r81OM7jl/1+vWpc2vt+yf95b/fb9EfWxmjXA=="
+}

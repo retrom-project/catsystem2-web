@@ -1,0 +1,2740 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "original": {
+    "path": ".local/phase11/sdk63-67-image-draw-20261127/ORIGINAL-BITMAP63-NORMAL.json",
+    "sha256": "fa02f92f3412f4ee4e89f9728bfc9b7a1877ade51713fbed856f1311c70caa0b",
+    "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+    "textSha256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+    "sourceSha256": {
+      "probe-bitmap63-normal.mjs": "7e32c6f2f13fd565b752808d98c9f27156f129edf9f981c584548b79517983b6",
+      "image63-host-close-once.mjs": "e6aa888dad4bf1b45ed3a43f2b18c2b10e8faf01006ec3054e46537bfe245547",
+      "typed-image-script63.mjs": "8234639cce26cf94c80407c6df277e919da3bc1299e738dfee3189181cb709ad"
+    },
+    "targetCalls": 38,
+    "dependencyCalls": 9
+  },
+  "resource": {
+    "name": "pixels.hg3",
+    "bytes": 214,
+    "sha256": "3b5c2c659b865ae62f8c5ef07819eff25e1e5c51cc3e1bbc7e0e20f5811273ee",
+    "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w==",
+    "provenance": "existing accepted SDK23 legal authored HG3 bytes; parsed independently by own63 original body"
+  },
+  "cases": [
+    {
+      "id": 111,
+      "args": [64],
+      "save": "source",
+      "dependency": true,
+      "ordinal": 0,
+      "text": "pixels.hg3",
+      "control": 1,
+      "result": "owned:source",
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 112,
+      "args": [4, 3],
+      "save": "target",
+      "dependency": true,
+      "ordinal": 1,
+      "control": 1,
+      "result": "owned:target",
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 117,
+      "args": ["target", 0, 0, 4, 3, 4281352272],
+      "dependency": true,
+      "ordinal": 2,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 374,
+      "args": ["source", -2, 5],
+      "ordinal": 3,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 371,
+      "args": ["source", 256, 260],
+      "ordinal": 4,
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [254, 255, 255, 255, 5, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 370,
+      "args": ["source", 0, 0],
+      "ordinal": 5,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 370,
+      "args": ["source", 1, 0],
+      "ordinal": 6,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 370,
+      "args": ["source", 2, 0],
+      "ordinal": 7,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 378,
+      "args": ["source", 1],
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 377,
+      "args": ["source"],
+      "ordinal": 9,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 378,
+      "args": ["source", 0],
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 377,
+      "args": ["source"],
+      "ordinal": 11,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 378,
+      "args": ["source", 4294967295],
+      "ordinal": 12,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 377,
+      "args": ["source"],
+      "ordinal": 13,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 446,
+      "args": ["source", 288],
+      "ordinal": 14,
+      "seed": [0, 0, 4, 3],
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 288,
+          "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 537,
+      "args": ["target", "source"],
+      "ordinal": 15,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 536,
+      "args": ["target", 7, 320, 324, 328, 332, 336],
+      "dependency": true,
+      "ordinal": 16,
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 320,
+          "bytes": [
+            10, 0, 0, 0, 236, 255, 255, 255, 30, 0, 0, 0, 216, 255, 255, 255, 35, 1, 128, 255
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            145, 129, 149, 0, 152, 140, 166, 0, 159, 151, 183, 0, 166, 162, 200, 0, 117, 85, 81, 0,
+            124, 96, 98, 0, 131, 107, 115, 0, 138, 118, 132, 0, 89, 41, 13, 0, 96, 52, 30, 128, 103,
+            63, 47, 255, 110, 74, 64, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 376,
+      "args": ["source", 1],
+      "ordinal": 17,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            135, 135, 135, 0, 148, 148, 148, 0, 160, 160, 160, 0, 173, 173, 173, 0, 86, 86, 86, 0,
+            99, 99, 99, 0, 110, 110, 110, 0, 123, 123, 123, 0, 37, 37, 37, 0, 48, 48, 48, 128, 61,
+            61, 61, 255, 74, 74, 74, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 376,
+      "args": ["source", 2],
+      "ordinal": 18,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            99, 139, 164, 0, 111, 151, 176, 0, 123, 163, 188, 0, 136, 176, 201, 0, 49, 89, 114, 0,
+            63, 103, 128, 0, 73, 113, 138, 0, 87, 127, 152, 0, 1, 41, 66, 0, 12, 52, 77, 128, 24,
+            64, 89, 255, 38, 78, 103, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 376,
+      "args": ["source", 3],
+      "ordinal": 19,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            156, 116, 91, 0, 144, 104, 79, 0, 132, 92, 67, 0, 119, 79, 54, 0, 206, 166, 141, 0, 192,
+            152, 127, 0, 182, 142, 117, 0, 168, 128, 103, 0, 254, 214, 189, 0, 243, 203, 178, 128,
+            231, 191, 166, 255, 217, 177, 152, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 468,
+      "args": ["source", 90],
+      "ordinal": 20,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 3,
+          "height": 4,
+          "pitch": 12,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 4,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 4294967294,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 3, 4],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            254, 214, 189, 0, 206, 166, 141, 0, 156, 116, 91, 0, 243, 203, 178, 128, 192, 152, 127,
+            0, 144, 104, 79, 0, 231, 191, 166, 255, 182, 142, 117, 0, 132, 92, 67, 0, 217, 177, 152,
+            0, 168, 128, 103, 0, 119, 79, 54, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 468,
+      "args": ["source", 180],
+      "ordinal": 21,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 3,
+          "height": 4,
+          "pitch": 12,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 3,
+            "canvasHeight": 4,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 5,
+            "baseY": 6,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 3, 4],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            119, 79, 54, 0, 168, 128, 103, 0, 217, 177, 152, 0, 132, 92, 67, 0, 182, 142, 117, 0,
+            231, 191, 166, 255, 144, 104, 79, 0, 192, 152, 127, 0, 243, 203, 178, 128, 156, 116, 91,
+            0, 206, 166, 141, 0, 254, 214, 189, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 468,
+      "args": ["source", 270],
+      "ordinal": 22,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 6,
+            "baseY": 4294967294,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            217, 177, 152, 0, 231, 191, 166, 255, 243, 203, 178, 128, 254, 214, 189, 0, 168, 128,
+            103, 0, 182, 142, 117, 0, 192, 152, 127, 0, 206, 166, 141, 0, 119, 79, 54, 0, 132, 92,
+            67, 0, 144, 104, 79, 0, 156, 116, 91, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 538,
+      "args": ["source", 1, 1],
+      "ordinal": 23,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 6,
+            "baseY": 4294967294,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            230, 190, 165, 48, 234, 194, 169, 120, 236, 196, 171, 96, 242, 202, 177, 24, 231, 191,
+            166, 16, 235, 195, 170, 40, 237, 197, 172, 32, 243, 203, 178, 8, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 558,
+      "args": ["source", 1],
+      "ordinal": 24,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 4294967294,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            242, 202, 177, 24, 236, 196, 171, 96, 234, 194, 169, 120, 230, 190, 165, 48, 243, 203,
+            178, 8, 237, 197, 172, 32, 235, 195, 170, 40, 231, 191, 166, 16, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 558,
+      "args": ["source", 0],
+      "ordinal": 25,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 8, 237, 197, 172, 32,
+            235, 195, 170, 40, 231, 191, 166, 16, 242, 202, 177, 24, 236, 196, 171, 96, 234, 194,
+            169, 120, 230, 190, 165, 48
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 564,
+      "args": ["source", 2147483651],
+      "ordinal": 26,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 8, 237, 197, 172, 32,
+            235, 195, 170, 40, 231, 191, 166, 16, 242, 202, 177, 24, 236, 196, 171, 96, 234, 194,
+            169, 120, 230, 190, 165, 48
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 641,
+      "args": ["source", 50],
+      "ordinal": 27,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 4, 237, 197, 172, 16,
+            235, 195, 170, 20, 231, 191, 166, 8, 242, 202, 177, 12, 236, 196, 171, 48, 234, 194,
+            169, 60, 230, 190, 165, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 377,
+      "args": ["source"],
+      "ordinal": 28,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 4, 237, 197, 172, 16,
+            235, 195, 170, 20, 231, 191, 166, 8, 242, 202, 177, 12, 236, 196, 171, 48, 234, 194,
+            169, 60, 230, 190, 165, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 641,
+      "args": ["source", 100],
+      "ordinal": 29,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 4, 237, 197, 172, 16,
+            235, 195, 170, 20, 231, 191, 166, 8, 242, 202, 177, 12, 236, 196, 171, 48, 234, 194,
+            169, 60, 230, 190, 165, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 446,
+      "args": ["source", 288],
+      "ordinal": 30,
+      "seed": [2, 3, 10, 11],
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 288,
+          "bytes": [2, 0, 0, 0, 3, 0, 0, 0, 10, 0, 0, 0, 11, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 4294967294,
+            "baseY": 5,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 4, 237, 197, 172, 16,
+            235, 195, 170, 20, 231, 191, 166, 8, 242, 202, 177, 12, 236, 196, 171, 48, 234, 194,
+            169, 60, 230, 190, 165, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 374,
+      "args": ["source", 0, 0],
+      "ordinal": 31,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 4, 237, 197, 172, 16,
+            235, 195, 170, 20, 231, 191, 166, 8, 242, 202, 177, 12, 236, 196, 171, 48, 234, 194,
+            169, 60, 230, 190, 165, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 371,
+      "args": ["source", 256, 260],
+      "ordinal": 32,
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [0, 0, 0, 0, 0, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 4, 237, 197, 172, 16,
+            235, 195, 170, 20, 231, 191, 166, 8, 242, 202, 177, 12, 236, 196, 171, 48, 234, 194,
+            169, 60, 230, 190, 165, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 370,
+      "args": ["source", 1, 1],
+      "ordinal": 33,
+      "control": 1,
+      "result": 16,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 243, 203, 178, 4, 237, 197, 172, 16,
+            235, 195, 170, 20, 231, 191, 166, 8, 242, 202, 177, 12, 236, 196, 171, 48, 234, 194,
+            169, 60, 230, 190, 165, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 376,
+      "args": ["source", 1],
+      "ordinal": 34,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 199, 199, 199, 4, 193, 193, 193, 16,
+            190, 190, 190, 20, 187, 187, 187, 8, 197, 197, 197, 12, 192, 192, 192, 48, 189, 189,
+            189, 60, 186, 186, 186, 24
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 538,
+      "args": ["source", 1, 1],
+      "ordinal": 35,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            196, 196, 196, 2, 193, 193, 193, 4, 189, 189, 189, 4, 187, 187, 187, 3, 194, 194, 194,
+            9, 191, 191, 191, 18, 187, 187, 187, 20, 185, 185, 185, 14, 193, 193, 193, 18, 190, 190,
+            190, 35, 187, 187, 187, 40, 185, 185, 185, 28
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 641,
+      "args": ["source", 0],
+      "ordinal": 36,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            196, 196, 196, 0, 193, 193, 193, 0, 189, 189, 189, 0, 187, 187, 187, 0, 194, 194, 194,
+            0, 191, 191, 191, 0, 187, 187, 187, 0, 185, 185, 185, 0, 193, 193, 193, 0, 190, 190,
+            190, 0, 187, 187, 187, 0, 185, 185, 185, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 377,
+      "args": ["source"],
+      "ordinal": 37,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 2,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            196, 196, 196, 0, 193, 193, 193, 0, 189, 189, 189, 0, 187, 187, 187, 0, 194, 194, 194,
+            0, 191, 191, 191, 0, 187, 187, 187, 0, 185, 185, 185, 0, 193, 193, 193, 0, 190, 190,
+            190, 0, 187, 187, 187, 0, 185, 185, 185, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 378,
+      "args": ["source", 0],
+      "ordinal": 38,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            196, 196, 196, 0, 193, 193, 193, 0, 189, 189, 189, 0, 187, 187, 187, 0, 194, 194, 194,
+            0, 191, 191, 191, 0, 187, 187, 187, 0, 185, 185, 185, 0, 193, 193, 193, 0, 190, 190,
+            190, 0, 187, 187, 187, 0, 185, 185, 185, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 377,
+      "args": ["source"],
+      "ordinal": 39,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            196, 196, 196, 0, 193, 193, 193, 0, 189, 189, 189, 0, 187, 187, 187, 0, 194, 194, 194,
+            0, 191, 191, 191, 0, 187, 187, 187, 0, 185, 185, 185, 0, 193, 193, 193, 0, 190, 190,
+            190, 0, 187, 187, 187, 0, 185, 185, 185, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 558,
+      "args": ["source", 2],
+      "ordinal": 40,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 4,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            187, 187, 187, 0, 189, 189, 189, 0, 193, 193, 193, 0, 196, 196, 196, 0, 185, 185, 185,
+            0, 187, 187, 187, 0, 191, 191, 191, 0, 194, 194, 194, 0, 185, 185, 185, 0, 187, 187,
+            187, 0, 190, 190, 190, 0, 193, 193, 193, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 446,
+      "args": ["target", 288],
+      "ordinal": 41,
+      "seed": [0, 0, 4, 3],
+      "control": 1,
+      "result": 1,
+      "outputs": [
+        {
+          "at": 288,
+          "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "source",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 4,
+            "baseY": 0,
+            "mask": 2147483651,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            187, 187, 187, 0, 189, 189, 189, 0, 193, 193, 193, 0, 196, 196, 196, 0, 185, 185, 185,
+            0, 187, 187, 187, 0, 191, 191, 191, 0, 194, 194, 194, 0, 185, 185, 185, 0, 187, 187,
+            187, 0, 190, 190, 190, 0, 193, 193, 193, 0
+          ],
+          "pixelsKnown": true
+        },
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["source"],
+      "close": "source",
+      "dependency": true,
+      "ordinal": 42,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [
+        {
+          "name": "target",
+          "width": 4,
+          "height": 3,
+          "pitch": 16,
+          "bpp": 4,
+          "metadata": {
+            "canvasWidth": 0,
+            "canvasHeight": 0,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 0,
+            "baseX": 0,
+            "baseY": 0,
+            "mask": 0,
+            "blendType": 0
+          },
+          "clip": [0, 0, 4, 3],
+          "bitmapReferences": 1,
+          "physicalPixels": [
+            80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80,
+            64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64, 48, 255, 80, 64,
+            48, 255, 80, 64, 48, 255
+          ],
+          "pixelsKnown": true
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 114,
+      "args": ["target"],
+      "close": "target",
+      "dependency": true,
+      "ordinal": 43,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    }
+  ],
+  "qualificationNotes": [
+    "Main112 fresh pixel storage was initially treated conservatively as capture-only. Own static chain Main112→528590→53c7c0→541680 proves an explicit whole-buffer clear at5416db..5416e3 via50bbe0 (zero memset/MMX). The qualified intact normal GCALL captures are therefore defined zero bytes, not allocator contents. No original rerun or runtime defaults were added."
+  ]
+}

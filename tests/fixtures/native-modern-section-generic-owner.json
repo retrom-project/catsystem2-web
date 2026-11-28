@@ -1,0 +1,109 @@
+{
+  "marker": 1632247811,
+  "startup": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><ext>kcs</ext><dir></dir></int00><int01><name>scene</name><ext>cst</ext><dir></dir></int01><int02><name>database</name><ext>db</ext><dir></dir></int02></INT></document>",
+  "inputs": [
+    {
+      "name": "startup.xml",
+      "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48ZXh0PmtjczwvZXh0PjxkaXI+PC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGV4dD5jc3Q8L2V4dD48ZGlyPjwvZGlyPjwvaW50MDE+PC9JTlQ+PC9kb2N1bWVudD4="
+    },
+    {
+      "name": "writer.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAACYRAABaEQAAAAAAAAAAAAAAEAAAABAAAFoRAAAAAAAATCIAAHicjdcxSGtXGMDxo0YINC0pN0MeZAicePARsZZnQWiGvDZDKA4ZMmTIoCapsVWffaYgxSGDg4NDChkcLFhQEOoDBwcHhwwWHBwsteAgxcHBQYqDbR2kr9zvJLl/Y1recvnxnXO+e8/Jp5xvQP/8/LsfjVY9Sg007YP9cAAOwiE4DEfgKByDB+EheAQehcfgBJyEU3AaHoczcBbOwXl4Ai6KK5NTs0Yrn+vSYr5gtE9cfjVTMNpv48OVJaMD4opSyuigWBfKr4xOimcKJWV0Sjz/7Zwyumo9OVcyuiZWsrbu897baL132ugj6/nSa6OPmzmHi0afiKdk7ak49nH8hdGq38vpE+fnXScRz4gnZxfKRletJb4inipVJo2uYX5dPF2aLxndEL+eKQwbfSQuLC4qo4/F29vb20Yrv2cf7IcDcBAOwWE4AkfhGDwID8Ej8Cg8BifgJJyC0/A4nIGzcA7OwxNwES7Ds/ACXIGX4GW4Cq/Aq/AaXIPr8Dq8AW/CW/AOvAvvwfvwAXwIN+Aj+Bg+gU/hM/gcvoAv4Sv4Gr6Bb+E7+B5+gFUA9Q/74QAchENwGI7AUTgGD8JD8Ag8Co/BCTgJp+A0PA5n4Cycg/PwBFyEy/AsvABX4CV4Ga7CK/AqvAbX4Dq8Dm/Am/AWvAPvwnvwPnwAH8IN+Ag+hk/gU/gMPocv4Ev4Cr6Gb+Bb+A6+hx9g9T7qH/bDATgIh+AwHIGjcAwehIfgEXgUHoMTcBJOwWl4HM7AWTgH5+EJuAiX4Vl4Aa7AS/AyXIVX4FV4Da7BdXgd3oA34S14B96F9+B9+AA+hBvwEXwMn8Cn8Bl8Dl/Al/AVfA3fwLfwHXwPP8DqA9Q/7IcDcBAOwWE4InZvpHH9U69S2idXs6TqGk65YccO2puovXf22Ol+d/obd3pIptsGwYafqXYW2ysElRv+pRVuJnHcwbj+1Q37bdZ+N/Cbt1zaCyeFj/AuvANyyXr0EbYDsXdfe1u1z4zkLfUpJZ9idEa948SsfKid3ivPqkyZdqcEMNgvz1q3wbie62vvSBqjZni+FX6HNzxKEurx1igZLPc1D7HZYjlhOduX3pqc9x4n17nGtmIfSfgP7/jzMlue+j3VStta/7l3TFGEP3u8q7j+0gvYVA3Z4J+q/Xrp+GQwrv9qV4kUX1zv9rbLRlW//2FAv337TTquv/K+Xho3x7ZvthEryu6/bh1hXL90s0rVPKomlnS1s5ps7/nkDyMtWdL/kaXRmWWoXcLciqx/tDd7KH//z+FL0xvXqdauWr9pFr/pjHcqo91/kyennO2sLumhbdan1SVNtZPoXl3Z7tVlm+9POqtrQmbLs1noie7Vleq+k2xndSFV8wId7XWn/KPaqaTfl4k4gx7HvWI47v9Q2+07jvvUMaXUoH72oZupr/Lmd9vyP9cDNhL9YtJGPv0XwS7cOg=="
+    },
+    {
+      "name": "reader.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAAJQNAADIDQAAAAAAAAAAAAAAEAAAABAAAMgNAAAAAAAAKBsAAHicbdc9aFpRFMDxm8aCUFsEHRwchGsuFiVYakGog20dQnFwcHBw0KiNgjGSWJCSwSFDhgwODhkypJBAhgwZMmTI4GDBwcEhQ4YMGTJkCCVDaDOEUt55Jv6hXS4/zjvnvE/03Dn94/W370arGaXmJnbATtgFu2Ev7IP9cAAOwiE4AkfhGByHE3ASTsELcBrOwFk4B+fhAlwWt4qLdaOVw3JlLV8y2iGurtRKRjvt+HyrbbRL3FJKGe0W61J1xeikuFaqKKNT4sbXZWV0x3ZxuWJ0V6yktueYnrf/eN4lowe2G5VVo4eTnvNlo0fiRakdi4Nvwm+NVs+nPR3ifMNyEvGMuFhvVo3u2Jb4hnix0ioa3UV+T7xUaVSM7otXa6V5owfi0tqaMnoo3t/f3zdaOad2wE7YBbthL+yD/XAADsIhOAJH4RgchxNwEk7BC3AazsBZOAfn4QJchqtwHW7CLbgNr8MdeAPehLfgLtyDt+EdeBfegw/gQ/gIPoZP4FO4Dw/gITyCx/AZfA5fwJfwFXwN38C38B18Dz/AyoXvH3bCLtgNe2Ef7IcDcBAOwRE4CsfgOJyAk3AKXoDTcAbOwjk4DxfgMlyF63ATbsFteB3uwBvwJrwFd+EevA3vwLvwHnwAH8JH8DF8Ap/CfXgAD+ERPIbP4HP4Ar6Er+Br+Aa+he/ge/gBVi/x/cNO2AW7YS/sg/1wAA7CITgCR+EYHIcTcBJOwQtwGs7AWTgH5+ECXIarcB1uwi24Da/DHXgD3oS34C7cg7fhHXgX3oMP4EP4CD6GT+BTuA8P4CE8gsfwGXwOX8CX8BV8Dd/At/AdfA8/wOoVvn/YCbtgN+yFfbBfbE+G9ixnr9YsF9aVWaW0W4a1rJJECf9WSmmHhPNW2COrfiGrNYWHdcqqdElKTlKk3mM5rGvWQacclDl9Ev44O2lrNwzrX+opkJXA8uzTiWWot7vKOBnW1WlXmfI9CbmSD9Oaf68ENfZu4J2Ef05vsCDZssr92G0f6z9NH1Dq/3diX/iXaQCtJv/ogWdWyh/11Eo2IJKIZzDjsX7zPNZLfdx+zAY+F+0tx/u/sMGGCQ=="
+    },
+    {
+      "name": "owned.cst",
+      "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+    },
+    {
+      "name": "scene/owned.cst",
+      "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+    },
+    {
+      "name": "scripts/writer.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAACYRAABaEQAAAAAAAAAAAAAAEAAAABAAAFoRAAAAAAAATCIAAHicjdcxSGtXGMDxo0YINC0pN0MeZAicePARsZZnQWiGvDZDKA4ZMmTIoCapsVWffaYgxSGDg4NDChkcLFhQEOoDBwcHhwwWHBwsteAgxcHBQYqDbR2kr9zvJLl/Y1recvnxnXO+e8/Jp5xvQP/8/LsfjVY9Sg007YP9cAAOwiE4DEfgKByDB+EheAQehcfgBJyEU3AaHoczcBbOwXl4Ai6KK5NTs0Yrn+vSYr5gtE9cfjVTMNpv48OVJaMD4opSyuigWBfKr4xOimcKJWV0Sjz/7Zwyumo9OVcyuiZWsrbu897baL132ugj6/nSa6OPmzmHi0afiKdk7ak49nH8hdGq38vpE+fnXScRz4gnZxfKRletJb4inipVJo2uYX5dPF2aLxndEL+eKQwbfSQuLC4qo4/F29vb20Yrv2cf7IcDcBAOwWE4AkfhGDwID8Ej8Cg8BifgJJyC0/A4nIGzcA7OwxNwES7Ds/ACXIGX4GW4Cq/Aq/AaXIPr8Dq8AW/CW/AOvAvvwfvwAXwIN+Aj+Bg+gU/hM/gcvoAv4Sv4Gr6Bb+E7+B5+gFUA9Q/74QAchENwGI7AUTgGD8JD8Ag8Co/BCTgJp+A0PA5n4Cycg/PwBFyEy/AsvABX4CV4Ga7CK/AqvAbX4Dq8Dm/Am/AWvAPvwnvwPnwAH8IN+Ag+hk/gU/gMPocv4Ev4Cr6Gb+Bb+A6+hx9g9T7qH/bDATgIh+AwHIGjcAwehIfgEXgUHoMTcBJOwWl4HM7AWTgH5+EJuAiX4Vl4Aa7AS/AyXIVX4FV4Da7BdXgd3oA34S14B96F9+B9+AA+hBvwEXwMn8Cn8Bl8Dl/Al/AVfA3fwLfwHXwPP8DqA9Q/7IcDcBAOwWE4InZvpHH9U69S2idXs6TqGk65YccO2puovXf22Ol+d/obd3pIptsGwYafqXYW2ysElRv+pRVuJnHcwbj+1Q37bdZ+N/Cbt1zaCyeFj/AuvANyyXr0EbYDsXdfe1u1z4zkLfUpJZ9idEa948SsfKid3ivPqkyZdqcEMNgvz1q3wbie62vvSBqjZni+FX6HNzxKEurx1igZLPc1D7HZYjlhOduX3pqc9x4n17nGtmIfSfgP7/jzMlue+j3VStta/7l3TFGEP3u8q7j+0gvYVA3Z4J+q/Xrp+GQwrv9qV4kUX1zv9rbLRlW//2FAv337TTquv/K+Xho3x7ZvthEryu6/bh1hXL90s0rVPKomlnS1s5ps7/nkDyMtWdL/kaXRmWWoXcLciqx/tDd7KH//z+FL0xvXqdauWr9pFr/pjHcqo91/kyennO2sLumhbdan1SVNtZPoXl3Z7tVlm+9POqtrQmbLs1noie7Vleq+k2xndSFV8wId7XWn/KPaqaTfl4k4gx7HvWI47v9Q2+07jvvUMaXUoH72oZupr/Lmd9vyP9cDNhL9YtJGPv0XwS7cOg=="
+    },
+    {
+      "name": "scripts/reader.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAAJQNAADIDQAAAAAAAAAAAAAAEAAAABAAAMgNAAAAAAAAKBsAAHicbdc9aFpRFMDxm8aCUFsEHRwchGsuFiVYakGog20dQnFwcHBw0KiNgjGSWJCSwSFDhgwODhkypJBAhgwZMmTI4GDBwcEhQ4YMGTJkCCVDaDOEUt55Jv6hXS4/zjvnvE/03Dn94/W370arGaXmJnbATtgFu2Ev7IP9cAAOwiE4AkfhGByHE3ASTsELcBrOwFk4B+fhAlwWt4qLdaOVw3JlLV8y2iGurtRKRjvt+HyrbbRL3FJKGe0W61J1xeikuFaqKKNT4sbXZWV0x3ZxuWJ0V6yktueYnrf/eN4lowe2G5VVo4eTnvNlo0fiRakdi4Nvwm+NVs+nPR3ifMNyEvGMuFhvVo3u2Jb4hnix0ioa3UV+T7xUaVSM7otXa6V5owfi0tqaMnoo3t/f3zdaOad2wE7YBbthL+yD/XAADsIhOAJH4RgchxNwEk7BC3AazsBZOAfn4QJchqtwHW7CLbgNr8MdeAPehLfgLtyDt+EdeBfegw/gQ/gIPoZP4FO4Dw/gITyCx/AZfA5fwJfwFXwN38C38B18Dz/AyoXvH3bCLtgNe2Ef7IcDcBAOwRE4CsfgOJyAk3AKXoDTcAbOwjk4DxfgMlyF63ATbsFteB3uwBvwJrwFd+EevA3vwLvwHnwAH8JH8DF8Ap/CfXgAD+ERPIbP4HP4Ar6Er+Br+Aa+he/ge/gBVi/x/cNO2AW7YS/sg/1wAA7CITgCR+EYHIcTcBJOwQtwGs7AWTgH5+ECXIarcB1uwi24Da/DHXgD3oS34C7cg7fhHXgX3oMP4EP4CD6GT+BTuA8P4CE8gsfwGXwOX8CX8BV8Dd/At/AdfA8/wOoVvn/YCbtgN+yFfbBfbE+G9ixnr9YsF9aVWaW0W4a1rJJECf9WSmmHhPNW2COrfiGrNYWHdcqqdElKTlKk3mM5rGvWQacclDl9Ev44O2lrNwzrX+opkJXA8uzTiWWot7vKOBnW1WlXmfI9CbmSD9Oaf68ENfZu4J2Ef05vsCDZssr92G0f6z9NH1Dq/3diX/iXaQCtJv/ogWdWyh/11Eo2IJKIZzDjsX7zPNZLfdx+zAY+F+0tx/u/sMGGCQ=="
+    },
+    {
+      "name": "tables/choice.txt",
+      "data": "I2Nob2ljZQ0KbnVtIDcNCm51bSA5DQpuYW1lIJRMDQojb3RoZXINCm51bSA1DQo="
+    },
+    {
+      "name": "tables/generic.db",
+      "data": "S0NEQlMAAAA0AQAAeJxjYWBg8HRhQAGMDAwMLAwMDCGeIT6u8cEocgowcVQtYHFPPxfXCCziTAwMDClQcx0Z8APHnIKMRDzyiQTkQXY5EbDDKbUEnxEMSQTkAaQnDhU="
+    }
+  ],
+  "changedSection": "I2Nob2ljZQ0KbnVtIDUNCm51bSA2DQpuYW1lIJRMDQojb3RoZXINCm51bSA1DQo=",
+  "projections": {
+    "words": [
+      256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324, 328,
+      332, 336, 340, 344, 348, 352, 356
+    ],
+    "spans": [
+      {
+        "at": 2048,
+        "size": 256
+      },
+      {
+        "at": 3072,
+        "size": 544
+      }
+    ]
+  },
+  "rows": [
+    {
+      "kind": "writer",
+      "index": 0,
+      "words": [
+        1, 9, 12, 1, 1, 0, 540, 540, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 4294934528, 2709137861,
+        2709137861, 2709137861, 2709137861, 4294934528, 4294967295
+      ],
+      "spans": [
+        "OQClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpZRMAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ==",
+        "paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ=="
+      ]
+    },
+    {
+      "kind": "writer",
+      "index": 1,
+      "words": [
+        1, 9, 12, 1, 1, 0, 540, 540, 1, 1, 1, 1, 540, 1, 0, 540, 540, 1, 540, 4294934528,
+        2709137861, 36, 2709137861, 1632247811, 4294934528, 4294967295
+      ],
+      "spans": [
+        "OQClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpZRMAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU5AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlNgClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ==",
+        "AgAAAGFscGhhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAEAAABiZXRhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAACAAAAABAAAApaWlpQ=="
+      ]
+    },
+    {
+      "kind": "reader",
+      "index": 0,
+      "words": [
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 540, 1, 0, 540, 540, 1, 540,
+        2709137861, 2709137861, 36, 2709137861, 1632247811, 2709137861, 2709137861
+      ],
+      "spans": [
+        "paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ==",
+        "AgAAAGFscGhhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAEAAABiZXRhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAACAAAAABAAAApaWlpQ=="
+      ]
+    }
+  ],
+  "nativeCSS": "Q1NTACsAAAAkAgAALwAAAHja42ZgYJBhYmAAIobEnIKMRIaRC1igmBGIk1JLRnJQMChAMSgsAE+sBBg=",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-script-resource-language-20261128/ORIGINAL-T1.json",
+    "sha256": "4d6a7ff09cc513852c601b7cc579c73b8367ca00db57e06c49fcb5394fa9ff68",
+    "scope": "Actual typed loadedScript → FileServer nonemptySection/normalKCDB (ID/TITLE_S/TITLE/INDEX allpresent) → duplicate-key ordinal/numeric/expression branch; two databaseowners → first/new/duplicate flagdirty → owned833/export872→CSS835/writer245→newreader/import873→newexport→definedVMspan/canaries/branch → normalrelease. 874/875 finite pack/unpack included, no undefinedscratch/null/fault probes."
+  },
+  "bridge76": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-script-resource-language-20261128/T1-BODY-CONTEXT-BRIDGE.json",
+    "sha256": "adee985711beb7a939eaf9cc90e6ce9d885057962d386a2126a85e06bb6a2362"
+  }
+}

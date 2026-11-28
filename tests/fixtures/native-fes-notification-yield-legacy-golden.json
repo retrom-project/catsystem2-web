@@ -1,0 +1,2129 @@
+{
+  "scope": "Actual owned Main66 FES and Main143 Script contexts; full GCALL notify, update and result queries, with captured ShellExecuteA/MessageBoxA only. Production cold restore is a separate host lifecycle check.",
+  "cases": [
+    {
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "version": "23",
+      "family": "OPENSITE-CONTROLS",
+      "shellResult": 5,
+      "receiptSha256": "63e507ec609c6664640318216edc0d6cf4dd7e7644b2a196105a9825ad5fe0bc",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nopensite https controlled.invalid/ordinary\r\nresult 123\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 111, 114, 100, 105, 110, 97, 114, 121
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        },
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "version": "23",
+      "family": "OPENSITE-CONTROLS",
+      "shellResult": 33,
+      "receiptSha256": "a567f4bb9189ffc442ac9557f7f7a8040d2ae3f5f06f90c4a583cf90ff0a2944",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nopensite https controlled.invalid/ordinary\r\nresult 123\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 111, 114, 100, 105, 110, 97, 114, 121
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 33
+        },
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 33
+        }
+      ]
+    },
+    {
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "version": "23",
+      "family": "RESULT-NOTIFICATION",
+      "shellResult": 5,
+      "receiptSha256": "4fba92413a3f70796240d6b9abc06748177bb99fe4351dcd9f0867128764a9a7",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nresult 123\r\n\\0=222\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "query local after result notification",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "version": "23",
+      "family": "EMPTY-EXEC",
+      "shellResult": 5,
+      "receiptSha256": "de0387182237603eac1024c187d1629ee50781e9bff6f8f2c69e27f7e932a848",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nexecfes\r\nexeckcs\r\nresult 123\r\n\\0=222\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "query local after result notification",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "version": "63",
+      "family": "OPENSITE-CONTROLS",
+      "shellResult": 5,
+      "receiptSha256": "f1a21d6cf209a8a4eebe9caabe03617eaed87b1e7ec9d2bf7f2319efe9dec8e3",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nopensite https controlled.invalid/ordinary\r\nresult 123\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 111, 114, 100, 105, 110, 97, 114, 121
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        },
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "version": "63",
+      "family": "OPENSITE-CONTROLS",
+      "shellResult": 33,
+      "receiptSha256": "279bcf2146663056f065084949c538481ca81cec793a39b4a9830b95ed25f87f",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nopensite https controlled.invalid/ordinary\r\nresult 123\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 111, 114, 100, 105, 110, 97, 114, 121
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 33
+        },
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 33
+        }
+      ]
+    },
+    {
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "version": "63",
+      "family": "RESULT-NOTIFICATION",
+      "shellResult": 5,
+      "receiptSha256": "e640c3d0da1fb9e97d5a23d1d68817991ea1f4037ec08a61f5ede6539b15351b",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nresult 123\r\n\\0=222\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "query local after result notification",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "version": "63",
+      "family": "EMPTY-EXEC",
+      "shellResult": 5,
+      "receiptSha256": "4159471566083b5e1d6830f9e796b533f0758817df1445f2dd7a5c7f100b91ec",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nexecfes\r\nexeckcs\r\nresult 123\r\n\\0=222\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "query local after result notification",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "bokutomo-engine-2.6.1.67",
+      "version": "67",
+      "family": "OPENSITE-CONTROLS",
+      "shellResult": 5,
+      "receiptSha256": "0ad7d46d4b49ce4f7a1eb77fd4c13d40e31c12ae1e4ed11400a564f534c93e33",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nopensite https controlled.invalid/ordinary\r\nresult 123\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 111, 114, 100, 105, 110, 97, 114, 121
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        },
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "bokutomo-engine-2.6.1.67",
+      "version": "67",
+      "family": "OPENSITE-CONTROLS",
+      "shellResult": 33,
+      "receiptSha256": "dbd44af687f202ca47b3c2d67d104a10be73470bdb710032d6449b979449bd95",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nopensite https controlled.invalid/ordinary\r\nresult 123\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 111, 114, 100, 105, 110, 97, 114, 121
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 33
+        },
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 33
+        }
+      ]
+    },
+    {
+      "profile": "bokutomo-engine-2.6.1.67",
+      "version": "67",
+      "family": "RESULT-NOTIFICATION",
+      "shellResult": 5,
+      "receiptSha256": "bd9a916ceeec73701dc4709cd6b75d7094de16e30bf489e0a8e2a4c485846af8",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nresult 123\r\n\\0=222\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "query local after result notification",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "profile": "bokutomo-engine-2.6.1.67",
+      "version": "67",
+      "family": "EMPTY-EXEC",
+      "shellResult": 5,
+      "receiptSha256": "ce4fc972f197a28bf561f7a607962a558f7925fcfafce5b3a754cb82933f96dc",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "source": "#START\r\nnext WAIT\r\n#WAIT\r\n#OPEN\r\nexecfes\r\nexeckcs\r\nresult 123\r\n\\0=222\r\nbreak\r\n#AFTER\r\nresult 456\r\nbreak\r\n",
+      "startSource": "#START\r\nopensite https controlled.invalid/start\r\nresult 789\r\nnext WAIT\r\n#WAIT\r\n",
+      "calls": [
+        {
+          "label": "own OPEN notification queues normal external-open work",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "own update drains normal external-open work",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query original continued result",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "additional ordinary update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query after update 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 123
+        },
+        {
+          "label": "independent known non-IO notification",
+          "id": 630,
+          "args": [2, 256, 320, 0],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "known result after later notification",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 456
+        },
+        {
+          "label": "query local after result notification",
+          "id": 646,
+          "args": [2, 0],
+          "control": 1,
+          "result": 0
+        },
+        {
+          "label": "reload true START source with platform command",
+          "id": 447,
+          "args": [2, 384],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "ordinary START update 0",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 0",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 1",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 1",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 2",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 2",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        },
+        {
+          "label": "ordinary START update 3",
+          "id": 448,
+          "args": [2],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "query START result 3",
+          "id": 667,
+          "args": [2],
+          "control": 1,
+          "result": 789
+        }
+      ],
+      "traffic": [
+        {
+          "api": "ShellExecuteA",
+          "owner": 4660,
+          "verb": [111, 112, 101, 110],
+          "file": [
+            104, 116, 116, 112, 115, 58, 47, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100,
+            46, 105, 110, 118, 97, 108, 105, 100, 47, 115, 116, 97, 114, 116
+          ],
+          "parameters": null,
+          "directory": null,
+          "show": 1,
+          "result": 5
+        },
+        {
+          "api": "MessageBoxA",
+          "owner": 4660,
+          "text": [
+            131, 73, 131, 121, 131, 140, 129, 91, 131, 101, 131, 66, 131, 147, 131, 79, 131, 86,
+            131, 88, 131, 101, 131, 128, 130, 170, 129, 65, 142, 119, 146, 232, 130, 179, 130, 234,
+            130, 189, 131, 116, 131, 64, 131, 67, 131, 139, 130, 214, 130, 204, 131, 65, 131, 78,
+            131, 90, 131, 88, 130, 240, 139, 145, 148, 219, 130, 181, 130, 220, 130, 181, 130, 189,
+            129, 66
+          ],
+          "caption": [142, 192, 141, 115, 131, 71, 131, 137, 129, 91],
+          "buttons": 0,
+          "result": 1
+        }
+      ]
+    }
+  ]
+}

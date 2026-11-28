@@ -1,0 +1,427 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-scene-history-css-20261127/ORIGINAL-G2.json",
+    "sha256": "3a9b86c5058abeb1b44942d767dacce3e65499a4445f659651df783964f621db"
+  },
+  "qualification": "Real CRT/FileServer/ApplicationRoot/typed Script and original Main bodies; controlled OS Map write/read, not physical disk or platform GAME_SAVE.",
+  "budget": {
+    "targetMain": 33,
+    "bootstrapGCALL": 3,
+    "carrier65": 6,
+    "cleanup71": 1,
+    "allGCALL": 43,
+    "newScriptFrameDirect": 7,
+    "host": "Unchanged qualified true host full initialization/cleanup journal, overlaps identified"
+  },
+  "outputFile": "scene-state23.css",
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "archives": [
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABzY2VuZS1nMi5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAANICAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAA5QgAABkJAAAAAAAAAAAAAAAQAAAAEAAAGQkAAAAAAADKEQAAeJxt1b9LW1EUB/DzzKMNNENAKw5CA8dchNeW0joU2iGpT5ohpaGEkiGDEkMtiASTwcEhLQ4ODg4OGRwSMODgIMHBwcHBoUOHDh06dOhfUDr0x5jyvu8l+Xrjcvlw87333PtOXpLWiR9lTWu9Ut0wKo5IWqsP6g2jLrzSqD42GoefPKzUjSbguogYTcKLuWzBaAYuLr0Roz7c7Xa7RmViZJccJyfISfIUeYY8S06R58jz5PvkR+QF8lPyc3KG7JNz5Dy5QC6SS+QyeZm8Sl4jr5Nr5AZ5i7xNbpJ3yLvkPfI++YDcIh+S2+Qj8jH5hHxKPiOfky/Il+Qr8ifyZ/IX8lfyN/J3uLK2UjMqbuBGdVOMunCn0+kYjZMT5CR5ijxDnoVv4R1JwQLPuaO6Garr09ocOU8ukIvkErkMu6i1DDvwKnwbXoPvwOtw+O7X3NG734A332+8M7oVnr/X6xndhntwk7xD3iXvkffJB+QW+ZDcJh+Rj8kn8JKKePpTRKKrZ0QkPYkRF03rPMag1Z7+DoJJBJsUTGCsYczYwR0JJhYdkaiTvl1i0pdBnz396AxX7toloqBjB/cwkZWoxGDN3bHNP4zW7FNwemxzCh7YO2obET8mgmMZLVr19e2C9Vhz2ASj3oPbGMOVi7FhtRZNv4hF69P40NNsbLhhGbmylYuOGfwXefonKB9H+tB+QH54BefaQk//ynAiZ01Em/4b3SlvN7aAhXl69oWbG3tEwWkKjjX22D53mMvgKHlneL8T+rAS1sTPVPAH5Omr0Yan1rHCN3vwVW8i/jqITyF+Zh9Uz+3el+wjhukUfI6xZDf5gqapeVyn3+/3PZw/qnNJkcrNkSt62tmJaNuxx3et7Xm7y78w8XIw8ew/+SWuUA=="
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "native CSS and Scene owners import complete defined legacy records",
+      "frame": 200,
+      "outputs": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "raw": null
+    },
+    {
+      "phase": 1,
+      "label": "live Scene exports both sides and owned raw buffer receives exact seen bytes",
+      "frame": 201,
+      "outputs": [1, 1, 1, 1, 1, 1, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "raw": "Y2hhcHRlcgChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaEGAAAAAAAAAA=="
+    },
+    {
+      "phase": 2,
+      "label": "raw bytes are independently copied, released and written by actual CSS stream",
+      "frame": 202,
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 1, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "raw": null
+    },
+    {
+      "phase": 3,
+      "label": "old owners release, actual file loader creates independent owners",
+      "frame": 203,
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 1, 40, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "raw": null
+    },
+    {
+      "phase": 4,
+      "label": "new Scene consumes imported numbered string and returns owned raw path bytes",
+      "frame": 204,
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 1, 40, 1, 1, 6, 0, 1, 112, 0, 0, 0, 0, 0],
+      "bytes": "Y2hhcHRlcgClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQQAAAClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVzY2VuZS1zdHJpbmcApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "raw": "Y2hhcHRlcgChoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaEEAAAAAQAAAAcAAAALAAAAc2NlbmUtc3RyaW5nALKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysg=="
+    },
+    {
+      "phase": 5,
+      "label": "copied raw block has independent lifetime and optional task wrapper keeps known routing",
+      "frame": 205,
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 1, 40, 1, 1, 6, 0, 1, 112, 1, 1, 0, 0, 0],
+      "bytes": "Y2hhcHRlcgClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQQAAAClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVzY2VuZS1zdHJpbmcApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "raw": null
+    },
+    {
+      "phase": 6,
+      "label": "normal Scene/CSS disposal and caller wait",
+      "frame": 206,
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 1, 40, 1, 1, 6, 0, 1, 112, 1, 1, 0, 0, 0],
+      "bytes": "Y2hhcHRlcgClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQQAAAClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVzY2VuZS1zdHJpbmcApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "raw": null
+    }
+  ],
+  "savedFile": "Q1NTAEQAAABQAQAARSMAAHja42ZgYNAA4uSMxIKS1CKGhTgAGwME8ABxARHqWYBqGIGYHYi5gbg4OTUvVbe4pCgzL51hE+lAlER3ig2QOwFTdpo5",
+  "nativeCalls": [
+    {
+      "id": 66,
+      "args": [12, 3, 256],
+      "control": 1,
+      "outputWritten": true,
+      "value": 4,
+      "phase": -1
+    },
+    {
+      "id": 209,
+      "args": [512],
+      "control": 2,
+      "outputWritten": false,
+      "phase": -1
+    },
+    {
+      "id": 143,
+      "args": [4, 256, 0],
+      "control": 2,
+      "outputWritten": false,
+      "phase": -1
+    },
+    {
+      "id": 238,
+      "args": [9029],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126736,
+      "phase": 0
+    },
+    {
+      "id": 244,
+      "args": [537126736, 11, 40, 1024],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 0
+    },
+    {
+      "id": 244,
+      "args": [537126736, 12, 112, 1088],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 0
+    },
+    {
+      "id": 323,
+      "args": [],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127060,
+      "phase": 0
+    },
+    {
+      "id": 386,
+      "args": [537126736, 11, 537127060, 0],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 0
+    },
+    {
+      "id": 386,
+      "args": [537126736, 12, 537127060, 1],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 0
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false,
+      "phase": 0
+    },
+    {
+      "id": 385,
+      "args": [537126736, 21, 537127060, 0],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 1
+    },
+    {
+      "id": 385,
+      "args": [537126736, 22, 537127060, 1],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 1
+    },
+    {
+      "id": 836,
+      "args": [537126736, 21, 160],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537141604,
+      "phase": 1
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false,
+      "phase": 1
+    },
+    {
+      "id": 238,
+      "args": [13398],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537141648,
+      "phase": 2
+    },
+    {
+      "id": 835,
+      "args": [537141648, 31, 40, 537141604],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 2
+    },
+    {
+      "id": 834,
+      "args": [537141604],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 2
+    },
+    {
+      "id": 833,
+      "args": [16],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537141604,
+      "phase": 2
+    },
+    {
+      "id": 834,
+      "args": [537141604],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 2
+    },
+    {
+      "id": 245,
+      "args": [537126736, 256],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 2
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false,
+      "phase": 2
+    },
+    {
+      "id": 324,
+      "args": [537127060],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 3
+    },
+    {
+      "id": 246,
+      "args": [537126736],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 3
+    },
+    {
+      "id": 246,
+      "args": [537141648],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 3
+    },
+    {
+      "id": 247,
+      "args": [256],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126736,
+      "phase": 3
+    },
+    {
+      "id": 323,
+      "args": [],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127060,
+      "phase": 3
+    },
+    {
+      "id": 386,
+      "args": [537126736, 21, 537127060, 0],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 3
+    },
+    {
+      "id": 386,
+      "args": [537126736, 22, 537127060, 1],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 3
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false,
+      "phase": 3
+    },
+    {
+      "id": 332,
+      "args": [537127060, 320],
+      "control": 1,
+      "outputWritten": true,
+      "value": 6,
+      "phase": 4
+    },
+    {
+      "id": 333,
+      "args": [537127060, 99, 512, 576],
+      "control": 1,
+      "outputWritten": true,
+      "value": 0,
+      "phase": 4
+    },
+    {
+      "id": 335,
+      "args": [537127060, 0, 7, 11, 640],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 4
+    },
+    {
+      "id": 836,
+      "args": [537126736, 22, 184],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537665908,
+      "phase": 4
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false,
+      "phase": 4
+    },
+    {
+      "id": 835,
+      "args": [537126736, 32, 112, 537665908],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 5
+    },
+    {
+      "id": 834,
+      "args": [537665908],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 5
+    },
+    {
+      "id": 576,
+      "args": [537126736, 22, 4294967295],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1,
+      "phase": 5
+    },
+    {
+      "id": 576,
+      "args": [537126736, 99, 4294967295],
+      "control": 1,
+      "outputWritten": true,
+      "value": 0,
+      "phase": 5
+    },
+    {
+      "id": 577,
+      "args": [0],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 5
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false,
+      "phase": 5
+    },
+    {
+      "id": 324,
+      "args": [537127060],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 6
+    },
+    {
+      "id": 246,
+      "args": [537126736],
+      "control": 2,
+      "outputWritten": false,
+      "phase": 6
+    },
+    {
+      "id": 71,
+      "args": [240],
+      "control": 4,
+      "outputWritten": false,
+      "phase": 6
+    }
+  ]
+}

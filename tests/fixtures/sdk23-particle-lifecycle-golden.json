@@ -1,0 +1,4042 @@
+{
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "scope": "Real loaded typed particle v1/v2 banks with finite quad/atlas/attachment/alpha/visibility and lifecycle. Canonical DrawPrimitive and pure COM memory Present, not physical GPU sampling. Only written normal buffers/results are compared.",
+  "builds": [
+    {
+      "label": "v2-restart-rebind",
+      "source": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P2-D1.json",
+        "sha256": "e4ae59ed92b3e8287c61b9e30b6aedc537364d96cd5984c150277e42839f91b9",
+        "bytes": 248535,
+        "rawComplete": false,
+        "qualification": "All native phases, returns and normal cleanup completed. Final author positive-draw assertion was wrong: load rebuilds the model, while raw286 separately binds its callback. Raw false receipt is retained; phase7 zero draw is the actual defined result."
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PGZwcz4zMDwvZnBzPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48L0lOVD48L2RvY3VtZW50Pg==",
+        "mainProgram": "S0NTAAIAAAAAAAAANAAAAIgFAAC8BQAAAAAAAAAAAAAAEAAAABAAALwFAAAAAAAAEAsAAHichZQxa1NRFMdvwhsyBEy1QweH4N/8CbwUgjoIiu9oI3YomCFChw59MQWHoKGmKOLQwaGjo4NDB4eiDh0cOogvQwU/Rj+C+AUq77x7khd8Nsvlxzm/e865N/elgZ9v/qCBbm9tg3Al5xqox0/HRKC8Fw/rREV5sBu/IqrKzjlH1JRHN1bHhCjH/eEO0ck56+bExL7yeBi/JN7lnANzdomJ8k7/xR5xqvx8kDq/cnWkPKvTUV7ta69yVvMsIVyQ8SQhAs+HCVHxvJ8QVc+SEDXPLiGWzflBrASzOa9a/B5Rt3hEXLc6EdE0JyJa1jci2jZPRNzyfBYRt62OEHc914QQz3UhOp7bQqxbLyE2PHeF6HreFqLneSTEps0jxJbnAyG2Pb8XYuD5gxDPbGYhhp6PhBh5PhZi7PlEiNd2LiHeBs6F6Djn/IW1XZosp+uVjNMnFuJBqlRVaWmy5WxKW29eWzoP8TgVa3OKyEy0nyZELxWX52tF2b2a8uSfWvLxYYjNNFzJhUtqb03Dfs9/5m9qUlf/DWSvvDxt0dC3GOJSyTms6KbD2SZtGuJLaTpFUwPpt4VA8b5dqOUuW474tNA4KjLsTj5b2wLjfN6w0ktWuqDX16IDFHjHC6f+VjxT9u+Qff8X3vBJcdnvCxtPio2LTn2aC6+5qdeaD+SL4rcGHlnuzl81oJxY",
+        "particleProgram": "S0NTAAIAAAACAAAANAAAABMDAABHAwAAAAAAAAAAAAAAEAAAABAAAEcDAAAAAAAAJgYAAHichZKtTgNBFIVvfwQCQRgC5V9cZoFcKC2WZHebICoQCEQFogKBqEAgCJh9BB6CB0ERRAWCB+AZsBhyz+50ZhaSmpPJ+c6de+fH8tvjNwvvERETESV8TUTWqB7wS5NIuOHhCHAE+APY9vBSIT+R2i2127CvYBPSO84uDauVqfCq2guRXaTCa3/t11S44+1b6AQte7W0ATQTqvqQ8LpGluL2mWoOLTLhjTgivBuMXKXL9Th32277mjvoPfQBsK9wEaMAGkBTws0Z5Bx6Dh0CbvlKQANohrMDhSpsNd7BlV9UdpFZfsd6Cv2AfiKeaHwlqD8OD1qkibuif26BhI+88RU/rXDX/4kxjBNv3KCkCfs03tTipwnvu4c85OXWnA+olc8DPOHAjRZcaiOYuLatg7WeZ7/1JUF0",
+        "reboundProgram": "S0NTAAIAAAABAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABwMi1tYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAD0CAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAiAUAALwFAAAAAAAAAAAAAAAQAAAAEAAAvAUAAAAAAAAQCwAAeJyFlDFrU1EUx2/CGzIETLVDB4fg3/wJvBSCOgiK72gjdiiYIUKHDn0xBYegoaYo4tDBoaOjg0MHh6IOHRw6iC9DBT9GP4L4BSrvvHuSF3w2y+XHOb97zrk396WBn2/+oIFub22DcCXnGqjHT8dEoLwXD+tERXmwG78iqsrOOUfUlEc3VseEKMf94Q7RyTnr5sTEvvJ4GL8k3uWcA3N2iYnyTv/FHnGq/HyQOr9ydaQ8q9NRXu1rr3JW8ywhXJDxJCECz4cJUfG8nxBVz5IQNc8uIZbN+UGsBLM5r1r8HlG3eERctzoR0TQnIlrWNyLaNk9E3PJ8FhG3rY4Qdz3XhBDPdSE6nttCrFsvITY8d4Xoet4Woud5JMSmzSPElucDIbY9vxdi4PmDEM9sZiGGno+EGHk+FmLs+USI13YuId4GzoXoOOf8hbVdmiyn65WM0ycW4kGqVFVpabLlbEpbb15bOg/xOBVrc4rITLSfJkQvFZfna0XZvZry5J9a8vFhiM00XMmFS2pvTcN+z3/mb2pSV/8NZK+8PG3R0LcY4lLJOazopsPZJm0a4ktpOkVTA+m3hUDxvl2o5S5bjvi00DgqMuxOPlvbAuN83rDSS1a6oNfXogMUeMcLp/5WPFP275B9/xfe8Elx2e8LG0+KjYtOfZoLr7mp15oP5IvitwYeWe7OXzWgnFg="
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAIAAABwMi1hdGxhcy5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAKIAAABwMi1hdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOgEAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARgAAAAAAAAAEAAAAIgAAAEAAAAAMAAAABAAAAHic42hoaBBEAsoTJ06UQQJMc+bMUUMGy5Yt40ECAJJvC8F4nGtkEGAAAAIoAJJIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAIAAABwMi10YWJsZS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAGsBAABwMi1yZWJvdW5kLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwIAAD0AAABLQ1MAAgAAAAIAAAA0AAAAEwMAAEcDAAAAAAAAAAAAAAAQAAAAEAAARwMAAAAAAAAmBgAAeJyFkq1OA0EUhW9/BAJBGALlX1xmgVwoLZZkd5sgKhAIRAWiAoGoQCAImH0EHoIHQRFEBYIH4BmwGHLP7nRmFpKak8n5zp1758fy2+M3C+8RERMRJXxNRNaoHvBLk0i44eEIcAT4A9j28FIhP5HaLbXbsK9gE9I7zi4Nq5Wp8KraC5FdpMJrf+3XVLjj7VvoBC17tbQBNBOq+pDwukaW4vaZag4tMuGNOCK8G4xcpcv1OHfbbvuaO+g99AGwr3ARowAaQFPCzRnkHHoOHQJu+UpAA2iGswOFKmw13sGVX1R2kVl+x3oK/YB+Ip5ofCWoPw4PWqSJu6J/boGEj7zxFT+tcNf/iTGME2/coKQJ+zTe1OKnCe+7hzzk5dacD6iVzwM84cCNFlxqI5i4tq2DtZ5nv/UlQXRLQ1MAAgAAAAEAAAA0AAAAAQAAADUAAAAAAAAAAAAAAAAQAAAAEAAANQAAAAAAAAACAAAAeJyzBgAAPAA8"
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "typed graph and particle/atlas/attachment creation; late start",
+          "frame": 700,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565976,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 30,
+            "textureOwner": 537155232,
+            "bitmapOwner": 537144720,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537155988,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537156228,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537161028,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537156468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537161076,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537161124,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155396,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          },
+          "particleDrawCount": 0
+        },
+        {
+          "phase": 1,
+          "label": "first actual particle idle and one visible transformed quad",
+          "frame": 701,
+          "caller": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565976,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537155232,
+            "bitmapOwner": 537144720,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537155988,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537156228,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537161028,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAkEEAAEBBAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537156468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537161076,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537161124,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155396,
+                "reference": 1,
+                "bytes": "AQAAAAAAAAA="
+              }
+            ],
+            "results": {
+              "64": 1077936128,
+              "68": 1082130432,
+              "72": 0,
+              "76": 1084227584,
+              "80": 30,
+              "84": 61,
+              "88": 0,
+              "92": 1,
+              "96": 5,
+              "100": 1,
+              "104": 1065353216,
+              "108": 1073741824,
+              "112": 1077936128,
+              "116": 1082130432,
+              "120": 0,
+              "200": 1015223296,
+              "204": 1011130368,
+              "208": 1107287867,
+              "212": 1103095660
+            }
+          },
+          "particleDrawCount": 1
+        },
+        {
+          "phase": 2,
+          "label": "next idle enables second particle",
+          "frame": 702,
+          "caller": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565976,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 1,
+            "before": 1,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537155232,
+            "bitmapOwner": 537144720,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537155988,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537156228,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537161028,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAkEEAAEBBAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537156468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537161076,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537161124,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155396,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ],
+            "results": {
+              "64": 1077936128,
+              "68": 1082130432,
+              "72": 0,
+              "76": 1084227584,
+              "80": 30,
+              "84": 61,
+              "88": 1,
+              "92": 1,
+              "96": 5,
+              "100": 1,
+              "104": 1065353216,
+              "108": 1073741824,
+              "112": 1077936128,
+              "116": 1082130432,
+              "120": 0,
+              "200": 1015223296,
+              "204": 1011130368,
+              "208": 1107287867,
+              "212": 1103095660
+            }
+          },
+          "particleDrawCount": 2
+        },
+        {
+          "phase": 3,
+          "label": "alpha zero suppresses draw while updates continue",
+          "frame": 703,
+          "caller": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565976,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 2,
+            "before": 2,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537155232,
+            "bitmapOwner": 537144720,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 0,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537155988,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537156228,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537161028,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAkEEAAEBBAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537156468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537161076,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537161124,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155396,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ],
+            "results": {
+              "64": 1077936128,
+              "68": 1082130432,
+              "72": 0,
+              "76": 1084227584,
+              "80": 30,
+              "84": 61,
+              "88": 2,
+              "92": 1,
+              "96": 5,
+              "100": 1,
+              "104": 1065353216,
+              "108": 1073741824,
+              "112": 1077936128,
+              "116": 1082130432,
+              "120": 0,
+              "200": 1015223296,
+              "204": 1011130368,
+              "208": 1107287867,
+              "212": 1103095660
+            }
+          },
+          "particleDrawCount": 0
+        },
+        {
+          "phase": 4,
+          "label": "ordinary stop/restart retains bank buffers",
+          "frame": 704,
+          "caller": [1, 1, 1, 0, 1, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565976,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 3,
+            "before": 3,
+            "origin": 0,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537155232,
+            "bitmapOwner": 537144720,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537155988,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537156228,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537161028,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAkEEAAEBBAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537156468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537161076,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537161124,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155396,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ],
+            "results": {
+              "64": 1077936128,
+              "68": 1082130432,
+              "72": 0,
+              "76": 1084227584,
+              "80": 30,
+              "84": 61,
+              "88": 3,
+              "92": 1,
+              "96": 5,
+              "100": 1,
+              "104": 1065353216,
+              "108": 1073741824,
+              "112": 1077936128,
+              "116": 1082130432,
+              "120": 0,
+              "200": 1015223296,
+              "204": 1011130368,
+              "208": 1107287867,
+              "212": 1103095660
+            }
+          }
+        },
+        {
+          "phase": 5,
+          "label": "restart frame zero composes with preserved quad",
+          "frame": 705,
+          "caller": [1, 1, 1, 0, 1, 1, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565976,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 705,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537155232,
+            "bitmapOwner": 537144720,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537155988,
+                "reference": 1,
+                "bytes": "Zn6CP6QkGUBOgWu9AACAP/////8AAAAAAAAAANw+xD+oNas/1Pq7PwAAgD//////AABAPwAAAAC9Dfo/G8R+QFiSKL8AAIA//////wAAAAAAAEA/GucdQEw6O0BjG14/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537156228,
+                "reference": 1,
+                "bytes": "Zn6CP6QkGUBOgWu9AACAP/////8AAAAAAAAAANw+xD+oNas/1Pq7PwAAgD//////AABAPwAAAAC9Dfo/G8R+QFiSKL8AAIA//////wAAAAAAAEA/GucdQEw6O0BjG14/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537161028,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAkEEAAEBBAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537156468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537161076,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537161124,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155396,
+                "reference": 1,
+                "bytes": "AQAAAAAAAAA="
+              }
+            ],
+            "results": {
+              "64": 1077936128,
+              "68": 1082130432,
+              "72": 0,
+              "76": 1084227584,
+              "80": 30,
+              "84": 61,
+              "88": 0,
+              "92": 1,
+              "96": 5,
+              "100": 1,
+              "104": 1065353216,
+              "108": 1073741824,
+              "112": 1077936128,
+              "116": 1082130432,
+              "120": 0,
+              "200": 1015223296,
+              "204": 1011130368,
+              "208": 1107287867,
+              "212": 1103095660
+            }
+          },
+          "particleDrawCount": 1
+        },
+        {
+          "phase": 6,
+          "label": "active resource rebind to real v1 script and new atlas",
+          "frame": 706,
+          "caller": [1, 1, 1, 0, 1, 1, 1, 1, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565792,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537145152,
+            "bitmapOwner": 537144864,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537154468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537154708,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537154948,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537145332,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537154996,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537155044,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155092,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 7,
+          "label": "real v1 bank first idle and quad submission",
+          "frame": 707,
+          "caller": [1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565792,
+            "receiver": 537130352,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 707,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537145152,
+            "bitmapOwner": 537144864,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537154468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537154708,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537154948,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537145332,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537154996,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537155044,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155092,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          },
+          "particleDrawCount": 0
+        },
+        {
+          "phase": 8,
+          "label": "normal stop/query and two child retirements",
+          "frame": 708,
+          "caller": [1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537130352,
+            "vm": 537132720,
+            "scriptOwner": 537132144,
+            "nativeTable": 7565792,
+            "receiver": 537130352,
+            "active": 0,
+            "current": 1,
+            "before": 1,
+            "origin": 707,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537145152,
+            "bitmapOwner": 537144864,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 5,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537154468,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537154708,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537154948,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537145332,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537154996,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537155044,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537155092,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 9,
+          "label": "parent prune and normal caller wait",
+          "frame": 709,
+          "caller": [1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 4,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 30
+        },
+        {
+          "table": "particle-v2",
+          "id": 3,
+          "args": [123],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 61
+        },
+        {
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 22,
+          "args": [512, 1040187392],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAqwB+QHdV/74AAIA//////wAAAAAAAIA/AACAQKsAfkB3Vf++AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 23,
+          "args": [512, 1048576000],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAKUKeEAAAAAAd1d9PwAAgD//////AACAPwAAAACzrvw9qwB+QGll974AAIA//////wAAAAAAAIA/G/B/QKsAfkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 24,
+          "args": [512, 1052770304],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAPnNZkCfs7W/d1d9PwAAgD//////AACAPwAAAAB3w8g/i3VpQGll974AAIA//////wAAAAAAAIA/2pelQLybDkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 48,
+          "args": [104, 108],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1065353216, 1073741824]
+        },
+        {
+          "table": "particle-v2",
+          "id": 25,
+          "args": [512, 1065353216, 1073741824, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AACAPwAAAEAAAAAAAACAP/////8AAAAAAAAAAPxmk0DCmBQ/d1d9PwAAgD//////AACAPwAAAAC8YSRAxrq0QGll974AAIA//////wAAAAAAAIA/2pfFQN5Nh0DCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 26,
+          "args": [512, 1056964608, 1061158912, 1065353216],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AACAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAIA/2pdFQM30SkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 31,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 29,
+          "args": [1056964608, 0, 1080033280, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 49,
+          "args": [112, 116, 120],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1077936128, 1082130432, 0]
+        },
+        {
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1077936128, 1082130432, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 28,
+          "args": [64, 68, 72],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1077936128, 1082130432, 0]
+        },
+        {
+          "table": "particle-v2",
+          "id": 37,
+          "args": [1077936128, 1082130432, 0, 0, 0, 0],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1084227584
+        },
+        {
+          "table": "particle-v2",
+          "id": 38,
+          "args": [1065353216, 200, 204, 208, 212],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1015223296, 1011130368, 1107287867, 1103095660]
+        },
+        {
+          "table": "particle-v2",
+          "id": 45,
+          "args": [0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 31,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 44,
+          "args": [0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 30,
+          "args": [736],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 5
+        },
+        {
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 50,
+          "args": [2],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [0, 1],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1099956224, 1094713344, 0],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 0],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 2
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 2
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 3
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 3
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 4,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 30
+        },
+        {
+          "table": "particle-v2",
+          "id": 3,
+          "args": [123],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 61
+        },
+        {
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 22,
+          "args": [512, 1040187392],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAP4CAvj8ZgD++AACAP/////8AAAAAAAAAAPxmE0DNKQ4/ZnhtPwAAgD//////AABAPwAAAAC8YaQ/1Y+EQLX2gL8AAIA//////wAAAAAAAEA/2pdFQN5pTUAQWNs9AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 23,
+          "args": [512, 1048576000],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "g90HP4CAvj9OgWu9AACAP/////8AAAAAAAAAANMhAEDNKQ4/1Pq7PwAAgD//////AABAPwAAAAB8Lb8/1Y+EQFiSKL8AAIA//////wAAAAAAAEA/MME9QN5pTUBjG14/AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 24,
+          "args": [512, 1052770304],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "y/yEP7RhmD9OgWu9AACAP/////8AAAAAAAAAANw+BECww12+1Pq7PwAAgD//////AABAPwAAAAC9DTpAI7BTQFiSKL8AAIA//////wAAAAAAAEA/NM57QB9G8z9jG14/AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 48,
+          "args": [104, 108],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1065353216, 1073741824]
+        },
+        {
+          "table": "particle-v2",
+          "id": 25,
+          "args": [512, 1065353216, 1073741824, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "Zn4CQNowTEBOgWu9AACAP/////8AAAAAAAAAANw+RECKR+Q/1Pq7PwAAgD//////AABAPwAAAAC9DXpAEtipQFiSKL8AAIA//////wAAAAAAAEA/GuedQBCjeUBjG14/AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 26,
+          "args": [512, 1056964608, 1061158912, 1065353216],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "Zn6CP6QkGUBOgWu9AACAP/////8AAAAAAAAAANw+xD+oNas/1Pq7PwAAgD//////AABAPwAAAAC9Dfo/G8R+QFiSKL8AAIA//////wAAAAAAAEA/GucdQEw6O0BjG14/AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 31,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 29,
+          "args": [1056964608, 0, 1080033280, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 49,
+          "args": [112, 116, 120],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1077936128, 1082130432, 0]
+        },
+        {
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1077936128, 1082130432, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 28,
+          "args": [64, 68, 72],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1077936128, 1082130432, 0]
+        },
+        {
+          "table": "particle-v2",
+          "id": 37,
+          "args": [1077936128, 1082130432, 0, 0, 0, 0],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1084227584
+        },
+        {
+          "table": "particle-v2",
+          "id": 38,
+          "args": [1065353216, 200, 204, 208, 212],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1015223296, 1011130368, 1107287867, 1103095660]
+        },
+        {
+          "table": "particle-v2",
+          "id": 45,
+          "args": [0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 31,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 44,
+          "args": [0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 30,
+          "args": [736],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "Zn6CP6QkGUBOgWu9AACAP/////8AAAAAAAAAANw+xD+oNas/1Pq7PwAAgD//////AABAPwAAAAC9Dfo/G8R+QFiSKL8AAIA//////wAAAAAAAEA/GucdQEw6O0BjG14/AACAP/////8AAEA/AABAPw=="
+        },
+        {
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 5
+        },
+        {
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 50,
+          "args": [2],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [0, 1],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1099956224, 1094713344, 0],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 0],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 1,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "table": "particle-v2",
+          "id": 39,
+          "args": [1, 1],
+          "particle": 1,
+          "control": 2,
+          "outputWritten": false
+        }
+      ],
+      "particleDraws": [
+        {
+          "phase": 1,
+          "texture": 537145376,
+          "triangles": [
+            [
+              {
+                "x": 3.5,
+                "y": 5.5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 5.292577743530273,
+                "y": 4.427857875823975,
+                "z": 0.923061728477478,
+                "w": 0.0010009892284870148,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0
+              },
+              {
+                "x": 4.289905548095703,
+                "y": 8.237671852111816,
+                "z": 0.9230843782424927,
+                "w": 0.000999515876173973,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0.75
+              }
+            ],
+            [
+              {
+                "x": 4.289905548095703,
+                "y": 8.237671852111816,
+                "z": 0.9230843782424927,
+                "w": 0.000999515876173973,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0.75
+              },
+              {
+                "x": 5.292577743530273,
+                "y": 4.427857875823975,
+                "z": 0.923061728477478,
+                "w": 0.0010009892284870148,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0
+              },
+              {
+                "x": 6.0823564529418945,
+                "y": 7.168737888336182,
+                "z": 0.9230691194534302,
+                "w": 0.001000508083961904,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0.75
+              }
+            ]
+          ],
+          "state": {
+            "states": [
+              [7, 1],
+              [8, 3],
+              [9, 2],
+              [14, 1],
+              [15, 1],
+              [16, 0],
+              [19, 2],
+              [20, 6],
+              [22, 1],
+              [23, 4],
+              [24, 1],
+              [25, 7],
+              [26, 0],
+              [27, 1],
+              [28, 0],
+              [29, 0],
+              [34, 0],
+              [35, 0],
+              [36, 0],
+              [37, 1065353216],
+              [38, 1065353216],
+              [48, 0],
+              [52, 1],
+              [53, 1],
+              [54, 1],
+              [55, 1],
+              [56, 8],
+              [57, 0],
+              [58, 4294967295],
+              [59, 4294967295],
+              [60, 4294967295],
+              [128, 0],
+              [129, 0],
+              [130, 0],
+              [131, 0],
+              [132, 0],
+              [133, 0],
+              [134, 0],
+              [135, 0],
+              [136, 1],
+              [137, 0],
+              [139, 0],
+              [140, 0],
+              [141, 1],
+              [142, 1],
+              [143, 0],
+              [145, 1],
+              [146, 2],
+              [147, 2],
+              [148, 0],
+              [151, 0],
+              [152, 0],
+              [154, 1065353216],
+              [155, 1065353216],
+              [156, 0],
+              [157, 0],
+              [158, 1065353216],
+              [159, 0],
+              [160, 0],
+              [161, 0],
+              [162, 4294967295],
+              [163, 0],
+              [165, 0],
+              [166, 1115684864],
+              [167, 0],
+              [168, 15],
+              [170, 0],
+              [171, 1],
+              [172, 3],
+              [173, 1],
+              [174, 0],
+              [175, 0],
+              [176, 0],
+              [178, 1065353216],
+              [179, 1065353216],
+              [180, 0],
+              [181, 0],
+              [182, 1065353216],
+              [183, 0],
+              [184, 0],
+              [185, 0],
+              [186, 1],
+              [187, 1],
+              [188, 1],
+              [189, 8],
+              [190, 15],
+              [191, 15],
+              [192, 15],
+              [193, 4294967295],
+              [194, 0],
+              [195, 0],
+              [198, 0],
+              [199, 0],
+              [200, 0],
+              [201, 0],
+              [202, 0],
+              [203, 0],
+              [204, 0],
+              [205, 0],
+              [206, 0],
+              [207, 2],
+              [208, 1],
+              [209, 1]
+            ],
+            "samplers": [
+              [1, 2],
+              [2, 2],
+              [3, 1],
+              [4, 0],
+              [5, 1],
+              [6, 1],
+              [7, 0],
+              [8, 0],
+              [9, 0],
+              [10, 1],
+              [11, 0],
+              [12, 0],
+              [13, 0]
+            ]
+          },
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          },
+          "scissor": [0, 0, 32, 24]
+        },
+        {
+          "phase": 2,
+          "texture": 537145376,
+          "triangles": [
+            [
+              {
+                "x": 3.5,
+                "y": 5.5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 5.292577743530273,
+                "y": 4.427857875823975,
+                "z": 0.923061728477478,
+                "w": 0.0010009892284870148,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0
+              },
+              {
+                "x": 4.289905548095703,
+                "y": 8.237671852111816,
+                "z": 0.9230843782424927,
+                "w": 0.000999515876173973,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0.75
+              }
+            ],
+            [
+              {
+                "x": 4.289905548095703,
+                "y": 8.237671852111816,
+                "z": 0.9230843782424927,
+                "w": 0.000999515876173973,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0.75
+              },
+              {
+                "x": 5.292577743530273,
+                "y": 4.427857875823975,
+                "z": 0.923061728477478,
+                "w": 0.0010009892284870148,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0
+              },
+              {
+                "x": 6.0823564529418945,
+                "y": 7.168737888336182,
+                "z": 0.9230691194534302,
+                "w": 0.001000508083961904,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0.75
+              }
+            ]
+          ],
+          "state": {
+            "states": [
+              [7, 1],
+              [8, 3],
+              [9, 2],
+              [14, 1],
+              [15, 1],
+              [16, 0],
+              [19, 2],
+              [20, 6],
+              [22, 1],
+              [23, 4],
+              [24, 1],
+              [25, 7],
+              [26, 0],
+              [27, 1],
+              [28, 0],
+              [29, 0],
+              [34, 0],
+              [35, 0],
+              [36, 0],
+              [37, 1065353216],
+              [38, 1065353216],
+              [48, 0],
+              [52, 1],
+              [53, 1],
+              [54, 1],
+              [55, 1],
+              [56, 8],
+              [57, 0],
+              [58, 4294967295],
+              [59, 4294967295],
+              [60, 4294967295],
+              [128, 0],
+              [129, 0],
+              [130, 0],
+              [131, 0],
+              [132, 0],
+              [133, 0],
+              [134, 0],
+              [135, 0],
+              [136, 1],
+              [137, 0],
+              [139, 0],
+              [140, 0],
+              [141, 1],
+              [142, 1],
+              [143, 0],
+              [145, 1],
+              [146, 2],
+              [147, 2],
+              [148, 0],
+              [151, 0],
+              [152, 0],
+              [154, 1065353216],
+              [155, 1065353216],
+              [156, 0],
+              [157, 0],
+              [158, 1065353216],
+              [159, 0],
+              [160, 0],
+              [161, 0],
+              [162, 4294967295],
+              [163, 0],
+              [165, 0],
+              [166, 1115684864],
+              [167, 0],
+              [168, 15],
+              [170, 0],
+              [171, 1],
+              [172, 3],
+              [173, 1],
+              [174, 0],
+              [175, 0],
+              [176, 0],
+              [178, 1065353216],
+              [179, 1065353216],
+              [180, 0],
+              [181, 0],
+              [182, 1065353216],
+              [183, 0],
+              [184, 0],
+              [185, 0],
+              [186, 1],
+              [187, 1],
+              [188, 1],
+              [189, 8],
+              [190, 15],
+              [191, 15],
+              [192, 15],
+              [193, 4294967295],
+              [194, 0],
+              [195, 0],
+              [198, 0],
+              [199, 0],
+              [200, 0],
+              [201, 0],
+              [202, 0],
+              [203, 0],
+              [204, 0],
+              [205, 0],
+              [206, 0],
+              [207, 2],
+              [208, 1],
+              [209, 1]
+            ],
+            "samplers": [
+              [1, 2],
+              [2, 2],
+              [3, 1],
+              [4, 0],
+              [5, 1],
+              [6, 1],
+              [7, 0],
+              [8, 0],
+              [9, 0],
+              [10, 1],
+              [11, 0],
+              [12, 0],
+              [13, 0]
+            ]
+          },
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          },
+          "scissor": [0, 0, 32, 24]
+        },
+        {
+          "phase": 2,
+          "texture": 537145376,
+          "triangles": [
+            [
+              {
+                "x": 18,
+                "y": 12,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 22,
+                "y": 12,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 18,
+                "y": 16,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 18,
+                "y": 16,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 22,
+                "y": 12,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 22,
+                "y": 16,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "state": {
+            "states": [
+              [7, 1],
+              [8, 3],
+              [9, 2],
+              [14, 1],
+              [15, 1],
+              [16, 0],
+              [19, 2],
+              [20, 6],
+              [22, 1],
+              [23, 4],
+              [24, 1],
+              [25, 7],
+              [26, 0],
+              [27, 1],
+              [28, 0],
+              [29, 0],
+              [34, 0],
+              [35, 0],
+              [36, 0],
+              [37, 1065353216],
+              [38, 1065353216],
+              [48, 0],
+              [52, 1],
+              [53, 1],
+              [54, 1],
+              [55, 1],
+              [56, 8],
+              [57, 0],
+              [58, 4294967295],
+              [59, 4294967295],
+              [60, 4294967295],
+              [128, 0],
+              [129, 0],
+              [130, 0],
+              [131, 0],
+              [132, 0],
+              [133, 0],
+              [134, 0],
+              [135, 0],
+              [136, 1],
+              [137, 0],
+              [139, 0],
+              [140, 0],
+              [141, 1],
+              [142, 1],
+              [143, 0],
+              [145, 1],
+              [146, 2],
+              [147, 2],
+              [148, 0],
+              [151, 0],
+              [152, 0],
+              [154, 1065353216],
+              [155, 1065353216],
+              [156, 0],
+              [157, 0],
+              [158, 1065353216],
+              [159, 0],
+              [160, 0],
+              [161, 0],
+              [162, 4294967295],
+              [163, 0],
+              [165, 0],
+              [166, 1115684864],
+              [167, 0],
+              [168, 15],
+              [170, 0],
+              [171, 1],
+              [172, 3],
+              [173, 1],
+              [174, 0],
+              [175, 0],
+              [176, 0],
+              [178, 1065353216],
+              [179, 1065353216],
+              [180, 0],
+              [181, 0],
+              [182, 1065353216],
+              [183, 0],
+              [184, 0],
+              [185, 0],
+              [186, 1],
+              [187, 1],
+              [188, 1],
+              [189, 8],
+              [190, 15],
+              [191, 15],
+              [192, 15],
+              [193, 4294967295],
+              [194, 0],
+              [195, 0],
+              [198, 0],
+              [199, 0],
+              [200, 0],
+              [201, 0],
+              [202, 0],
+              [203, 0],
+              [204, 0],
+              [205, 0],
+              [206, 0],
+              [207, 2],
+              [208, 1],
+              [209, 1]
+            ],
+            "samplers": [
+              [1, 2],
+              [2, 2],
+              [3, 1],
+              [4, 0],
+              [5, 1],
+              [6, 1],
+              [7, 0],
+              [8, 0],
+              [9, 0],
+              [10, 1],
+              [11, 0],
+              [12, 0],
+              [13, 0]
+            ]
+          },
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          },
+          "scissor": [0, 0, 32, 24]
+        },
+        {
+          "phase": 5,
+          "texture": 537145376,
+          "triangles": [
+            [
+              {
+                "x": 4.020184516906738,
+                "y": 6.393189907073975,
+                "z": 0.9230778813362122,
+                "w": 0.0009999413741752505,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 4.516302108764648,
+                "y": 5.327775001525879,
+                "z": 0.9230543375015259,
+                "w": 0.0010014709550887346,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0
+              },
+              {
+                "x": 4.960831642150879,
+                "y": 7.983371257781982,
+                "z": 0.9230871200561523,
+                "w": 0.000999340321868658,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0.75
+              }
+            ],
+            [
+              {
+                "x": 4.960831642150879,
+                "y": 7.983371257781982,
+                "z": 0.9230871200561523,
+                "w": 0.000999340321868658,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0.75
+              },
+              {
+                "x": 4.516302108764648,
+                "y": 5.327775001525879,
+                "z": 0.9230543375015259,
+                "w": 0.0010014709550887346,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0
+              },
+              {
+                "x": 5.458087921142578,
+                "y": 6.9210286140441895,
+                "z": 0.9230636358261108,
+                "w": 0.001000867923721671,
+                "color": 4294967295,
+                "u": 0.75,
+                "v": 0.75
+              }
+            ]
+          ],
+          "state": {
+            "states": [
+              [7, 1],
+              [8, 3],
+              [9, 2],
+              [14, 1],
+              [15, 1],
+              [16, 0],
+              [19, 2],
+              [20, 6],
+              [22, 1],
+              [23, 4],
+              [24, 1],
+              [25, 7],
+              [26, 0],
+              [27, 1],
+              [28, 0],
+              [29, 0],
+              [34, 0],
+              [35, 0],
+              [36, 0],
+              [37, 1065353216],
+              [38, 1065353216],
+              [48, 0],
+              [52, 1],
+              [53, 1],
+              [54, 1],
+              [55, 1],
+              [56, 8],
+              [57, 0],
+              [58, 4294967295],
+              [59, 4294967295],
+              [60, 4294967295],
+              [128, 0],
+              [129, 0],
+              [130, 0],
+              [131, 0],
+              [132, 0],
+              [133, 0],
+              [134, 0],
+              [135, 0],
+              [136, 1],
+              [137, 0],
+              [139, 0],
+              [140, 0],
+              [141, 1],
+              [142, 1],
+              [143, 0],
+              [145, 1],
+              [146, 2],
+              [147, 2],
+              [148, 0],
+              [151, 0],
+              [152, 0],
+              [154, 1065353216],
+              [155, 1065353216],
+              [156, 0],
+              [157, 0],
+              [158, 1065353216],
+              [159, 0],
+              [160, 0],
+              [161, 0],
+              [162, 4294967295],
+              [163, 0],
+              [165, 0],
+              [166, 1115684864],
+              [167, 0],
+              [168, 15],
+              [170, 0],
+              [171, 1],
+              [172, 3],
+              [173, 1],
+              [174, 0],
+              [175, 0],
+              [176, 0],
+              [178, 1065353216],
+              [179, 1065353216],
+              [180, 0],
+              [181, 0],
+              [182, 1065353216],
+              [183, 0],
+              [184, 0],
+              [185, 0],
+              [186, 1],
+              [187, 1],
+              [188, 1],
+              [189, 8],
+              [190, 15],
+              [191, 15],
+              [192, 15],
+              [193, 4294967295],
+              [194, 0],
+              [195, 0],
+              [198, 0],
+              [199, 0],
+              [200, 0],
+              [201, 0],
+              [202, 0],
+              [203, 0],
+              [204, 0],
+              [205, 0],
+              [206, 0],
+              [207, 2],
+              [208, 1],
+              [209, 1]
+            ],
+            "samplers": [
+              [1, 2],
+              [2, 2],
+              [3, 1],
+              [4, 0],
+              [5, 1],
+              [6, 1],
+              [7, 0],
+              [8, 0],
+              [9, 0],
+              [10, 1],
+              [11, 0],
+              [12, 0],
+              [13, 0]
+            ]
+          },
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          },
+          "scissor": [0, 0, 32, 24]
+        }
+      ],
+      "presents": [
+        {
+          "device": 537017888,
+          "source": 2146430544,
+          "destination": 2146430480,
+          "sourceRect": [2, 2, 7, 7],
+          "destinationRect": [2, 2, 7, 7],
+          "dirty": 0,
+          "window": 0,
+          "result": 0
+        },
+        {
+          "device": 537017888,
+          "source": 0,
+          "destination": 0,
+          "sourceRect": null,
+          "destinationRect": null,
+          "dirty": 0,
+          "window": 0,
+          "result": 0
+        },
+        {
+          "device": 537017888,
+          "source": 0,
+          "destination": 0,
+          "sourceRect": null,
+          "destinationRect": null,
+          "dirty": 0,
+          "window": 0,
+          "result": 0
+        },
+        {
+          "device": 537017888,
+          "source": 0,
+          "destination": 0,
+          "sourceRect": null,
+          "destinationRect": null,
+          "dirty": 0,
+          "window": 0,
+          "result": 0
+        },
+        {
+          "device": 537017888,
+          "source": 0,
+          "destination": 0,
+          "sourceRect": null,
+          "destinationRect": null,
+          "dirty": 0,
+          "window": 0,
+          "result": 0
+        },
+        {
+          "device": 537017888,
+          "source": 0,
+          "destination": 0,
+          "sourceRect": null,
+          "destinationRect": null,
+          "dirty": 0,
+          "window": 0,
+          "result": 0
+        }
+      ],
+      "actualCount": {
+        "allGCALL": 124,
+        "businessDirect": 22
+      }
+    },
+    {
+      "label": "v1-exit-draw",
+      "source": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P2-V1.json",
+        "sha256": "bb54b6c19f81a2e48a9b818ff2811eaed0919afc02b1a24f344c5ceb294c859d",
+        "bytes": 96421,
+        "rawComplete": true,
+        "qualification": "Complete normal v1 start/exit/draw and retirement."
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PGZwcz4zMDwvZnBzPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48L0lOVD48L2RvY3VtZW50Pg==",
+        "mainProgram": "S0NTAAIAAAAAAAAANAAAAPsCAAAvAwAAAAAAAAAAAAAAEAAAABAAAC8DAAAAAAAA9gUAAHicbdK9SgNREAXgUbZIETD+FCksAsccAjEQxUJQ3FEjWliksLCwMCGCQoqgIYpYWFiktLSwSGGR0tLKtfE98gjiE8jezKhFmuVjZu7M7N4t4vP2G0X0VgpnhEyJFHFz0S0QUXDrsnFNZIJFRIhscGe10iM0eKXSbRC14Gb7TIgDr2kQ98HdduOKeAiuNNM+fes5SgiJxv5IiMg8SIiM+T4hsmZNiJxZEmLBa96JfPS356LHt4iCx2NiyfvERMlrYmLZ58ZE1feJiTXzKCbWvY8Sm+acEmouKFEzV5U48FlKHJrrStTNp0ocmTtKHPs+SpyY+0qcmh+VaJmflDj3nZVom4dKdMyvSnTNb0rc+HspcReJlFETEftgVUmTufQ5P3b6O5Sxk5ZkQ0kpJMPT7n58u9Pjcn3eK4a7LGNmSgT5cGjwe6iMXBqOArd9sufmPEe8TK6Y9YoJR4b/wrsyYQq+QmDfcxs/U+tdkA==",
+        "particleProgram": "S0NTAAIAAAABAAAANAAAAAwAAABAAAAAAAAAAAAAAAAAEAAAABAAAEAAAAAAAAAAGAAAAHic01ZWYGBgUGZgYGCwBgAF3gDN",
+        "reboundProgram": "S0NTAAIAAAABAAAANAAAAAwAAABAAAAAAAAAAAAAAAAAEAAAABAAAEAAAAAAAAAAGAAAAHic01ZWYGBgUGZgYGCwBgAF3gDN",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABwMi1tYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAJ8BAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAA+wIAAC8DAAAAAAAAAAAAAAAQAAAAEAAALwMAAAAAAAD2BQAAeJxt0r1KA1EQBeBRtkgRMP4UKSwCxxwCMRDFQlDcUSNaWKSwsLAwIYJCiqAhilhYWKS0tLBIYZHS0sq18T3yCOITyN7MqEWa5WNm7szs3i3i8/YbRfRWCmeETIkUcXPRLRBRcOuycU1kgkVEiGxwZ7XSIzR4pdJtELXgZvtMiAOvaRD3wd1244p4CK400z596zlKCInG/kiIyDxIiIz5PiGyZk2InFkSYsFr3ol89Lfnose3iILHY2LJ+8REyWtiYtnnxkTV94mJNfMoJta9jxKb5pwSai4oUTNXlTjwWUocmutK1M2nShyZO0oc+z5KnJj7SpyaH5VomZ+UOPedlWibh0p0zK9KdM1vStz4eylxF4mUURMR+2BVSZO59Dk/dvo7lLGTlmRDSSkkw9Pufny70+Nyfd4rhrssY2ZKBPlwaPB7qIxcGo4Ct32y5+Y8R7xMrpj1iglHhv/CuzJhCr5CYN9zGz9T612Q"
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAEAAABwMi1hdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAEAAABwMi12MS10YWJsZS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAEgAAABLQ1MAAgAAAAEAAAA0AAAADAAAAEAAAAAAAAAAAAAAAAAQAAAAEAAAQAAAAAAAAAAYAAAAeJzTVlZgYGBQZmBgYLAGAAXeAM0="
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "fresh typed v1 bank, second atlas and ordinary start",
+          "frame": 700,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128624,
+            "vm": 537129968,
+            "scriptOwner": 537127312,
+            "nativeTable": 7565792,
+            "receiver": 537128624,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 30,
+            "textureOwner": 537117488,
+            "bitmapOwner": 537128176,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537150868,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537155620,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537150164,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537150116,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537150212,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537155860,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537128612,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "label": "real v1 exit does not unregister the enabled quad port",
+          "frame": 701,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128624,
+            "vm": 537129968,
+            "scriptOwner": 537127312,
+            "nativeTable": 7565792,
+            "receiver": 537128624,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117488,
+            "bitmapOwner": 537128176,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537150868,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537155620,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537150164,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537150116,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537150212,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537155860,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537128612,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          },
+          "particleDrawCount": 2
+        },
+        {
+          "phase": 2,
+          "label": "explicit stop/query and normal retirement",
+          "frame": 702,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128624,
+            "vm": 537129968,
+            "scriptOwner": 537127312,
+            "nativeTable": 7565792,
+            "receiver": 537128624,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117488,
+            "bitmapOwner": 537128176,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537150868,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537155620,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537150164,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537150116,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537150212,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537155860,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537128612,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 3,
+          "label": "normal parent prune and caller wait",
+          "frame": 703,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "table": "particle-v1",
+          "id": 32,
+          "args": [],
+          "particle": 0,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 32,
+          "args": [],
+          "particle": 1,
+          "control": 4,
+          "outputWritten": false
+        }
+      ],
+      "particleDraws": [
+        {
+          "phase": 1,
+          "texture": 537128528,
+          "triangles": [
+            [
+              {
+                "x": 0,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 0,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 0,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 4,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "state": {
+            "states": [
+              [7, 1],
+              [8, 3],
+              [9, 2],
+              [14, 1],
+              [15, 1],
+              [16, 0],
+              [19, 5],
+              [20, 6],
+              [22, 1],
+              [23, 4],
+              [24, 1],
+              [25, 7],
+              [26, 0],
+              [27, 1],
+              [28, 0],
+              [29, 0],
+              [34, 0],
+              [35, 0],
+              [36, 0],
+              [37, 1065353216],
+              [38, 1065353216],
+              [48, 0],
+              [52, 1],
+              [53, 1],
+              [54, 1],
+              [55, 1],
+              [56, 8],
+              [57, 0],
+              [58, 4294967295],
+              [59, 4294967295],
+              [60, 4294967295],
+              [128, 0],
+              [129, 0],
+              [130, 0],
+              [131, 0],
+              [132, 0],
+              [133, 0],
+              [134, 0],
+              [135, 0],
+              [136, 1],
+              [137, 0],
+              [139, 0],
+              [140, 0],
+              [141, 1],
+              [142, 1],
+              [143, 0],
+              [145, 1],
+              [146, 2],
+              [147, 2],
+              [148, 0],
+              [151, 0],
+              [152, 0],
+              [154, 1065353216],
+              [155, 1065353216],
+              [156, 0],
+              [157, 0],
+              [158, 1065353216],
+              [159, 0],
+              [160, 0],
+              [161, 0],
+              [162, 4294967295],
+              [163, 0],
+              [165, 0],
+              [166, 1115684864],
+              [167, 0],
+              [168, 15],
+              [170, 0],
+              [171, 1],
+              [172, 3],
+              [173, 1],
+              [174, 0],
+              [175, 0],
+              [176, 0],
+              [178, 1065353216],
+              [179, 1065353216],
+              [180, 0],
+              [181, 0],
+              [182, 1065353216],
+              [183, 0],
+              [184, 0],
+              [185, 0],
+              [186, 1],
+              [187, 1],
+              [188, 1],
+              [189, 8],
+              [190, 15],
+              [191, 15],
+              [192, 15],
+              [193, 4294967295],
+              [194, 0],
+              [195, 0],
+              [198, 0],
+              [199, 0],
+              [200, 0],
+              [201, 0],
+              [202, 0],
+              [203, 0],
+              [204, 0],
+              [205, 0],
+              [206, 0],
+              [207, 2],
+              [208, 1],
+              [209, 1]
+            ],
+            "samplers": [
+              [1, 2],
+              [2, 2],
+              [3, 1],
+              [4, 0],
+              [5, 1],
+              [6, 1],
+              [7, 0],
+              [8, 0],
+              [9, 0],
+              [10, 1],
+              [11, 0],
+              [12, 0],
+              [13, 0]
+            ]
+          },
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "f5eJ/3iihqpxrYNVariAAJtrlf+UdpKqjYGPVYaMjAC3P6H/sEqeqqlVm1WiYJgA0xOt/8weqqrFKadVvjSkAA=="
+          },
+          "scissor": [0, 0, 32, 24]
+        },
+        {
+          "phase": 1,
+          "texture": 537128528,
+          "triangles": [
+            [
+              {
+                "x": 0,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 0,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 0,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 4,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "state": {
+            "states": [
+              [7, 1],
+              [8, 3],
+              [9, 2],
+              [14, 1],
+              [15, 1],
+              [16, 0],
+              [19, 5],
+              [20, 6],
+              [22, 1],
+              [23, 4],
+              [24, 1],
+              [25, 7],
+              [26, 0],
+              [27, 1],
+              [28, 0],
+              [29, 0],
+              [34, 0],
+              [35, 0],
+              [36, 0],
+              [37, 1065353216],
+              [38, 1065353216],
+              [48, 0],
+              [52, 1],
+              [53, 1],
+              [54, 1],
+              [55, 1],
+              [56, 8],
+              [57, 0],
+              [58, 4294967295],
+              [59, 4294967295],
+              [60, 4294967295],
+              [128, 0],
+              [129, 0],
+              [130, 0],
+              [131, 0],
+              [132, 0],
+              [133, 0],
+              [134, 0],
+              [135, 0],
+              [136, 1],
+              [137, 0],
+              [139, 0],
+              [140, 0],
+              [141, 1],
+              [142, 1],
+              [143, 0],
+              [145, 1],
+              [146, 2],
+              [147, 2],
+              [148, 0],
+              [151, 0],
+              [152, 0],
+              [154, 1065353216],
+              [155, 1065353216],
+              [156, 0],
+              [157, 0],
+              [158, 1065353216],
+              [159, 0],
+              [160, 0],
+              [161, 0],
+              [162, 4294967295],
+              [163, 0],
+              [165, 0],
+              [166, 1115684864],
+              [167, 0],
+              [168, 15],
+              [170, 0],
+              [171, 1],
+              [172, 3],
+              [173, 1],
+              [174, 0],
+              [175, 0],
+              [176, 0],
+              [178, 1065353216],
+              [179, 1065353216],
+              [180, 0],
+              [181, 0],
+              [182, 1065353216],
+              [183, 0],
+              [184, 0],
+              [185, 0],
+              [186, 1],
+              [187, 1],
+              [188, 1],
+              [189, 8],
+              [190, 15],
+              [191, 15],
+              [192, 15],
+              [193, 4294967295],
+              [194, 0],
+              [195, 0],
+              [198, 0],
+              [199, 0],
+              [200, 0],
+              [201, 0],
+              [202, 0],
+              [203, 0],
+              [204, 0],
+              [205, 0],
+              [206, 0],
+              [207, 2],
+              [208, 1],
+              [209, 1]
+            ],
+            "samplers": [
+              [1, 2],
+              [2, 2],
+              [3, 1],
+              [4, 0],
+              [5, 1],
+              [6, 1],
+              [7, 0],
+              [8, 0],
+              [9, 0],
+              [10, 1],
+              [11, 0],
+              [12, 0],
+              [13, 0]
+            ]
+          },
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "f5eJ/3iihqpxrYNVariAAJtrlf+UdpKqjYGPVYaMjAC3P6H/sEqeqqlVm1WiYJgA0xOt/8weqqrFKadVvjSkAA=="
+          },
+          "scissor": [0, 0, 32, 24]
+        }
+      ],
+      "presents": [
+        {
+          "device": 537017632,
+          "source": 0,
+          "destination": 0,
+          "sourceRect": null,
+          "destinationRect": null,
+          "dirty": 0,
+          "window": 0,
+          "result": 0
+        }
+      ],
+      "actualCount": {
+        "allGCALL": 17,
+        "businessDirect": 6
+      }
+    },
+    {
+      "label": "v1-finite-body-bridge",
+      "source": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P3-V1.json",
+        "sha256": "84586a434d6c4e87cd557eede9d0c8723715230938c360019996a61a455870d0",
+        "bytes": 95097,
+        "rawComplete": true,
+        "qualification": "Remaining exact-body bridges now have their own real loaded table/typed receiver/VM argument/control/output capture. Original scalar/range/physical backend evidence is reused; finite inputs do not establish all arithmetic domains."
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PGZwcz4zMDwvZnBzPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48L0lOVD48L2RvY3VtZW50Pg==",
+        "mainProgram": "S0NTAAIAAAAAAAAANAAAAAcDAAA7AwAAAAAAAAAAAAAAEAAAABAAADsDAAAAAAAADgYAAHicbdKvTgNBEAbwKTmBaEL5IxCIJh/90qQ0aQBBAuEGKKECUYFAIGgDAZICTakgBIFAIJEIBAKBRKI4DO/RRyA8Abm9GUDUbH7Z+XZn73ZL+Lz6Rgln571TQnIiJbQ6xT4RZW53DonR4GK7d0Lkgw+ODoUoBHcXqn1C/+XrwSIiRCPLzFdbxE1wv9O6IG6Dq+00c2f5QUJIlPkjISLzU0KMmm8SIm/WhCiYJSGmPPNOTEd/Z5jx+VWi6PMxMev7xETZMzEx531joubniYlF8yAmlnwfJVbMBSXUXFSibq4p0fBeSmybm0o0zftK7Ji7Suz6eZTYM98psW++V+LA/KDEsZ9ZiY75RYmu+VWJvvlNiUv/LiWuI5EK6iJiP6wmabGQjpOZ06dRwXoayYdIORTDaHef3e5IFtfHzVK4ywrGciKYDouefhdVwuNBFLjmnb024TXieXhi3BNDlrz8m96QIV3wFSa2vLb8A7rHYE4=",
+        "particleProgram": "S0NTAAIAAAABAAAANAAAAOACAAAUAwAAAAAAAAAAAAAAEAAAABAAABQDAAAAAAAAwAUAAHicbZE9TsNwDMVNhaBSiwgfoqV8Y1KQfIRKiYcODB0YGBgYOjAwMDAy9igcgRvAyMDAwIgEAwPHQH6J45R2sf76vWc/xxE+ISImIurzAxGlG1bP+KtBlBrPhZfMsgiLUuDlwMMSTzLhZuDzmrsVeFRhq4+5cNvEJsSLUjS8Ej2Xjp+FVwNflfhJMVCFkxh1XYqJCq9Fz9jj0aMqvB49N0QkfBRHuQU4DnDnm6ivKdF+X4gN69n3yAIgMhPecndgO1tnFr9kwt057jy2t5xtsyTTObBoXtiFe9MW4YPabqQYNakG7pjYhviK+ob6DnE3RM8p3uOqf6+W9m/4bBVOzd7F+T4oPvET72/UH9Rf2Ptm3wRYqE059UMJH/rPGgz+AMYWQs8=",
+        "reboundProgram": "S0NTAAIAAAABAAAANAAAAOACAAAUAwAAAAAAAAAAAAAAEAAAABAAABQDAAAAAAAAwAUAAHicbZE9TsNwDMVNhaBSiwgfoqV8Y1KQfIRKiYcODB0YGBgYOjAwMDAy9igcgRvAyMDAwIgEAwPHQH6J45R2sf76vWc/xxE+ISImIurzAxGlG1bP+KtBlBrPhZfMsgiLUuDlwMMSTzLhZuDzmrsVeFRhq4+5cNvEJsSLUjS8Ej2Xjp+FVwNflfhJMVCFkxh1XYqJCq9Fz9jj0aMqvB49N0QkfBRHuQU4DnDnm6ivKdF+X4gN69n3yAIgMhPecndgO1tnFr9kwt057jy2t5xtsyTTObBoXtiFe9MW4YPabqQYNakG7pjYhviK+ob6DnE3RM8p3uOqf6+W9m/4bBVOzd7F+T4oPvET72/UH9Rf2Ptm3wRYqE059UMJH/rPGgz+AMYWQs8=",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABwMi1tYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAKMBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAABwMAADsDAAAAAAAAAAAAAAAQAAAAEAAAOwMAAAAAAAAOBgAAeJxt0q9OA0EQBvApOYFoQvkjEIgmH/3SpDRpAEEC4QYooQJRgUAgaAMBkgJNqSAEgUAgkQgEAoFEojgM79FHIDwBub0ZQNRsftn5dmfvdkv4vPpGCWfnvVNCciIltDrFPhFlbncOidHgYrt3QuSDD44OhSgEdxeqfUL/5evBIiJEI8vMV1vETXC/07ogboOr7TRzZ/lBQkiU+SMhIvNTQoyabxIib9aEKJglIaY8805MR39nmPH5VaLo8zEx6/vERNkzMTHnfWOi5ueJiUXzICaWfB8lVswFJdRcVKJurinR8F5KbJubSjTN+0rsmLtK7Pp5lNgz3ymxb75X4sD8oMSxn1mJjvlFia75VYm++U2JS/8uJa4jkQrqImI/rCZpsZCOk5nTp1HBehrJh0g5FMNod5/d7kgW18fNUrjLCsZyIpgOi55+F1XC40EUuOadvTbhNeJ5eGLcE0OWvPyb3pAhXfAVJra8tvwDusdgTg=="
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAEAAABwMi1hdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAEAAABwMy10YWJsZS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAFgBAABLQ1MAAgAAAAEAAAA0AAAA4AIAABQDAAAAAAAAAAAAAAAQAAAAEAAAFAMAAAAAAADABQAAeJxtkT1Ow3AMxU2FoFKLCB+ipXxjUpB8hEqJhw4MHRgYGBg6MDAwMDL2KByBG8DIwMDAiAQDA8dAfonjlHax/vq9Zz/HET4hIiYi6vMDEaUbVs/4q0GUGs+Fl8yyCItS4OXAwxJPMuFm4POauxV4VGGrj7lw28QmxItSNLwSPZeOn4VXA1+V+EkxUIWTGHVdiokKr0XP2OPRoyq8Hj03RCR8FEe5BTgOcOebqK8p0X5fiA3r2ffIAiAyE95yd2A7W2cWv2TC3TnuPLa3nG2zJNM5sGhe2IV70xbhg9pupBg1qQbumNiG+Ir6hvoOcTdEzyne46p/r5b2b/hsFU7N3sX5Pig+8RPvb9Qf1F/Y+2bfBFioTTn1Qwkf+s8aDP4AxhZCzw=="
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "typed initialized table bridge bank",
+          "frame": 700,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565792,
+            "receiver": 537128656,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537152260,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537152500,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537152740,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152788,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152836,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "label": "first particle finite bridge and second normal GetNow after exit",
+          "frame": 701,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565792,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537152260,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537152500,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537152740,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152788,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152836,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAAAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1,
+              "200": 1077936128,
+              "204": 1082130432,
+              "208": 0,
+              "212": 1084227584,
+              "220": 1015223296,
+              "224": 1011130368,
+              "228": 1107287867,
+              "232": 1103095660
+            }
+          }
+        },
+        {
+          "phase": 2,
+          "label": "explicit stop/query and normal retirement",
+          "frame": 702,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565792,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537152260,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537152500,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537152740,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152788,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152836,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAAAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1,
+              "200": 1077936128,
+              "204": 1082130432,
+              "208": 0,
+              "212": 1084227584,
+              "220": 1015223296,
+              "224": 1011130368,
+              "228": 1107287867,
+              "232": 1103095660
+            }
+          }
+        },
+        {
+          "phase": 3,
+          "label": "normal parent prune and caller wait",
+          "frame": 703,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "table": "particle-v1",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v1",
+          "id": 6,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1056274244
+        },
+        {
+          "table": "particle-v1",
+          "id": 7,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1063299392
+        },
+        {
+          "table": "particle-v1",
+          "id": 8,
+          "args": [1048576000],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1048755245
+        },
+        {
+          "table": "particle-v1",
+          "id": 11,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1055744824
+        },
+        {
+          "table": "particle-v1",
+          "id": 12,
+          "args": [1056964608, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1052955067
+        },
+        {
+          "table": "particle-v1",
+          "id": 13,
+          "args": [1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1073741824
+        },
+        {
+          "table": "particle-v1",
+          "id": 15,
+          "args": [3214934016],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 3221225472
+        },
+        {
+          "table": "particle-v1",
+          "id": 16,
+          "args": [1085276160, 1073741824],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v1",
+          "id": 17,
+          "args": [1074790400],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v1",
+          "id": 18,
+          "args": [1073741824, 1077936128],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1090519040
+        },
+        {
+          "table": "particle-v1",
+          "id": 33,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 2867219139
+        },
+        {
+          "table": "particle-v1",
+          "id": 34,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1059776075
+        },
+        {
+          "table": "particle-v1",
+          "id": 43,
+          "args": [1084227584, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 22,
+          "args": [512, 1040187392],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAqwB+QHdV/74AAIA//////wAAAAAAAIA/AACAQKsAfkB3Vf++AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 23,
+          "args": [512, 1048576000],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAKUKeEAAAAAAd1d9PwAAgD//////AACAPwAAAACzrvw9qwB+QGll974AAIA//////wAAAAAAAIA/G/B/QKsAfkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 24,
+          "args": [512, 1052770304],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAPnNZkCfs7W/d1d9PwAAgD//////AACAPwAAAAB3w8g/i3VpQGll974AAIA//////wAAAAAAAIA/2pelQLybDkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 25,
+          "args": [512, 1065353216, 1073741824, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AACAPwAAAEAAAAAAAACAP/////8AAAAAAAAAAPxmk0DCmBQ/d1d9PwAAgD//////AACAPwAAAAC8YSRAxrq0QGll974AAIA//////wAAAAAAAIA/2pfFQN5Nh0DCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 26,
+          "args": [512, 1056964608, 1061158912, 1065353216],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AACAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAIA/2pdFQM30SkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 31,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 27,
+          "args": [1077936128, 1082130432, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 28,
+          "args": [200, 204, 208],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1077936128, 1082130432, 0]
+        },
+        {
+          "table": "particle-v1",
+          "id": 29,
+          "args": [1056964608, 0, 1080033280, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 37,
+          "args": [1077936128, 1082130432, 0, 0, 0, 0],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1084227584
+        },
+        {
+          "table": "particle-v1",
+          "id": 38,
+          "args": [1065353216, 220, 224, 228, 232],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1015223296, 1011130368, 1107287867, 1103095660]
+        },
+        {
+          "table": "particle-v1",
+          "id": 39,
+          "args": [1, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 32,
+          "args": [],
+          "particle": 0,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        }
+      ],
+      "particleDraws": [],
+      "presents": [],
+      "actualCount": {
+        "allGCALL": 44,
+        "businessDirect": 4
+      }
+    },
+    {
+      "label": "v2-finite-body-bridge",
+      "source": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P3-V2.json",
+        "sha256": "efc92c1eb822edb82e500f72deda4c6990c93afcdcd44339acd70e31ae702855",
+        "bytes": 87238,
+        "rawComplete": true,
+        "qualification": "Remaining exact-body bridges now have their own real loaded table/typed receiver/VM argument/control/output capture. Original scalar/range/physical backend evidence is reused; finite inputs do not establish all arithmetic domains."
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PGZwcz4zMDwvZnBzPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48L0lOVD48L2RvY3VtZW50Pg==",
+        "mainProgram": "S0NTAAIAAAAAAAAANAAAAAcDAAA7AwAAAAAAAAAAAAAAEAAAABAAADsDAAAAAAAADgYAAHicbdKvTgNBEAbwKTmBaEL5IxCIJh/90qQ0aQBBAuEGKKECUYFAIGgDAZICTakgBIFAIJEIBAKBRKI4DO/RRyA8Abm9GUDUbH7Z+XZn73ZL+Lz6Rgln571TQnIiJbQ6xT4RZW53DonR4GK7d0Lkgw+ODoUoBHcXqn1C/+XrwSIiRCPLzFdbxE1wv9O6IG6Dq+00c2f5QUJIlPkjISLzU0KMmm8SIm/WhCiYJSGmPPNOTEd/Z5jx+VWi6PMxMev7xETZMzEx531joubniYlF8yAmlnwfJVbMBSXUXFSibq4p0fBeSmybm0o0zftK7Ji7Suz6eZTYM98psW++V+LA/KDEsZ9ZiY75RYmu+VWJvvlNiUv/LiWuI5EK6iJiP6wmabGQjpOZ06dRwXoayYdIORTDaHef3e5IFtfHzVK4ywrGciKYDouefhdVwuNBFLjmnb024TXieXhi3BNDlrz8m96QIV3wFSa2vLb8A7rHYE4=",
+        "particleProgram": "S0NTAAIAAAACAAAANAAAAGEBAACVAQAAAAAAAAAAAAAAEAAAABAAAJUBAAAAAAAAwgIAAHicTZAxDkFREEWvRPgJ4mMDGF8ks4SfMIVCoVAoFIpfKBQKpdJSLMEObE1m8p6rmeLcc+dNnsoCgADAUh4AqonPlTQtoHK+Uem40g7FQNwl3ib8XKsUxLs/u0e8/2Gfr41K38MiwkMKHQ/YOWb8URkSnxJ+Wyw0lZKrziksTWXETpOfj46ZypidCwCVGT/lGmBOcMuXWD5TWb+HPc12XX8BcCEf1w==",
+        "reboundProgram": "S0NTAAIAAAACAAAANAAAAGEBAACVAQAAAAAAAAAAAAAAEAAAABAAAJUBAAAAAAAAwgIAAHicTZAxDkFREEWvRPgJ4mMDGF8ks4SfMIVCoVAoFIpfKBQKpdJSLMEObE1m8p6rmeLcc+dNnsoCgADAUh4AqonPlTQtoHK+Uem40g7FQNwl3ib8XKsUxLs/u0e8/2Gfr41K38MiwkMKHQ/YOWb8URkSnxJ+Wyw0lZKrziksTWXETpOfj46ZypidCwCVGT/lGmBOcMuXWD5TWb+HPc12XX8BcCEf1w==",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABwMi1tYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAKMBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAABwMAADsDAAAAAAAAAAAAAAAQAAAAEAAAOwMAAAAAAAAOBgAAeJxt0q9OA0EQBvApOYFoQvkjEIgmH/3SpDRpAEEC4QYooQJRgUAgaAMBkgJNqSAEgUAgkQgEAoFEojgM79FHIDwBub0ZQNRsftn5dmfvdkv4vPpGCWfnvVNCciIltDrFPhFlbncOidHgYrt3QuSDD44OhSgEdxeqfUL/5evBIiJEI8vMV1vETXC/07ogboOr7TRzZ/lBQkiU+SMhIvNTQoyabxIib9aEKJglIaY8805MR39nmPH5VaLo8zEx6/vERNkzMTHnfWOi5ueJiUXzICaWfB8lVswFJdRcVKJurinR8F5KbJubSjTN+0rsmLtK7Pp5lNgz3ymxb75X4sD8oMSxn1mJjvlFia75VYm++U2JS/8uJa4jkQrqImI/rCZpsZCOk5nTp1HBehrJh0g5FMNod5/d7kgW18fNUrjLCsZyIpgOi55+F1XC40EUuOadvTbhNeJ5eGLcE0OWvPyb3pAhXfAVJra8tvwDusdgTg=="
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAEAAABwMi1hdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAEAAABwMy10YWJsZS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAANkAAABLQ1MAAgAAAAIAAAA0AAAAYQEAAJUBAAAAAAAAAAAAAAAQAAAAEAAAlQEAAAAAAADCAgAAeJxNkDEOQVEQRa9E+AniYwMYXySzhJ8whUKhUCgUil8oFAql0lIswQ5sTWbynquZ4txz502eygKAAMBSHgCqic+VNC2gcr5R6bjSDsVA3CXeJvxcqxTEuz+7R7z/YZ+vjUrfwyLCQwodD9g5ZvxRGRKfEn5bLDSVkqvOKSxNZcROk5+PjpnKmJ0LAJUZP+UaYE5wy5dYPlNZv4c9zXZdfwFwIR/X"
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "typed initialized table bridge bank",
+          "frame": 700,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565976,
+            "receiver": 537128656,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537151492,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537151732,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537151972,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152020,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152068,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "label": "first particle finite bridge and second normal GetNow after exit",
+          "frame": 701,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565976,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537151492,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537151732,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537151972,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152020,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152068,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1
+            }
+          }
+        },
+        {
+          "phase": 2,
+          "label": "explicit stop/query and normal retirement",
+          "frame": 702,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565976,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537151492,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537151732,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537151972,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152020,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152068,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1
+            }
+          }
+        },
+        {
+          "phase": 3,
+          "label": "normal parent prune and caller wait",
+          "frame": 703,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 6,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1056274244
+        },
+        {
+          "table": "particle-v2",
+          "id": 7,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1063299392
+        },
+        {
+          "table": "particle-v2",
+          "id": 8,
+          "args": [1048576000],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1048755245
+        },
+        {
+          "table": "particle-v2",
+          "id": 11,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1055744824
+        },
+        {
+          "table": "particle-v2",
+          "id": 12,
+          "args": [1056964608, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1052955067
+        },
+        {
+          "table": "particle-v2",
+          "id": 13,
+          "args": [1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1073741824
+        },
+        {
+          "table": "particle-v2",
+          "id": 15,
+          "args": [3214934016],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 3221225472
+        },
+        {
+          "table": "particle-v2",
+          "id": 16,
+          "args": [1085276160, 1073741824],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v2",
+          "id": 17,
+          "args": [1074790400],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v2",
+          "id": 18,
+          "args": [1073741824, 1077936128],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1090519040
+        },
+        {
+          "table": "particle-v2",
+          "id": 33,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 2867219139
+        },
+        {
+          "table": "particle-v2",
+          "id": 34,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1059776075
+        },
+        {
+          "table": "particle-v2",
+          "id": 43,
+          "args": [1084227584, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 32,
+          "args": [],
+          "particle": 0,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        }
+      ],
+      "particleDraws": [],
+      "presents": [],
+      "actualCount": {
+        "allGCALL": 31,
+        "businessDirect": 4
+      }
+    }
+  ]
+}

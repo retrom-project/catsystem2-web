@@ -1,0 +1,335 @@
+// SPDX-License-Identifier: MPL-2.0
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { NativeInput } from '../src/native/input.mjs';
+import { ProgressBudget, FrameBudgetReached } from './browser/progress-budget.mjs';
+import { captureTerminalState } from './browser/terminal-evidence.mjs';
+import {
+  fullAcceptanceMode,
+  progressAcceptance,
+  hoverNativeButton,
+  step,
+  state,
+  until,
+} from './browser/native-game-input.mjs';
+
+test('progress gates retain reviewed floors and stop at the fixed extra frame budget', () => {
+  const budget = new ProgressBudget('route');
+  budget.observe({ frame: 583, messages: 54, position: ['01', 54] });
+  assert.throws(
+    () => budget.observe({ frame: 883, messages: 80, position: ['01', 80] }),
+    FrameBudgetReached,
+  );
+  const regressed = new ProgressBudget('route');
+  assert.throws(
+    () => regressed.observe({ frame: 883, messages: 53, position: ['01', 53] }),
+    /Progress regressed at messages/,
+  );
+  assert.equal(new ProgressBudget('game').limit, 1936);
+  assert.equal(new ProgressBudget('particle').limit, undefined);
+});
+
+test('a blocked browser frame closes its context after the wall stall deadline', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  let closed = false;
+  const page = {
+    on() {},
+    evaluate: () => new Promise(() => {}),
+    context: () => ({
+      close: async () => {
+        closed = true;
+      },
+    }),
+  };
+  const info = { setTimeout() {}, async attach() {} };
+  const operation = progressAcceptance(page, info, 'game', () => step(page));
+  t.mock.timers.tick(180000);
+  await assert.rejects(operation, /wall stall/);
+  assert.equal(closed, true);
+});
+
+test('progress observes explicit scene handles and a revealing JS writer while the KCS PC waits', async () => {
+  const previousWindow = globalThis.window,
+    previousDocument = globalThis.document;
+  const reader = { filename: '01', block: 2, line: 7 },
+    text = { source: 'dialogue', elapsed: 1, active: true },
+    task = { name: 'sscript', machine: { pc: 123 } };
+  globalThis.window = {
+    catSystem2: {
+      status: () => ({ stack: ['meswnd#WAIT'], unsupported: [] }),
+      world: {
+        frame: 500,
+        runtime: {
+          sceneData: () => null,
+          scheduler: { tasks: new Map([[1, task]]) },
+          handles: { records: new Map([[7, { type: 'scene-data', value: { reader } }]]) },
+        },
+        objects: { objects: new Map([[8, { id: 8, implementation: { text } }]]) },
+      },
+    },
+  };
+  globalThis.document = { getElementById: () => ({ textContent: '' }) };
+  try {
+    const page = { evaluate: (observe) => observe() };
+    const first = await state(page);
+    assert.equal(first.position.scenes[0].line, 7);
+    text.elapsed++;
+    const revealed = await state(page);
+    assert.notDeepEqual(revealed.position, first.position);
+    reader.line++;
+    const advanced = await state(page);
+    assert.equal(advanced.position.scenes[0].line, 8);
+    assert.deepEqual(advanced.position.tasks, first.position.tasks);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.document = previousDocument;
+  }
+});
+
+test('frame and wall no-progress conditions stop independently at the earlier bound', () => {
+  let time = 0;
+  const budget = new ProgressBudget('game', () => time);
+  budget.observe({ frame: 10, position: ['wait'] });
+  time = 179999;
+  budget.observe({ frame: 10, position: ['wait'] }, 1);
+  time++;
+  assert.throws(() => budget.observe({ frame: 10, position: ['wait'] }, 1), /no progress/);
+  const frames = new ProgressBudget('game', () => 0);
+  frames.observe({ frame: 10, position: ['wait'] });
+  assert.throws(() => frames.observe({ frame: 10, position: ['wait'] }, 300), /no progress/);
+  const moving = new ProgressBudget('game', () => time);
+  moving.observe({ frame: 0, position: ['a'] });
+  time += 100000;
+  moving.observe({ frame: 1, position: ['a'] });
+  assert.equal(moving.remainingWallMS(), 180000);
+});
+
+test('full campaign mode is explicit and the actual acceptance process reports its selected mode', async () => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+  assert.equal(fullAcceptanceMode('1'), true);
+  for (const value of ['', '0', 'true', 'yes', ' 1'])
+    assert.throws(() => fullAcceptanceMode(value), /must be explicitly 1/);
+  const page = { on() {} },
+    info = {
+      annotations: [],
+      setTimeout(value) {
+        assert.equal(value, 0);
+      },
+    };
+  try {
+    delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    assert.equal(fullAcceptanceMode(), false);
+    let calls = 0;
+    await progressAcceptance(page, info, 'game', () => {
+      calls++;
+    });
+    process.env.CATSYSTEM2_FULL_ACCEPTANCE = '1';
+    await progressAcceptance(page, info, 'route', () => {
+      calls++;
+    });
+    assert.equal(calls, 2);
+    assert.deepEqual(
+      info.annotations.map((a) => JSON.parse(a.description)),
+      [
+        { mode: 'progress', FULL: null },
+        { mode: 'full', FULL: '1' },
+      ],
+    );
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
+});
+
+test('explicit full campaign retains the original wall stall deadline and failure cleanup', async (t) => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  process.env.CATSYSTEM2_FULL_ACCEPTANCE = '1';
+  let closed = false;
+  const page = {
+      on() {},
+      evaluate: () => new Promise(() => {}),
+      context: () => ({
+        close: async () => {
+          closed = true;
+        },
+      }),
+    },
+    info = { annotations: [], setTimeout() {}, async attach() {} };
+  try {
+    const operation = progressAcceptance(page, info, 'game', () => step(page));
+    t.mock.timers.tick(180000);
+    await assert.rejects(operation, /wall stall/);
+    assert.equal(closed, true);
+    assert.deepEqual(JSON.parse(info.annotations[0].description), { mode: 'full', FULL: '1' });
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
+});
+
+test('full campaign assertion failures retain the page for terminal teardown', async () => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE,
+    original = new Error('owned first assertion failure');
+  let closes = 0;
+  const context = { close: async () => closes++ },
+    page = { on() {}, context: () => context },
+    info = { annotations: [], setTimeout() {}, async attach() {} };
+  process.env.CATSYSTEM2_FULL_ACCEPTANCE = '1';
+  try {
+    await assert.rejects(
+      progressAcceptance(page, info, 'game', async () => {
+        throw original;
+      }),
+      (error) => error === original,
+    );
+    assert.equal(closes, 0, 'terminal teardown needs the original live page');
+    await context.close();
+    assert.equal(closes, 1, 'the existing fixture remains the final context owner');
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
+});
+
+test('a native FES wait observes overlay exit when the backdrop is already waiting', async () => {
+  let frame = 0;
+  const page = {
+      async evaluate(_observe, count) {
+        if (count !== undefined) {
+          frame += count;
+          return;
+        }
+        const overlay = frame === 0 ? 'ACTIVE' : frame === 6 ? 'EXIT' : 'WAIT';
+        return {
+          frame,
+          stack: ['backdrop#WAIT', `overlay#${overlay}`],
+          unsupported: [],
+          error: '',
+        };
+      },
+    },
+    settled = ({ stack }) => stack.includes('overlay#WAIT');
+  assert.equal((await until(page, 'backdrop#WAIT', 12, settled)).frame, 12);
+  frame = 0;
+  await assert.rejects(until(page, 'backdrop#WAIT', 6, settled));
+  assert.equal(frame, 6);
+  assert.equal((await until(page, 'backdrop#WAIT', 6)).frame, 6);
+});
+
+test('native button fallback requires the real unobscured input owner', async (t) => {
+  const priorWindow = globalThis.window,
+    priorDocument = globalThis.document,
+    input = new NativeInput(),
+    story = {
+      root: {
+        runtimeID: 14,
+        byKey: new Map([['save', { disp: true, enable: true, nativeInputTaskID: 24 }]]),
+        placement: () => ({ shown: true }),
+      },
+    },
+    overlay = { root: { runtimeID: 40, byKey: new Map() } },
+    moves = [];
+  const page = {
+    evaluate: async (observe, argument) =>
+      typeof argument === 'string' ? observe(argument) : { error: '' },
+    mouse: { move: async (...point) => moves.push(point) },
+  };
+  globalThis.window = {
+    catSystem2: {
+      world: { inputFor: () => input },
+      game: { width: 128, height: 96 },
+      activeFES: () => overlay,
+      pointerPlayers: () => [overlay, story],
+    },
+  };
+  globalThis.document = {
+    getElementById: () => ({
+      getBoundingClientRect: () => ({ x: 100, y: 200, width: 128, height: 96 }),
+    }),
+  };
+  try {
+    input.register({ owner: 24, bounds: [20, 10, 40, 30], priority: 12, mask: 2 });
+    await t.test('a nonoverlapping live overlay leaves the story button actionable', async () => {
+      input.register({ owner: 41, bounds: [0, 0, 10, 10], priority: 20, mask: 2 });
+      await hoverNativeButton(page, 'save');
+      assert.deepEqual(moves, [[130, 220]]);
+      input.unregister(41);
+    });
+    await t.test('a modal region owning that point blocks the fallback', async () => {
+      moves.length = 0;
+      input.register({ owner: 42, bounds: [0, 0, 128, 96], priority: 20, mask: 2 });
+      await assert.rejects(hoverNativeButton(page, 'save'), /No native input region for save/);
+      assert.deepEqual(moves, []);
+    });
+  } finally {
+    globalThis.window = priorWindow;
+    globalThis.document = priorDocument;
+  }
+});
+
+test('terminal evidence records a checkpoint fault and still visits userdata teardown', async () => {
+  const prior = globalThis.window,
+    error = new Error('private attachment text');
+  error.stack =
+    'Error: private attachment text\n  at snapshot (http://localhost/src/native/world.mjs:31:7)';
+  globalThis.window = {
+    catSystem2: {
+      world: { frame: 30 },
+      snapshot: async () => {
+        throw error;
+      },
+    },
+  };
+  try {
+    let evaluations = 0,
+      attached;
+    const page = {
+        isClosed: () => false,
+        evaluate: async (...args) => {
+          evaluations++;
+          return args[0](args[1]);
+        },
+      },
+      info = {
+        status: 'failed',
+        expectedStatus: 'passed',
+        attach: async (name, { body }) => {
+          attached = { name, result: JSON.parse(body) };
+        },
+      };
+    const result = await captureTerminalState(page, info);
+    assert.equal(evaluations, 3);
+    assert.deepEqual(result.errors[0], {
+      stage: 'checkpoint-snapshot',
+      type: 'Error',
+      location: { file: 'src/native/world.mjs', line: 31, column: 7 },
+    });
+    assert.equal(result.errors[1].stage, 'userdata');
+    assert.deepEqual(attached, { name: 'terminal-evidence.json', result });
+    assert.doesNotMatch(JSON.stringify(attached), /private attachment text/);
+  } finally {
+    globalThis.window = prior;
+  }
+});
+
+test('progress campaign assertion failures preserve immediate cleanup and the original error', async () => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE,
+    original = new Error('owned first progress failure');
+  let closes = 0;
+  const page = { on() {}, context: () => ({ close: async () => closes++ }) },
+    info = { annotations: [], setTimeout() {}, async attach() {} };
+  delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+  try {
+    await assert.rejects(
+      progressAcceptance(page, info, 'game', async () => {
+        throw original;
+      }),
+      (error) => error === original,
+    );
+    assert.equal(closes, 1);
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
+});

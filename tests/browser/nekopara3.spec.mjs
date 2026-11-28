@@ -1,0 +1,210 @@
+// SPDX-License-Identifier: MPL-2.0
+// Current NativeWorld UI acceptance using the mounted frozen game.
+import { test, expect } from './native-performance.mjs';
+import {
+  clickGame,
+  button,
+  noError,
+  launch,
+  pad,
+  nativeWait,
+  waitForSlotCloseInput,
+  waitForLoadedSlotStory,
+  ordinarySlotDialogue,
+  gameplay,
+} from './game-helpers.mjs';
+import { captureTerminalState } from './terminal-evidence.mjs';
+import {
+  hoverNativeButton,
+  step,
+  until,
+  progressAcceptance,
+  guardNormalOriginalCPU,
+  fullAcceptanceMode,
+} from './native-game-input.mjs';
+
+test.afterEach(async ({ page }, info) => {
+  if (info.status !== info.expectedStatus && !page.isClosed())
+    console.log('failure state', await gameplay(page));
+});
+test.afterEach(async ({ page }, info) => {
+  if (fullAcceptanceMode()) await captureTerminalState(page, info);
+});
+test('native title, gamepad, story, touch, save, settings, backlog and new-instance recovery', async ({
+  page,
+}, info) => {
+  await progressAcceptance(page, info, 'game', () => runGame(page));
+});
+
+async function runGame(page) {
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(() => {
+    window.testPad = {
+      connected: true,
+      mapping: 'standard',
+      axes: [0, 0],
+      buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })),
+    };
+    Object.defineProperty(navigator, 'getGamepads', { value: () => [window.testPad] });
+  });
+  // The native default disables joystick input. The retired ScenePlayer did
+  // not honor that setting, so a fake pad alone no longer enables this path.
+  await launch(page, { preferences: '<KEY><enable_joypad>1</enable_joypad></KEY>' });
+  expect(await page.evaluate(() => window.catSystem2.world.configuration.keys.enableJoypad)).toBe(
+    1,
+  );
+  // Native title has no default button. A physical hover establishes focus;
+  // unlike ScenePlayer, a direction from no focus cannot select the first row.
+  await hoverNativeButton(page, 'btn1[0]');
+  const focused = () => page.evaluate(() => window.catSystem2.activeFES().focused?.o?.key);
+  expect(await focused()).toBe('btn1[0]');
+  await pad(page, 13);
+  expect(await focused()).toBe('btn1[1]');
+  await pad(page, 12);
+  expect(await focused()).toBe('btn1[0]');
+  await pad(page, 0);
+  await until(page, 'meswnd#WAIT', 900);
+  await nativeWait(page, () => {
+    const { world } = window.catSystem2,
+      message = [...world.objects.objects.values()].find((record) => record.name === 'meswnd'),
+      body = message?.implementation.player?.root.byKey.get('str');
+    // Observe the actual native writer. The raw VM bank's get() decodes CP932,
+    // whereas this game supplies UTF-8 dialogue (including its quote glyphs).
+    return world.objects.objects.get(body?.nativeTaskID)?.implementation.text?.source;
+  });
+  expect((await gameplay(page)).text.length).toBeGreaterThan(0);
+  expect(await page.evaluate(() => window.catSystem2.audio.context.state)).toBe('running');
+  for (let i = 0; i < 240; i++) {
+    const ready = await page.evaluate(() =>
+      [...window.catSystem2.nativeFES.values()].some((player) => {
+        const object = player.root?.byKey.get('btn');
+        return (
+          player.stack.some((label) => label.startsWith('touch#')) &&
+          object?.enable &&
+          player.root.placement(object).shown
+        );
+      }),
+    );
+    if (ready) break;
+    await page.click('#next');
+    await step(page, 6);
+  }
+  expect((await gameplay(page)).nativeActors).toBeGreaterThan(0);
+  await button(page, 'btn', true);
+  await until(page, 'touch#WAIT_TOUCH', 240);
+  await clickGame(page, 640, 240);
+  await nativeWait(page, () => /touch/i.test(window.catSystem2.audio.voiceInfo().file || ''));
+  await page.keyboard.press('Escape');
+  await until(page, 'meswnd#WAIT', 240, ({ stack }) => stack.includes('touch#WAIT'));
+
+  await page.click('#settings');
+  await until(page, 'config#WAIT', 240);
+  await button(page, 'tab[0]');
+  await button(page, 'system_langage[1]');
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
+  await button(page, 'system_main[2]');
+  await until(page, 'config#WAIT', 240);
+  expect((await gameplay(page)).language.main).toBe(2);
+  await button(page, 'system_langage[1]');
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
+  await button(page, 'system_main[1]');
+  await until(page, 'config#WAIT', 240);
+  expect((await gameplay(page)).language.main).toBe(0);
+  await button(page, 'system_langage[1]');
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
+  await button(page, 'system_main[2]');
+  await until(page, 'config#WAIT', 240);
+  await button(page, 'system_langage[0]');
+  await until(page, 'config#SYSTEM_LANG_WAIT', 240);
+  await button(page, 'system_ui[2]');
+  await until(page, 'config#WAIT', 240);
+  expect((await gameplay(page)).language).toMatchObject({ main: 2, ui: 2 });
+  await page.keyboard.press('Escape');
+  await until(page, 'meswnd#WAIT', 240, ({ stack }) =>
+    stack.every((label) => !label.startsWith('config#')),
+  );
+  await noError(page);
+
+  const before = (await gameplay(page)).saves;
+  await page.click('#quick-save');
+  await nativeWait(
+    page,
+    (before) =>
+      [...window.catSystem2.nativeStorage.store.records.keys()].some(
+        (name) => /save\d+\.dat$/i.test(name) && !before.includes(name),
+      ),
+    before,
+  );
+  const saved = await gameplay(page);
+  expect(saved.saves.length).toBeGreaterThan(before.length);
+  await page.click('#backlog');
+  await until(page, 'hist_b#WAIT', 240);
+  await button(page, 'ret[0]');
+  await until(page, 'confirm#WAIT', 240);
+  await button(page, 'btn[0]');
+  await until(page, 'meswnd#WAIT', 900, ({ stack }) =>
+    stack.every((label) => !/^(hist_b|confirm2?)#/.test(label)),
+  );
+  await noError(page);
+
+  await page.reload();
+  await guardNormalOriginalCPU(page);
+  await page.click('#start');
+  await page.waitForFunction(
+    () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
+    undefined,
+    { timeout: 180_000, polling: 100 },
+  );
+  await until(page, 'title#WAIT', 900);
+  expect((await gameplay(page)).source).toBe(saved.source);
+  expect((await gameplay(page)).saves).toEqual(saved.saves);
+  await page.click('#quick-load');
+  await until(page, 'meswnd#WAIT', 900);
+  expect((await gameplay(page)).text).toBe(saved.text);
+  expect((await gameplay(page)).language).toMatchObject({ main: 2, ui: 2 });
+  const restored = await gameplay(page);
+  for (let i = 0; i < 20; i++) {
+    if ((await gameplay(page)).text !== restored.text) break;
+    await page.click('#next');
+    await step(page, 6);
+  }
+  expect((await gameplay(page)).text).not.toBe(restored.text);
+
+  await button(page, 'btn[4]');
+  await until(page, 'saveload#WAIT', 240);
+  await button(page, 'btdata[0]');
+  await nativeWait(page, () =>
+    [...window.catSystem2.nativeStorage.store.records.keys()].some((name) =>
+      /save0000\.dat$/i.test(name),
+    ),
+  );
+  await waitForSlotCloseInput(page);
+  const savedLayout = await ordinarySlotDialogue(page);
+  await page.keyboard.press('Escape');
+  await until(page, 'meswnd#WAIT', 240, ({ stack }) =>
+    stack.every((label) => !label.startsWith('saveload#')),
+  );
+  const ordinary = await ordinarySlotDialogue(page);
+  for (let i = 0; i < 8; i++) {
+    await page.click('#next');
+    await step(page, 6);
+  }
+  await button(page, 'btn[5]');
+  await until(page, 'saveload#WAIT', 240);
+  await button(page, 'btdata[0]');
+  await nativeWait(page, () =>
+    window.catSystem2.status().stack.some((label) => /^confirm2?#WAIT$/.test(label)),
+  );
+  await button(page, 'btn[0]');
+  await waitForLoadedSlotStory(page);
+  const loaded = await ordinarySlotDialogue(page);
+  expect(ordinary.glyphCount).toBeGreaterThan(0);
+  expect(loaded.glyphs).toBe(ordinary.glyphs);
+  expect(loaded.layout).toBe(ordinary.layout);
+  expect(loaded.pageBreakRows).toEqual(savedLayout.pageBreakRows);
+  await step(page, 6);
+  expect((await gameplay(page)).frame).toBeGreaterThan(loaded.frame + 3);
+  await noError(page);
+  expect(errors).toEqual([]);
+}

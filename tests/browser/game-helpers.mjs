@@ -1,0 +1,248 @@
+// SPDX-License-Identifier: MPL-2.0
+import { expect } from '@playwright/test';
+import { captureTouchBeforeClick } from './touch-evidence.mjs';
+import {
+  frameClock,
+  until,
+  clickNativeButton,
+  step,
+  guardNormalOriginalCPU,
+} from './native-game-input.mjs';
+export async function clickGame(page, x, y) {
+  await page.locator('#screen').scrollIntoViewIfNeeded();
+  const rect = await page.locator('#screen').boundingBox();
+  await page.mouse.move(rect.x + (x * rect.width) / 1280, rect.y + (y * rect.height) / 720);
+  await step(page, 2);
+  await page.mouse.down();
+  await step(page, 2);
+  await page.mouse.up();
+  await step(page, 2);
+}
+export async function button(page, name, extra = false) {
+  if (await page.evaluate(() => Boolean(window.catSystem2?.world))) {
+    if (!extra) return clickNativeButton(page, name);
+    const selected = await page.evaluate((key) => {
+      const e = window.catSystem2,
+        player = [...e.nativeFES.values()].find((p) =>
+          p.stack.some((label) => label.startsWith('touch#')),
+        ),
+        object = player?.root.byKey.get(key),
+        region = object && e.world.inputFor(player.root.runtimeID)?.get(object.nativeInputTaskID);
+      if (!region) throw new Error('Missing native touch input ' + key);
+      const [l, t, r, b] = region.bounds;
+      return { point: [(l + r) / 2, (t + b) / 2], owner: player.root.runtimeID };
+    }, name);
+    await captureTouchBeforeClick(page, { key: name, owner: selected.owner });
+    return clickGame(page, ...selected.point);
+  }
+  await page.waitForFunction(
+    ({ name, extra }) => {
+      const e = window.catSystem2,
+        p = extra ? e?.extraFES : e?.activeFES();
+      const s = p?.instances.toReversed().find((s) => s.byKey.has(name));
+      const o = s?.byKey.get(name);
+      return o?.enable && s.placement(o).shown;
+    },
+    { name, extra },
+  );
+  const rect = await page.evaluate(
+    ({ name, extra }) => {
+      const e = globalThis.catSystem2,
+        p = extra ? e.extraFES : e.activeFES();
+      const s = p.instances.toReversed().find((s) => s.byKey.has(name));
+      if (!s) throw new Error(`Missing test button ${name}`);
+      return s.rect(s.byKey.get(name));
+    },
+    { name, extra },
+  );
+  await clickGame(page, rect.x + rect.w / 2, rect.y + rect.h / 2);
+}
+export async function noError(page) {
+  await expect(page.locator('#error')).toBeHidden();
+}
+export async function launch(page, { preferences = '' } = {}) {
+  await frameClock(page);
+  await page.goto('/');
+  if (preferences)
+    await page.evaluate(async (xml) => {
+      const { NativeFileStorage } = await import('/src/native/storage.mjs'),
+        { identity } = await (await fetch('/game.json')).json(),
+        storage = new NativeFileStorage({}, identity);
+      await storage.open();
+      try {
+        if (!(await storage.write('setup.xml', new TextEncoder().encode(xml))))
+          throw new Error('Could not save the native input preferences fixture');
+      } finally {
+        storage.close();
+      }
+    }, `<?xml version="1.0" encoding="UTF-8"?><document>${preferences}</document>`);
+  await guardNormalOriginalCPU(page);
+  await page.click('#start');
+  await page.waitForFunction(
+    () => window.catSystem2?.mode === 'running' || !document.getElementById('error').hidden,
+    undefined,
+    { polling: 100, timeout: 180_000 },
+  );
+  await noError(page);
+  await until(page, 'langselect#WAIT', 900);
+  await noError(page);
+  await button(page, 'decide');
+  await until(page, 'title#WAIT', 240);
+}
+export async function pad(page, index) {
+  await page.evaluate((i) => {
+    window.testPad.buttons[i] = { pressed: true, value: 1 };
+  }, index);
+  await step(page, 6);
+  await page.evaluate((i) => {
+    window.testPad.buttons[i] = { pressed: false, value: 0 };
+  }, index);
+  await step(page, 4);
+}
+
+export async function nativeWait(page, predicate, argument, maxFrames = 240) {
+  const start = await page.evaluate(() => window.catSystem2.world.frame);
+  let frame = start;
+  while (frame - start < maxFrames) {
+    if (await page.evaluate(predicate, argument)) return;
+    frame = (await step(page, 6)).frame;
+  }
+  expect(
+    await page.evaluate(predicate, argument),
+    JSON.stringify(await page.evaluate(() => window.catSystem2.status())),
+  ).toBeTruthy();
+}
+export async function waitForSlotCloseInput(page) {
+  await nativeWait(page, () => {
+    const engine = window.catSystem2,
+      player = engine.activeFES(),
+      root = player?.root;
+    if (player?.stack[0] !== 'saveload#WAIT' || root.finished !== null) return false;
+    if (engine.status().stack.some((label) => /^confirm2?#/.test(label))) return false;
+    const owner = engine.world.objects.objects.get(root.runtimeID),
+      close = root.byKey.get('btn_sys'),
+      input = engine.world.inputFor(root.runtimeID),
+      region = close && input?.get(close.nativeInputTaskID);
+    return Boolean(
+      owner?.state === 'active' &&
+        owner.implementation.player === player &&
+        !owner.implementation.sleepValue &&
+        !owner.implementation.input.state.sleeping &&
+        close?.enable &&
+        close.disp &&
+        !close.deleted &&
+        root.placement(close).shown &&
+        region?.enabled &&
+        region.mask & 1 &&
+        input.enabled[1],
+    );
+  });
+}
+export async function waitForLoadedSlotStory(page, maxFrames = 900) {
+  await nativeWait(
+    page,
+    () => {
+      const engine = window.catSystem2,
+        { world } = engine;
+      if (engine.status().stack.some((label) => /^(saveload|confirm2?)#/.test(label))) return false;
+      const player = [...engine.nativeFES.values()].find((p) => p.stack.includes('meswnd#WAIT')),
+        root = player?.root,
+        owner = world.objects.objects.get(root?.runtimeID),
+        body = root?.byKey.get('str'),
+        writer = world.objects.objects.get(body?.nativeTaskID),
+        text = writer?.implementation.text;
+      if (!owner || !writer || !body?.disp || body.deleted) return false;
+      const placement = root.placement(body);
+      return Boolean(
+        owner.state === 'active' &&
+          owner.implementation.player === player &&
+          world.runtime.scheduler.tasks.has(owner.parent) &&
+          writer.state === 'active' &&
+          writer.parent === owner.id &&
+          writer.implementation.state?.shown &&
+          placement.shown &&
+          placement.alpha > 0 &&
+          text?.source?.length &&
+          text.sourceEvents.some(({ kind }) => kind === 'append' || kind === 'secondary'),
+      );
+    },
+    undefined,
+    maxFrames,
+  );
+  expect(await page.evaluate(() => window.catSystem2.status().unsupported)).toEqual([]);
+}
+export async function ordinarySlotDialogue(page) {
+  return page.evaluate(async () => {
+    const { textVisible } = await import('/src/native/text-layout.mjs'),
+      engine = window.catSystem2,
+      { world } = engine,
+      message = [...engine.nativeFES.values()].find((p) => p.stack.includes('meswnd#WAIT')),
+      body = message?.root.byKey.get('str'),
+      text = world.objects.objects.get(body?.nativeTaskID)?.implementation.text,
+      writer = world.text.core?.writers.get(text?.writer);
+    if (!writer?.parser.rows.length) throw new Error('The ordinary slot story has no text layout');
+    const rows = writer.parser.rows,
+      glyphs = rows.filter(textVisible),
+      hash = async (data) =>
+        new Uint8Array(
+          await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(data))),
+        ).toHex();
+    return {
+      frame: world.frame,
+      glyphCount: glyphs.length,
+      glyphs: await hash(glyphs.map((row) => [row[1], row[9], row[21]])),
+      // Keep glyph placement and style independently of reveal time and raster progress.
+      layout: await hash(
+        glyphs.map((row) => [...row.slice(1, 11), ...row.slice(13, 15), ...row.slice(20)]),
+      ),
+      pageBreakRows: rows.flatMap((row, index) => (row[1] === 0xffff ? [index] : [])),
+    };
+  });
+}
+export const gameplay = (page) =>
+  page.evaluate(() => {
+    const e = window.catSystem2,
+      { world } = e,
+      runtime = world.runtime,
+      script = [...runtime.scheduler.tasks.values()].find((task) => task.name === 'sscript'),
+      data = script && runtime.sceneData(script),
+      message = [...world.objects.objects.values()].find((record) => record.name === 'meswnd'),
+      body = message?.implementation.player?.root.byKey.get('str'),
+      writer = world.objects.objects.get(body?.nativeTaskID)?.implementation;
+    return {
+      frame: world.frame,
+      frameMetrics: window.nativeFrameMetrics,
+      touchButtons: [...e.nativeFES.values()]
+        .filter((player) => player.stack.some((label) => label.startsWith('touch#')))
+        .map((player) => {
+          const object = player.root?.byKey.get('btn'),
+            region = object && world.inputFor(player.root.runtimeID)?.get(object.nativeInputTaskID);
+          return {
+            stack: player.stack.slice(),
+            key: object?.key,
+            type: object?.nativeType,
+            enable: object?.enable,
+            shown: object ? player.root.placement(object).shown : null,
+            inputTask: object?.nativeInputTaskID,
+            bounds: region?.bounds,
+            inputEnabled: region?.enabled,
+          };
+        }),
+      source: e.identity,
+      text: writer?.text?.source ?? '',
+      scene: data?.reader.filename,
+      block: data?.reader.block,
+      line: data?.reader.line,
+      stack: e.status().stack,
+      language: { ...world.configuration.language },
+      touch: e.status().stack.includes('touch#WAIT_TOUCH'),
+      // M2 instances now belong to the JS owner; GPU targets remain on StageRenderer.
+      nativeActors: [...(world.m2?.tasks.values() ?? [])].filter(
+        (task) =>
+          task.model && task.state.shown && task.graph && task.graph.renderEnabled !== false,
+      ).length,
+      saves: [...e.nativeStorage.store.records.keys()]
+        .filter((name) => /save\d+\.dat$/i.test(name))
+        .sort(),
+    };
+  });

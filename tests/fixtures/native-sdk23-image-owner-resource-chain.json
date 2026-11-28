@@ -1,0 +1,2845 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalPE": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "scope": "Finite HG3 loaded owner and HG2 RGB24 raw descriptor. Actual metadata/pixel mutations, source release and normal Script owner cleanup. No physical GPU or arbitrary decoder/invalid-pointer dereference.",
+  "marker": 1194413911,
+  "projections": {
+    "outputs": [
+      256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324, 328,
+      332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396, 400, 404,
+      408, 412, 416, 420, 424, 428, 432, 436, 440, 444
+    ],
+    "metadata": [
+      512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572, 576, 580, 584,
+      588, 592, 596, 600, 604, 608, 612, 616
+    ]
+  },
+  "files": [
+    [
+      "startup.xml",
+      "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg=="
+    ],
+    [
+      "g1.kcs",
+      "S0NTAAIAAAAAAAAANAAAAHAJAACkCQAAAAAAAAAAAAAAEAAAABAAAKQJAAAAAAAA4BIAAHicjZS/a1NRFMfPez5qhgyRZOiQoXj6HpFbJG0zFCwYIWCGB80QaJAORVKawdZSlBZxcHDo4NDBoUOHCA10EOyg4ODg4u/fv3+AWv+D/gMSeee+l/vNSxpdDh/O+d5z7jvnvuPy7Mz4WZcfnbhyy2OyiCJ2gBPASeAUcAZ4GDgLPAI8CpwDHgPOAxeAp4CngYvAJeAysA9cAa4C14DngOeB68AN4AvAK8CXgNeBrwJfA74OvAF8A3gT+CbwFvA2cBN4B3gX+DbwHvBd4PvAD4RbrVbLY7INO8AJ4CRwCjgDPAycBR4BHgXOAY8B54ELwFPA08BF4BJwGdgHrgBXgWvAc8DzwHXghvDFteUFj8kJuH6yseixIzxJRB4nhFcXz0947AsXRFMBTVVYR4NZKF6ziDghQf24gqDipcDtiLtIRG5arPRU8R1zRh5hGCSxZZEED5uTItmISZT8AeH5Uie54uWoppsWN1uH2IN7423Fl4mIh+XkmQB1eZLrP7Y71y+Le0isI+ofdqe8L9V8uD7F5C5PHj/WVrxvh9XctM6oV2GwBBU/tcOvjYJ6HyYl+Dwe1EsxI8EX8aDejFkJvrI7TZSfWiSK35mP27TMyaNi9QbVu1NvTb0v85LxY3A0K0dlHehPD/N+Mn3ZMsEwr96oepfqLar3Zzmed9vqnkjX7Yak0GvzXU34ADNixW+MZAckf9rtdjTGt0aya/WfS0/rcS49rce5QOv1vrOIVlyui9BYxc8CYQqezoLYGbG1mCQsNCt2Sezp/pKD/eZDxS+jiUTuCVF/i7t1z953u7seyh50yJbg10jdZ1jnxP1hgEJX/DJAcQRqfY+6eYhO8e9/1Ioqfh6QCX9gUz16xrhA8G4/g4y5/07TP6r4V5Sm52KKn9idxebHHSVxrFLoOPUXJBZ+jA=="
+    ],
+    [
+      "scripts-loose/g1.kcs",
+      "S0NTAAIAAAAAAAAANAAAAHAJAACkCQAAAAAAAAAAAAAAEAAAABAAAKQJAAAAAAAA4BIAAHicjZS/a1NRFMfPez5qhgyRZOiQoXj6HpFbJG0zFCwYIWCGB80QaJAORVKawdZSlBZxcHDo4NDBoUOHCA10EOyg4ODg4u/fv3+AWv+D/gMSeee+l/vNSxpdDh/O+d5z7jvnvuPy7Mz4WZcfnbhyy2OyiCJ2gBPASeAUcAZ4GDgLPAI8CpwDHgPOAxeAp4CngYvAJeAysA9cAa4C14DngOeB68AN4AvAK8CXgNeBrwJfA74OvAF8A3gT+CbwFvA2cBN4B3gX+DbwHvBd4PvAD4RbrVbLY7INO8AJ4CRwCjgDPAycBR4BHgXOAY8B54ELwFPA08BF4BJwGdgHrgBXgWvAc8DzwHXghvDFteUFj8kJuH6yseixIzxJRB4nhFcXz0947AsXRFMBTVVYR4NZKF6ziDghQf24gqDipcDtiLtIRG5arPRU8R1zRh5hGCSxZZEED5uTItmISZT8AeH5Uie54uWoppsWN1uH2IN7423Fl4mIh+XkmQB1eZLrP7Y71y+Le0isI+ofdqe8L9V8uD7F5C5PHj/WVrxvh9XctM6oV2GwBBU/tcOvjYJ6HyYl+Dwe1EsxI8EX8aDejFkJvrI7TZSfWiSK35mP27TMyaNi9QbVu1NvTb0v85LxY3A0K0dlHehPD/N+Mn3ZMsEwr96oepfqLar3Zzmed9vqnkjX7Yak0GvzXU34ADNixW+MZAckf9rtdjTGt0aya/WfS0/rcS49rce5QOv1vrOIVlyui9BYxc8CYQqezoLYGbG1mCQsNCt2Sezp/pKD/eZDxS+jiUTuCVF/i7t1z953u7seyh50yJbg10jdZ1jnxP1hgEJX/DJAcQRqfY+6eYhO8e9/1Ioqfh6QCX9gUz16xrhA8G4/g4y5/07TP6r4V5Sm52KKn9idxebHHSVxrFLoOPUXJBZ+jA=="
+    ],
+    [
+      "scripts/g1.kcs",
+      "S0NTAAIAAAAAAAAANAAAAHAJAACkCQAAAAAAAAAAAAAAEAAAABAAAKQJAAAAAAAA4BIAAHicjZS/a1NRFMfPez5qhgyRZOiQoXj6HpFbJG0zFCwYIWCGB80QaJAORVKawdZSlBZxcHDo4NDBoUOHCA10EOyg4ODg4u/fv3+AWv+D/gMSeee+l/vNSxpdDh/O+d5z7jvnvuPy7Mz4WZcfnbhyy2OyiCJ2gBPASeAUcAZ4GDgLPAI8CpwDHgPOAxeAp4CngYvAJeAysA9cAa4C14DngOeB68AN4AvAK8CXgNeBrwJfA74OvAF8A3gT+CbwFvA2cBN4B3gX+DbwHvBd4PvAD4RbrVbLY7INO8AJ4CRwCjgDPAycBR4BHgXOAY8B54ELwFPA08BF4BJwGdgHrgBXgWvAc8DzwHXghvDFteUFj8kJuH6yseixIzxJRB4nhFcXz0947AsXRFMBTVVYR4NZKF6ziDghQf24gqDipcDtiLtIRG5arPRU8R1zRh5hGCSxZZEED5uTItmISZT8AeH5Uie54uWoppsWN1uH2IN7423Fl4mIh+XkmQB1eZLrP7Y71y+Le0isI+ofdqe8L9V8uD7F5C5PHj/WVrxvh9XctM6oV2GwBBU/tcOvjYJ6HyYl+Dwe1EsxI8EX8aDejFkJvrI7TZSfWiSK35mP27TMyaNi9QbVu1NvTb0v85LxY3A0K0dlHehPD/N+Mn3ZMsEwr96oepfqLar3Zzmed9vqnkjX7Yak0GvzXU34ADNixW+MZAckf9rtdjTGt0aya/WfS0/rcS49rce5QOv1vrOIVlyui9BYxc8CYQqezoLYGbG1mCQsNCt2Sezp/pKD/eZDxS+jiUTuCVF/i7t1z953u7seyh50yJbg10jdZ1jnxP1hgEJX/DJAcQRqfY+6eYhO8e9/1Ioqfh6QCX9gUz16xrhA8G4/g4y5/07TP6r4V5Sm52KKn9idxebHHSVxrFLoOPUXJBZ+jA=="
+    ],
+    [
+      "main.kcs",
+      "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+    ],
+    [
+      "scripts.int",
+      "S0lGAAIAAABnMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAOkCAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgQMAAE4AAABLQ1MAAgAAAAAAAAA0AAAAcAkAAKQJAAAAAAAAAAAAAAAQAAAAEAAApAkAAAAAAADgEgAAeJyNlL9rU1EUx897PmqGDJFk6JChePoekVskbTMULBghYIYHzRBokA5FUprB1lKUFnFwcOjg0MGhQ4cIDXQQ7KDg4ODi79+/f4Ba/4P+AxJ5576X+81LGl0OH8753nPuO+e+4/LszPhZlx+duHLLY7KIInaAE8BJ4BRwBngYOAs8AjwKnAMeA84DF4CngKeBi8Al4DKwD1wBrgLXgOeA54HrwA3gC8ArwJeA14GvAl8Dvg68AXwDeBP4JvAW8DZwE3gHeBf4NvAe8F3g+8APhFutVstjsg07wAngJHAKOAM8DJwFHgEeBc4BjwHngQvAU8DTwEXgEnAZ2AeuAFeBa8BzwPPAdeCG8MW15QWPyQm4frKx6LEjPElEHieEVxfPT3jsCxdEUwFNVVhHg1koXrOIOCFB/biCoOKlwO2Iu0hEblqs9FTxHXNGHmEYJLFlkQQPm5Mi2YhJlPwB4flSJ7ni5aimmxY3W4fYg3vjbcWXiYiH5eSZAHV5kus/tjvXL4t7SKwj6h92p7wv1Xy4PsXkLk8eP9ZWvG+H1dy0zqhXYbAEFT+1w6+NgnofJiX4PB7USzEjwRfxoN6MWQm+sjtNlJ9aJIrfmY/btMzJo2L1BtW7U29NvS/zkvFjcDQrR2Ud6E8P834yfdkywTCv3qh6l+otqvdnOZ532+qeSNfthqTQa/NdTfgAM2LFb4xkByR/2u12NMa3RrJr9Z9LT+txLj2tx7lA6/W+s4hWXK6L0FjFzwJhCp7OgtgZsbWYJCw0K3ZJ7On+koP95kPFL6OJRO4JUX+Lu3XP3ne7ux7KHnTIluDXSN1nWOfE/WGAQlf8MkBxBGp9j7p5iE7x73/Uiip+HpAJf2BTPXrGuEDwbj+DjLn/TtM/qvhXlKbnYoqf2J3F5scdJXGsUug49RckFn6MS0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+    ],
+    [
+      "images.int",
+      "S0lGAAIAAABvd25lZC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAANYAAAByZ2IyNC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbgEAAIcAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAAAAAAAAAAAAAQAAAADAAAAAQAAAAAAAAAAAAAAaW1nMDAwMABmAAAAVgAAAAAAAAADAAAAJwAAACkAAAAXAAAADwAAAHicYztwQOWJChiIP3miwn6cHQwUjh9n13qlBQGvVq060AAAD/gNz3icY+RoUGbQlzjAzfbBiesDJwAZkAP6YXRzMDAwNwAAAAAAFAAAAAoAAADs////HgAAANj///8jAYD/SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+    ],
+    [
+      "owned.hg3",
+      "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+    ],
+    [
+      "images-loose/owned.hg3",
+      "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+    ],
+    [
+      "rgb24.hg3",
+      "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+    ],
+    [
+      "images-loose/rgb24.hg3",
+      "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+    ]
+  ],
+  "rows": [
+    {
+      "index": 0,
+      "label": "declared RGB24 resource -> raw descriptor/header/frame -> independent mutable four-byte bitmap",
+      "words": [
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      }
+    },
+    {
+      "index": 1,
+      "label": "real loaded image collection and separately filled target;metadata and nonempty attributes",
+      "words": [
+        4, 3, 4, 3, 0, 0, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 0, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 4,
+          "height": 3,
+          "bpp": 4,
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 4, 3],
+          "mask": 0,
+          "rgba": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA"
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "label": "canvas/offset/base writes reach defined queries;neutral ignores owner and nonneutral changes pixels",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 4,
+          "height": 3,
+          "bpp": 4,
+          "canvasWidth": 7,
+          "canvasHeight": 6,
+          "offsetX": 1,
+          "offsetY": 1,
+          "alphaHint": 2,
+          "baseX": -3,
+          "baseY": 4,
+          "clip": [0, 0, 4, 3],
+          "mask": 2,
+          "rgba": "BiY0ABAxODAZOzxgIkZAACtQRAA1W0kAPmVNAEdwUABQelUAWoVZAGOQXgBtmmEA"
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "label": "loaded layers rotate into later pixel/geometry state",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [3, 4, 6, 7, 2, 1, 2, 4294967293, 4, 1, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 3,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 6,
+          "canvasHeight": 7,
+          "offsetX": 2,
+          "offsetY": 1,
+          "alphaHint": 2,
+          "baseX": 2,
+          "baseY": -3,
+          "clip": [0, 0, 3, 4],
+          "mask": 2,
+          "rgba": "IkZAAEdwUABtmmEAGTs8YD5lTQBjkF4AEDE4MDVbSQBahVkABiY0ACtQRABQelUA"
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "label": "loaded layers flip into later pixel/geometry state",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [3, 4, 6, 7, 1, 1, 4, 4294967293, 4, 1, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 3,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 6,
+          "canvasHeight": 7,
+          "offsetX": 1,
+          "offsetY": 1,
+          "alphaHint": 2,
+          "baseX": 4,
+          "baseY": -3,
+          "clip": [0, 0, 3, 4],
+          "mask": 2,
+          "rgba": "bZphAEdwUAAiRkAAY5BeAD5lTQAZOzxgWoVZADVbSQAQMTgwUHpVACtQRAAGJjQA"
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "label": "loaded layers resize into later pixel/geometry state",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [2, 1, 3, 2, 1, 0, 2, 0, 4, 1, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 2,
+          "height": 1,
+          "bpp": 4,
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 1,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 2,
+          "baseY": 0,
+          "clip": [0, 0, 2, 1],
+          "mask": 2,
+          "rgba": "AAAAABg7PAA="
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "label": "loaded layer colour filter reaches later pixels",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [2, 1, 3, 2, 1, 0, 2, 0, 4, 1, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 2,
+          "height": 1,
+          "bpp": 4,
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 1,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 2,
+          "baseY": 0,
+          "clip": [0, 0, 2, 1],
+          "mask": 2,
+          "rgba": "////AOfEwwA="
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "label": "collection blur expands and consumes its actual layer/output alias",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [2, 1, 3, 2, 1, 0, 2, 0, 4, 1, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 3,
+          "height": 2,
+          "bpp": 4,
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 2,
+          "baseY": 0,
+          "clip": [0, 0, 3, 2],
+          "mask": 2,
+          "rgba": null
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "label": "actual owner pixels blend/copy into independent filled target",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0],
+      "decoded": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "canvasWidth": 4,
+        "canvasHeight": 3,
+        "offsetX": 0,
+        "offsetY": 0,
+        "alphaHint": 1,
+        "baseX": 0,
+        "baseY": 0,
+        "clip": [0, 0, 4, 3],
+        "mask": 0,
+        "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+      },
+      "source": {
+        "info": [2, 1, 3, 2, 1, 0, 2, 0, 4, 1, 0],
+        "layers": 1,
+        "bitmap": {
+          "width": 3,
+          "height": 2,
+          "bpp": 4,
+          "canvasWidth": 3,
+          "canvasHeight": 2,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 2,
+          "baseY": 0,
+          "clip": [0, 0, 3, 2],
+          "mask": 2,
+          "rgba": null
+        }
+      },
+      "target": {
+        "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+        "layers": null,
+        "bitmap": {
+          "width": 6,
+          "height": 4,
+          "bpp": 4,
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "clip": [0, 0, 6, 4],
+          "mask": 0,
+          "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/AAAAAAAAAAAAAAAAESIz/xEiM/8RIjP/AAAAAAAAAAAAAAAAESIz/xEiM/8RIjP/"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "label": "explicit owners and independently decoded bitmap release normally",
+      "words": [
+        7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+        4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+        2709137861
+      ],
+      "metadata": [0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0]
+    }
+  ],
+  "coldAt": 5,
+  "observationLimit": "Original full-chain producer read legacy header[4] rather than the expanded pitch*height. Source RGBA in phases7/8 is not asserted; corrected positive-blur followups read complete bounded physical spans. Original raw is retained.",
+  "followups": [
+    {
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "originalPE": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "scope": "Correct full pitch*height positive loaded-layer blur, separate before/after phases; SDK23 direct kernel versus modern bitmap method, actual cached/physical bounds and base, real source cleanup.",
+      "coldAt": 1,
+      "marker": 1194413911,
+      "projections": {
+        "outputs": [
+          256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+          328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396,
+          400, 404, 408, 412, 416, 420, 424, 428, 432, 436, 440, 444
+        ],
+        "metadata": [
+          512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572, 576, 580,
+          584, 588, 592, 596, 600, 604, 608, 612, 616
+        ]
+      },
+      "files": [
+        [
+          "startup.xml",
+          "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg=="
+        ],
+        [
+          "g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAHgFAACsBQAAAAAAAAAAAAAAEAAAABAAAKwFAAAAAAAA8AoAAHicbdKtS0NhFMfxs3HRhYWJhgWDeLwX5Yr4siA4cMLAhQsuDDQYRCYu+IYIihgMBoPBYDAYFBwYDAaDwapiUZNN8B+RyT3z3n1Fy+HDeX7PeR4eHldnZ0amXX0Y2L3wVBIikR04BafhDNwFZ+FuuAfug/vhQXgYzsHjcB4uwEW4BAdwGa7Ac/A8vABX4Rq8Am/AW/AOvAfvwwfwIXwEH8Mn8Cl8Bp/Dl/AVfA3fwLfwHXxvrtfrdU8l2bIDp+A0nIG74CzcDffAfXA/PAgPwzl4HM7DBbgIl+AALsMVeA6ehxfgKlwzr2+vLXkqTujqUG3ZU8c8JiKepsyby4ujngbmnGXKyFTM4aqvqwkRdaxdEBG306qKhIvhJ9WULRbjRV/Xoj2uXcPXx2Q8pGTtNquOpT+S8ZDAhgTxCVFtxV0d6+1o+PoZbsra/ikRaeY6m8Pb4z2+voS5tA23X/sTScTV19dW5BKRr0ajEV3xrRW5QmTW6qrVSQs+h8HM/9fime/RwD85X5+ix2q+xK9G0Rqb8tOY+AYsqx+E"
+        ],
+        [
+          "scripts-loose/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAHgFAACsBQAAAAAAAAAAAAAAEAAAABAAAKwFAAAAAAAA8AoAAHicbdKtS0NhFMfxs3HRhYWJhgWDeLwX5Yr4siA4cMLAhQsuDDQYRCYu+IYIihgMBoPBYDAYFBwYDAaDwapiUZNN8B+RyT3z3n1Fy+HDeX7PeR4eHldnZ0amXX0Y2L3wVBIikR04BafhDNwFZ+FuuAfug/vhQXgYzsHjcB4uwEW4BAdwGa7Ac/A8vABX4Rq8Am/AW/AOvAfvwwfwIXwEH8Mn8Cl8Bp/Dl/AVfA3fwLfwHXxvrtfrdU8l2bIDp+A0nIG74CzcDffAfXA/PAgPwzl4HM7DBbgIl+AALsMVeA6ehxfgKlwzr2+vLXkqTujqUG3ZU8c8JiKepsyby4ujngbmnGXKyFTM4aqvqwkRdaxdEBG306qKhIvhJ9WULRbjRV/Xoj2uXcPXx2Q8pGTtNquOpT+S8ZDAhgTxCVFtxV0d6+1o+PoZbsra/ikRaeY6m8Pb4z2+voS5tA23X/sTScTV19dW5BKRr0ajEV3xrRW5QmTW6qrVSQs+h8HM/9fime/RwD85X5+ix2q+xK9G0Rqb8tOY+AYsqx+E"
+        ],
+        [
+          "scripts/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAHgFAACsBQAAAAAAAAAAAAAAEAAAABAAAKwFAAAAAAAA8AoAAHicbdKtS0NhFMfxs3HRhYWJhgWDeLwX5Yr4siA4cMLAhQsuDDQYRCYu+IYIihgMBoPBYDAYFBwYDAaDwapiUZNN8B+RyT3z3n1Fy+HDeX7PeR4eHldnZ0amXX0Y2L3wVBIikR04BafhDNwFZ+FuuAfug/vhQXgYzsHjcB4uwEW4BAdwGa7Ac/A8vABX4Rq8Am/AW/AOvAfvwwfwIXwEH8Mn8Cl8Bp/Dl/AVfA3fwLfwHXxvrtfrdU8l2bIDp+A0nIG74CzcDffAfXA/PAgPwzl4HM7DBbgIl+AALsMVeA6ehxfgKlwzr2+vLXkqTujqUG3ZU8c8JiKepsyby4ujngbmnGXKyFTM4aqvqwkRdaxdEBG306qKhIvhJ9WULRbjRV/Xoj2uXcPXx2Q8pGTtNquOpT+S8ZDAhgTxCVFtxV0d6+1o+PoZbsra/ikRaeY6m8Pb4z2+voS5tA23X/sTScTV19dW5BKRr0ajEV3xrRW5QmTW6qrVSQs+h8HM/9fime/RwD85X5+ix2q+xK9G0Rqb8tOY+AYsqx+E"
+        ],
+        [
+          "main.kcs",
+          "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "scripts.int",
+          "S0lGAAIAAABnMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAM4BAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZgIAAE4AAABLQ1MAAgAAAAAAAAA0AAAAeAUAAKwFAAAAAAAAAAAAAAAQAAAAEAAArAUAAAAAAADwCgAAeJxt0q1LQ2EUx/GzcdGFhYmGBYN4vBfliviyIDhwwsCFCy4MNBhEJi74hgiKGAwGg8FgMBgUHBgMBoPBqmJRk03wH5HJPfPefUXL4cN5fs95Hh4eV2dnRqZdfRjYvfBUEiKRHTgFp+EM3AVn4W64B+6D++FBeBjOweNwHi7ARbgEB3AZrsBz8Dy8AFfhGrwCb8Bb8A68B+/DB/AhfAQfwyfwKXwGn8OX8BV8Dd/At/AdfG+u1+t1TyXZsgOn4DScgbvgLNwN98B9cD88CA/DOXgczsMFuAiX4AAuwxV4Dp6HF+AqXDOvb68teSpO6OpQbdlTxzwmIp6mzJvLi6OeBuacZcrIVMzhqq+rCRF1rF0QEbfTqoqEi+En1ZQtFuNFX9eiPa5dw9fHZDykZO02q46lP5LxkMCGBPEJUW3FXR3r7Wj4+hluytr+KRFp5jqbw9vjPb6+hLm0Dbdf+xNJxNXX11bkEpGvRqMRXfGtFblCZNbqqtVJCz6Hwcz/1+KZ79HAPzlfn6LHar7Er0bRGpvy05j4BiyrH4RLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjA="
+        ],
+        [
+          "images.int",
+          "S0lGAAIAAABvd25lZC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAANYAAAByZ2IyNC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbgEAAIcAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAAAAAAAAAAAAAQAAAADAAAAAQAAAAAAAAAAAAAAaW1nMDAwMABmAAAAVgAAAAAAAAADAAAAJwAAACkAAAAXAAAADwAAAHicYztwQOWJChiIP3miwn6cHQwUjh9n13qlBQGvVq060AAAD/gNz3icY+RoUGbQlzjAzfbBiesDJwAZkAP6YXRzMDAwNwAAAAAAFAAAAAoAAADs////HgAAANj///8jAYD/SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "images-loose/owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "images-loose/rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ]
+      ],
+      "rows": [
+        {
+          "index": 0,
+          "label": "own source plus independent decoded bitmap and target",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 0, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 4,
+              "canvasHeight": 3,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 1,
+          "label": "canvas/offset/base then positive tone, before blur",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 7,
+              "canvasHeight": 6,
+              "offsetX": 1,
+              "offsetY": 1,
+              "alphaHint": 2,
+              "baseX": -3,
+              "baseY": 4,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "Cyw4ABo4PIAoRED/N1BFAEZcSQBVaE4AZHRSAHKAVgCBjFsAkJhfAJ+kZACusGgA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 2,
+          "label": "positive collection blur alone",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 6,
+              "height": 5,
+              "bpp": 4,
+              "canvasWidth": 7,
+              "canvasHeight": 6,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": -3,
+              "baseY": 4,
+              "clip": [0, 0, 6, 5],
+              "mask": 0,
+              "rgba": "AAAAABo4PAghPj4gJEA/KChEQBAAAAAAAAAAABo4PBAhPj5AJEA/UChEQCAAAAAAAAAAABo4PAghPj4gJEA/KChEQBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 3,
+          "label": "explicit owners and independently decoded bitmap release normally",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "originalPE": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "scope": "Correct full pitch*height positive loaded-layer blur, separate before/after phases; SDK23 direct kernel versus modern bitmap method, actual cached/physical bounds and base, real source cleanup.",
+      "coldAt": 1,
+      "marker": 1194413911,
+      "projections": {
+        "outputs": [
+          256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+          328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396,
+          400, 404, 408, 412, 416, 420, 424, 428, 432, 436, 440, 444
+        ],
+        "metadata": [
+          512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572, 576, 580,
+          584, 588, 592, 596, 600, 604, 608, 612, 616
+        ]
+      },
+      "files": [
+        [
+          "startup.xml",
+          "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg=="
+        ],
+        [
+          "g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAMAFAAD0BQAAAAAAAAAAAAAAEAAAABAAAPQFAAAAAAAAgAsAAHicbdKxaxNhGMfxJ+HQDBkizZChQ/HpvVSuSrUZChaMEDDDgRkCzZAhlZREaJrSFiri4NChg0OHDg4OCg10cHBwcHBVcVEnN8F/RFLe53p3X9Hl4cP7/t7fe3dcqBsPbz8I9dONp2+cSkEkdQCX4DJcgatwDZ6HF+BFeAlehlfgOrwGr8MNuAm34Bhuwx24C/fgPjyAR/A2vAsfwE/gZ/Bz+Ag+hl/AJ/Ap/BJ+Bb+Gz+Bz+C38Dn4Pf4A/mqfT6dSpFHMHcAkuwxW4CtfgeXgBXoSX4GV4Ba7Da/A63ICbcAuO4TbcgbtwD+7DA3hkfjzeHDqVwHtr/+a208A8mexvOS2Ze5PDHaflJDO4NXJaMQ9XRZxWg7wnRk8bPZ2kZ2/4yGnXfKfue3ro6Zt9Q6TjgogG4pcbIhLO2VQRv+l/di3ZZjPbjHQnPRPa60T6uZiVtGz5is3A0r+KWUlsJXF2QzrzeKir16/NIv3tD9Xs/H0RSXJzSfnV7Eyk33yubOX2919GCtmM9HseOUPkz2w2Sx/xRx45R2TD5tjmPQt+9cHK/x+Ld/5MC//JRfol/VjJl/hroWkLe3K5cPcCxDcuiA=="
+        ],
+        [
+          "scripts-loose/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAMAFAAD0BQAAAAAAAAAAAAAAEAAAABAAAPQFAAAAAAAAgAsAAHicbdKxaxNhGMfxJ+HQDBkizZChQ/HpvVSuSrUZChaMEDDDgRkCzZAhlZREaJrSFiri4NChg0OHDg4OCg10cHBwcHBVcVEnN8F/RFLe53p3X9Hl4cP7/t7fe3dcqBsPbz8I9dONp2+cSkEkdQCX4DJcgatwDZ6HF+BFeAlehlfgOrwGr8MNuAm34Bhuwx24C/fgPjyAR/A2vAsfwE/gZ/Bz+Ag+hl/AJ/Ap/BJ+Bb+Gz+Bz+C38Dn4Pf4A/mqfT6dSpFHMHcAkuwxW4CtfgeXgBXoSX4GV4Ba7Da/A63ICbcAuO4TbcgbtwD+7DA3hkfjzeHDqVwHtr/+a208A8mexvOS2Ze5PDHaflJDO4NXJaMQ9XRZxWg7wnRk8bPZ2kZ2/4yGnXfKfue3ro6Zt9Q6TjgogG4pcbIhLO2VQRv+l/di3ZZjPbjHQnPRPa60T6uZiVtGz5is3A0r+KWUlsJXF2QzrzeKir16/NIv3tD9Xs/H0RSXJzSfnV7Eyk33yubOX2919GCtmM9HseOUPkz2w2Sx/xRx45R2TD5tjmPQt+9cHK/x+Ld/5MC//JRfol/VjJl/hroWkLe3K5cPcCxDcuiA=="
+        ],
+        [
+          "scripts/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAMAFAAD0BQAAAAAAAAAAAAAAEAAAABAAAPQFAAAAAAAAgAsAAHicbdKxaxNhGMfxJ+HQDBkizZChQ/HpvVSuSrUZChaMEDDDgRkCzZAhlZREaJrSFiri4NChg0OHDg4OCg10cHBwcHBVcVEnN8F/RFLe53p3X9Hl4cP7/t7fe3dcqBsPbz8I9dONp2+cSkEkdQCX4DJcgatwDZ6HF+BFeAlehlfgOrwGr8MNuAm34Bhuwx24C/fgPjyAR/A2vAsfwE/gZ/Bz+Ag+hl/AJ/Ap/BJ+Bb+Gz+Bz+C38Dn4Pf4A/mqfT6dSpFHMHcAkuwxW4CtfgeXgBXoSX4GV4Ba7Da/A63ICbcAuO4TbcgbtwD+7DA3hkfjzeHDqVwHtr/+a208A8mexvOS2Ze5PDHaflJDO4NXJaMQ9XRZxWg7wnRk8bPZ2kZ2/4yGnXfKfue3ro6Zt9Q6TjgogG4pcbIhLO2VQRv+l/di3ZZjPbjHQnPRPa60T6uZiVtGz5is3A0r+KWUlsJXF2QzrzeKir16/NIv3tD9Xs/H0RSXJzSfnV7Eyk33yubOX2919GCtmM9HseOUPkz2w2Sx/xRx45R2TD5tjmPQt+9cHK/x+Ld/5MC//JRfol/VjJl/hroWkLe3K5cPcCxDcuiA=="
+        ],
+        [
+          "main.kcs",
+          "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "scripts.int",
+          "S0lGAAIAAABnMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAPYBAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjgIAAE4AAABLQ1MAAgAAAAAAAAA0AAAAwAUAAPQFAAAAAAAAAAAAAAAQAAAAEAAA9AUAAAAAAACACwAAeJxt0rFrE2EYx/En4dAMGSLNkKFD8em9VK5KtRkKFowQMMOBGQLNkCGVlERomtIWKuLg0KGDQ4cODg4KDXRwcHBwcFVxUSc3wX9EUt7nendf0eXhw/v+3t97d1yoGw9vPwj1042nb5xKQSR1AJfgMlyBq3ANnocX4EV4CV6GV+A6vAavww24CbfgGG7DHbgL9+A+PIBH8Da8Cx/AT+Bn8HP4CD6GX8An8Cn8En4Fv4bP4HP4LfwOfg9/gD+ap9Pp1KkUcwdwCS7DFbgK1+B5eAFehJfgZXgFrsNr8DrcgJtwC47hNtyBu3AP7sMDeGR+PN4cOpXAe2v/5rbTwDyZ7G85LZl7k8Mdp+UkM7g1cloxD1dFnFaDvCdGTxs9naRnb/jIadd8p+57eujpm31DpOOCiAbilxsiEs7ZVBG/6X92LdlmM9uMdCc9E9rrRPq5mJW0bPmKzcDSv4pZSWwlcXZDOvN4qKvXr80i/e0P1ez8fRFJcnNJ+dXsTKTffK5s5fb3X0YK2Yz0ex45Q+TPbDZLH/FHHjlHZMPm2OY9C371wcr/H4t3/kwL/8lF+iX9WMmX+GuhaQt7crlw9wLENy6IS0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "images.int",
+          "S0lGAAIAAABvd25lZC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAANYAAAByZ2IyNC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbgEAAIcAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAAAAAAAAAAAAAQAAAADAAAAAQAAAAAAAAAAAAAAaW1nMDAwMABmAAAAVgAAAAAAAAADAAAAJwAAACkAAAAXAAAADwAAAHicYztwQOWJChiIP3miwn6cHQwUjh9n13qlBQGvVq060AAAD/gNz3icY+RoUGbQlzjAzfbBiesDJwAZkAP6YXRzMDAwNwAAAAAAFAAAAAoAAADs////HgAAANj///8jAYD/SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "images-loose/owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "images-loose/rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ]
+      ],
+      "rows": [
+        {
+          "index": 0,
+          "label": "own source plus independent decoded bitmap and target",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 0, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 4,
+              "canvasHeight": 3,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 1,
+          "label": "canvas/offset/base then positive tone, before blur",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 7,
+              "canvasHeight": 6,
+              "offsetX": 1,
+              "offsetY": 1,
+              "alphaHint": 2,
+              "baseX": -3,
+              "baseY": 4,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "Cyw4ABo4PIAoRED/N1BFAEZcSQBVaE4AZHRSAHKAVgCBjFsAkJhfAJ+kZACusGgA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 2,
+          "label": "positive collection blur alone",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [6, 5, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 7,
+              "height": 6,
+              "bpp": 4,
+              "canvasWidth": 7,
+              "canvasHeight": 6,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": -3,
+              "baseY": 4,
+              "clip": [0, 0, 7, 6],
+              "mask": 0,
+              "rgba": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaODwIIT4+ICRAPygoREAQAAAAAAAAAAAAAAAAGjg8ECE+PkAkQD9QKERAIAAAAAAAAAAAAAAAABo4PAghPj4gJEA/KChEQBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 3,
+          "label": "explicit owners and independently decoded bitmap release normally",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ]
+        }
+      ]
+    },
+    {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "originalPE": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "marker": 1194413911,
+      "projections": {
+        "outputs": [
+          256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+          328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396,
+          400, 404, 408, 412, 416, 420, 424, 428, 432, 436, 440, 444
+        ],
+        "metadata": [
+          512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572, 576, 580,
+          584, 588, 592, 596, 600, 604, 608, 612, 616
+        ]
+      },
+      "files": [
+        [
+          "startup.xml",
+          "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg=="
+        ],
+        [
+          "g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAALgJAADsCQAAAAAAAAAAAAAAEAAAABAAAOwJAAAAAAAAcBMAAHicjdS/a1NRFAfw+56PmiFDJBkyZCievkfkVknbDAULRgiYIdAMgQbJECUhEZqmtEpFHBwcOjh0cOjQIUIDHQQ7KDg4uPj79+8foNb/oP+ARN657+V+85JGl8uHe88757573zs2LcxPnbHp0bErtxwShhC+LXAIHAZHwDFwHJwAj4MnwEnwJDgFToNnwXPgDDgLzoHz4AK4CC6By+AKuApugBfBy+CL4Mvgq+Br4OvgdfAN8Ab4JngTvAVug7fBO+Db4F3wXfB98AN2p9PpOCRMbQscAofBEXAMHAcnwOPgCXASPAlOgdPgWfAcOAPOgnPgPLgALoJL4DK4Aq6CG+wLzXN1h4TlurZ6fNEhi91qrdYcCrHLrbUlh8Iqpnqi4VCEXZ8RwqGYpfPkIU8B8hRVnpX6eYdK7Om0m6cMeSpslcG9U0lrhhAUEu6i+kjdRUlNd9ri6YwQwo7yyHcj6Y5+hj9mb1HwmOMQ9wehMIesB0Ik/0ne89lecklLfk07ytNkHDDu35vqSrokhKA4P3napSovePuPzd72czw9xqPF0T/MXvk8V8vD9kUg3KaZo0e6kvZMr5odVRlVS3WbqaSnpve2/qLqq2FefB5cVM01xosvgouqwyZ48ZXZO0RuDhwi6Z1+uQ1DP3mYR9WJVQ9W3Vf13RRn/Og+muBHua2oV/fyftLnsqkXvbyqM6uerLqx6sO5YN4to/9G+nY3xoVe6/dqwwvoK5b0RodsQ8ifbrfrX+NbHbJjDL+XgaPHexk4erwXOHrVNw0hlm2qcqAeJT1zAyPw6dR4nOexFAjxCi3w2OTx1PCQ/b32Q0kv/Rvxp6c5+ltwWp3Z+/7pvg9lF07I5MWvfvSQyzrL0x9GRKiKX0ZEHIJa3/3TPCBO0u9/1PIrfh6RCX9gXd3/jLGB4N5+uhmT/51m+KqkX36agY1JemL2Gls+OJHliRXhTZz8C1cGjZA="
+        ],
+        [
+          "scripts-loose/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAALgJAADsCQAAAAAAAAAAAAAAEAAAABAAAOwJAAAAAAAAcBMAAHicjdS/a1NRFAfw+56PmiFDJBkyZCievkfkVknbDAULRgiYIdAMgQbJECUhEZqmtEpFHBwcOjh0cOjQIUIDHQQ7KDg4uPj79+8foNb/oP+ARN657+V+85JGl8uHe88757573zs2LcxPnbHp0bErtxwShhC+LXAIHAZHwDFwHJwAj4MnwEnwJDgFToNnwXPgDDgLzoHz4AK4CC6By+AKuApugBfBy+CL4Mvgq+Br4OvgdfAN8Ab4JngTvAVug7fBO+Db4F3wXfB98AN2p9PpOCRMbQscAofBEXAMHAcnwOPgCXASPAlOgdPgWfAcOAPOgnPgPLgALoJL4DK4Aq6CG+wLzXN1h4TlurZ6fNEhi91qrdYcCrHLrbUlh8Iqpnqi4VCEXZ8RwqGYpfPkIU8B8hRVnpX6eYdK7Om0m6cMeSpslcG9U0lrhhAUEu6i+kjdRUlNd9ri6YwQwo7yyHcj6Y5+hj9mb1HwmOMQ9wehMIesB0Ik/0ne89lecklLfk07ytNkHDDu35vqSrokhKA4P3napSovePuPzd72czw9xqPF0T/MXvk8V8vD9kUg3KaZo0e6kvZMr5odVRlVS3WbqaSnpve2/qLqq2FefB5cVM01xosvgouqwyZ48ZXZO0RuDhwi6Z1+uQ1DP3mYR9WJVQ9W3Vf13RRn/Og+muBHua2oV/fyftLnsqkXvbyqM6uerLqx6sO5YN4to/9G+nY3xoVe6/dqwwvoK5b0RodsQ8ifbrfrX+NbHbJjDL+XgaPHexk4erwXOHrVNw0hlm2qcqAeJT1zAyPw6dR4nOexFAjxCi3w2OTx1PCQ/b32Q0kv/Rvxp6c5+ltwWp3Z+/7pvg9lF07I5MWvfvSQyzrL0x9GRKiKX0ZEHIJa3/3TPCBO0u9/1PIrfh6RCX9gXd3/jLGB4N5+uhmT/51m+KqkX36agY1JemL2Gls+OJHliRXhTZz8C1cGjZA="
+        ],
+        [
+          "scripts/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAALgJAADsCQAAAAAAAAAAAAAAEAAAABAAAOwJAAAAAAAAcBMAAHicjdS/a1NRFAfw+56PmiFDJBkyZCievkfkVknbDAULRgiYIdAMgQbJECUhEZqmtEpFHBwcOjh0cOjQIUIDHQQ7KDg4uPj79+8foNb/oP+ARN657+V+85JGl8uHe88757573zs2LcxPnbHp0bErtxwShhC+LXAIHAZHwDFwHJwAj4MnwEnwJDgFToNnwXPgDDgLzoHz4AK4CC6By+AKuApugBfBy+CL4Mvgq+Br4OvgdfAN8Ab4JngTvAVug7fBO+Db4F3wXfB98AN2p9PpOCRMbQscAofBEXAMHAcnwOPgCXASPAlOgdPgWfAcOAPOgnPgPLgALoJL4DK4Aq6CG+wLzXN1h4TlurZ6fNEhi91qrdYcCrHLrbUlh8Iqpnqi4VCEXZ8RwqGYpfPkIU8B8hRVnpX6eYdK7Om0m6cMeSpslcG9U0lrhhAUEu6i+kjdRUlNd9ri6YwQwo7yyHcj6Y5+hj9mb1HwmOMQ9wehMIesB0Ik/0ne89lecklLfk07ytNkHDDu35vqSrokhKA4P3napSovePuPzd72czw9xqPF0T/MXvk8V8vD9kUg3KaZo0e6kvZMr5odVRlVS3WbqaSnpve2/qLqq2FefB5cVM01xosvgouqwyZ48ZXZO0RuDhwi6Z1+uQ1DP3mYR9WJVQ9W3Vf13RRn/Og+muBHua2oV/fyftLnsqkXvbyqM6uerLqx6sO5YN4to/9G+nY3xoVe6/dqwwvoK5b0RodsQ8ifbrfrX+NbHbJjDL+XgaPHexk4erwXOHrVNw0hlm2qcqAeJT1zAyPw6dR4nOexFAjxCi3w2OTx1PCQ/b32Q0kv/Rvxp6c5+ltwWp3Z+/7pvg9lF07I5MWvfvSQyzrL0x9GRKiKX0ZEHIJa3/3TPCBO0u9/1PIrfh6RCX9gXd3/jLGB4N5+uhmT/51m+KqkX36agY1JemL2Gls+OJHliRXhTZz8C1cGjZA="
+        ],
+        [
+          "main.kcs",
+          "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "scripts.int",
+          "S0lGAAIAAABnMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAAsDAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAowMAAE4AAABLQ1MAAgAAAAAAAAA0AAAAuAkAAOwJAAAAAAAAAAAAAAAQAAAAEAAA7AkAAAAAAABwEwAAeJyN1L9rU1EUB/D7no+aIUMkGTJkKJ6+R+RWSdsMBQtGCJgh0AyBBskQJSERmqa0SkUcHBw6OHRw6NAhQgMdBDsoODi4+Pv37x+g1v+g/4BE3rnv5X7zkkaXy4d7zzvnvnvfOzYtzE+dsenRsSu3HBKGEL4tcAgcBkfAMXAcnACPgyfASfAkOAVOg2fBc+AMOAvOgfPgArgILoHL4Aq4Cm6AF8HL4Ivgy+Cr4Gvg6+B18A3wBvgmeBO8BW6Dt8E74NvgXfBd8H3wA3an0+k4JExtCxwCh8ERcAwcByfA4+AJcBI8CU6B0+BZ8Bw4A86Cc+A8uAAugkvgMrgCroIb7AvNc3WHhOW6tnp80SGL3Wqt1hwKscuttSWHwiqmeqLhUIRdnxHCoZil8+QhTwHyFFWelfp5h0rs6bSbpwx5KmyVwb1TSWuGEBQS7qL6SN1FSU132uLpjBDCjvLIdyPpjn6GP2ZvUfCY4xD3B6Ewh6wHQiT/Sd7z2V5ySUt+TTvK02QcMO7fm+pKuiSEoDg/edqlKi94+4/N3vZzPD3Go8XRP8xe+TxXy8P2RSDcppmjR7qS9kyvmh1VGVVLdZuppKem97b+ouqrYV58HlxUzTXGiy+Ci6rDJnjxldk7RG4OHCLpnX65DUM/eZhH1YlVD1bdV/XdFGf86D6a4Ee5rahX9/J+0ueyqRe9vKozq56surHqw7lg3i2j/0b6djfGhV7r92rDC+grlvRGh2xDyJ9ut+tf41sdsmMMv5eBo8d7GTh6vBc4etU3DSGWbapyoB4lPXMDI/Dp1Hic57EUCPEKLfDY5PHU8JD9vfZDSS/9G/Gnpzn6W3Bandn7/um+D2UXTsjkxa9+9JDLOsvTH0ZEqIpfRkQcglrf/dM8IE7S73/U8it+HpEJf2Bd3f+MsYHg3n66GZP/nWb4qqRffpqBjUl6YvYaWz44keWJFeFNnPwLVwaNkEtDUwACAAAAAAAAADQAAAASAAAARgAAAAAAAAAAAAAAABAAAAAQAABGAAAAAAAAACQAAAB4nFNV/sDAwKCt7M7AwKDMwsDAYA0AG2sCMA=="
+        ],
+        [
+          "images.int",
+          "S0lGAAIAAABvd25lZC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAANYAAAByZ2IyNC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbgEAAIcAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAAAAAAAAAAAAAQAAAADAAAAAQAAAAAAAAAAAAAAaW1nMDAwMABmAAAAVgAAAAAAAAADAAAAJwAAACkAAAAXAAAADwAAAHicYztwQOWJChiIP3miwn6cHQwUjh9n13qlBQGvVq060AAAD/gNz3icY+RoUGbQlzjAzfbBiesDJwAZkAP6YXRzMDAwNwAAAAAAFAAAAAoAAADs////HgAAANj///8jAYD/SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "images-loose/owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "images-loose/rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ]
+      ],
+      "rows": [
+        {
+          "index": 0,
+          "label": "declared RGB24 resource -> raw descriptor/header/frame -> independent mutable four-byte bitmap",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          }
+        },
+        {
+          "index": 1,
+          "label": "real loaded image collection and separately filled target;metadata and nonempty attributes",
+          "words": [
+            4, 3, 4, 3, 0, 0, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 10,
+            4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 0, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 4,
+              "canvasHeight": 3,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 2,
+          "label": "canvas/offset/base writes reach defined queries;neutral ignores owner and nonneutral changes pixels",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 7,
+              "canvasHeight": 6,
+              "offsetX": 1,
+              "offsetY": 1,
+              "alphaHint": 2,
+              "baseX": -3,
+              "baseY": 4,
+              "clip": [0, 0, 4, 3],
+              "mask": 2,
+              "rgba": "BiY0ABAxODAZOzxgIkZAACtQRAA1W0kAPmVNAEdwUABQelUAWoVZAGOQXgBtmmEA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 3,
+          "label": "loaded layers rotate into later pixel/geometry state",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [3, 4, 6, 7, 2, 1, 2, 4294967293, 4, 1, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 3,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 6,
+              "canvasHeight": 7,
+              "offsetX": 2,
+              "offsetY": 1,
+              "alphaHint": 2,
+              "baseX": 2,
+              "baseY": -3,
+              "clip": [0, 0, 3, 4],
+              "mask": 2,
+              "rgba": "IkZAAEdwUABtmmEAGTs8YD5lTQBjkF4AEDE4MDVbSQBahVkABiY0ACtQRABQelUA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 4,
+          "label": "loaded layers flip into later pixel/geometry state",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [3, 4, 6, 7, 1, 1, 4, 4294967293, 4, 1, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 3,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 6,
+              "canvasHeight": 7,
+              "offsetX": 1,
+              "offsetY": 1,
+              "alphaHint": 2,
+              "baseX": 4,
+              "baseY": -3,
+              "clip": [0, 0, 3, 4],
+              "mask": 2,
+              "rgba": "bZphAEdwUAAiRkAAY5BeAD5lTQAZOzxgWoVZADVbSQAQMTgwUHpVACtQRAAGJjQA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 5,
+          "label": "loaded layers resize into later pixel/geometry state",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [2, 1, 3, 2, 1, 0, 2, 0, 4, 1, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 2,
+              "height": 1,
+              "bpp": 4,
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 1,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 2,
+              "baseY": 0,
+              "clip": [0, 0, 2, 1],
+              "mask": 2,
+              "rgba": "AAAAABg7PAA="
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 6,
+          "label": "loaded layer colour filter reaches later pixels",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [2, 1, 3, 2, 1, 0, 2, 0, 4, 1, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 2,
+              "height": 1,
+              "bpp": 4,
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 1,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 2,
+              "baseY": 0,
+              "clip": [0, 0, 2, 1],
+              "mask": 2,
+              "rgba": "////AOfEwwA="
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 7,
+          "label": "collection blur expands and consumes its actual layer/output alias",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [3, 2, 3, 2, 0, 0, 2, 0, 4, 1, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 3,
+              "height": 2,
+              "bpp": 4,
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 2,
+              "baseY": 0,
+              "clip": [0, 0, 3, 2],
+              "mask": 2,
+              "rgba": null
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": null
+            }
+          }
+        },
+        {
+          "index": 8,
+          "label": "actual owner pixels blend/copy into independent filled target",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [],
+            "info": [3, 2, 3, 2, 0, 0, 2, 0, 4, 1, 0],
+            "layers": null,
+            "bitmap": {
+              "width": 3,
+              "height": 2,
+              "bpp": 4,
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 2,
+              "baseY": 0,
+              "clip": [0, 0, 3, 2],
+              "mask": 2,
+              "rgba": null
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": null
+            }
+          }
+        },
+        {
+          "index": 9,
+          "label": "explicit owners and independently decoded bitmap release normally",
+          "words": [
+            7, 6, 1, 1, 4294967293, 4, 0, 0, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2709137861,
+            2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ]
+        }
+      ],
+      "coldAt": null,
+      "scope": "Normal exact-build loaded Script image-data/owner/metadata mutation, defined result writes and bounded pixel observations. Software output; original full-span positive blur is asserted by the separate corrected followup.",
+      "observationLimit": "74 layer-vector projection used old-layout offset and is omitted. Original cached-header byte length after expansion is not a physical pixel span: affected blur/after-blur RGBA observations are omitted, not treated as native zeros.",
+      "raw": {
+        "path": "ORIGINAL-G1D2-74.json",
+        "sha256": "54b9615fbbe603019b336761a1a88d18c9c53e99b214c8e7ac4eee69534ae6c2"
+      }
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "originalPE": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "marker": 1194413911,
+      "projections": {
+        "outputs": [
+          256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+          328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396,
+          400, 404, 408, 412, 416, 420, 424, 428, 432, 436, 440, 444
+        ],
+        "metadata": [
+          512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572, 576, 580,
+          584, 588, 592, 596, 600, 604, 608, 612, 616
+        ]
+      },
+      "files": [
+        [
+          "startup.xml",
+          "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg=="
+        ],
+        [
+          "g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAHEHAAClBwAAAAAAAAAAAAAAEAAAABAAAKUHAAAAAAAA4g4AAHicjdW/a1NRFAfw856PmuENkWTIkKF4+h6RW6W1GQoWjBAwwwMzBJohQ5SURGgaaSuW4uDg4ODg4NDBoYUGOnTooODg6m/8Bermjz/Bf0Ce3HPz3v02RnC5fLjnvHPu+3VvwMtX5i8H/PzM9l7I5BAl9sAZsA/OgvPgArgIngbPgEvgWfAcuAxeBC+BK+AquAaOwHVwA9wEt8BtcAfcA6+Cb4A3wVvg2+A74Lvge+D74Afgh+Ad8CPwLngffAA+BB+BH4Ofgp+Jh8PhMGRyrT1wBuyDs+A8uAAugqfBM+ASeBY8By6DF8FL4Aq4Cq6BI3Ad3AA3wS1wG9wB98TX+1e7IZOnvbJxdjVkTzwYbKyEnBG3BrfWQvZNTudcL+SsuLtAFHLes3UiqFOHOg1TZ717LeSm+HxZ12lBnbZYV1Dcd4jYIz1dIaIgJyMT6aD+2DkjwWoaVLyWXBPkZJqdf4y/nszHim8SERfkykuaZDpI+xdu2r4m01MyepL9zU3bR9ItSteWjDY94IXTp2LFP91RtyBnKp6U0exNZlcy+5HZifQepPizvqgoneRHM52kgOIvdhk7zvG7ONZiSrLf62xfsuV/HKXYx6L4g03Zh5TfcRwnt/7RphxAyrKMfRkvSuJrnZilyY2+JlWSoDkBPLmLV+NBcwz4EnwzHjRnQV6Cb8eD5kAoSvCdXfmhYx/iJ/uijyY/RHytJ2R04aXjZ2Wjir/ruqX/LjM5qvhHUuavhSl+6aafezQ+UZWJdRpNXPgDMSZUlw=="
+        ],
+        [
+          "scripts-loose/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAHEHAAClBwAAAAAAAAAAAAAAEAAAABAAAKUHAAAAAAAA4g4AAHicjdW/a1NRFAfw856PmuENkWTIkKF4+h6RW6W1GQoWjBAwwwMzBJohQ5SURGgaaSuW4uDg4ODg4NDBoYUGOnTooODg6m/8Bermjz/Bf0Ce3HPz3v02RnC5fLjnvHPu+3VvwMtX5i8H/PzM9l7I5BAl9sAZsA/OgvPgArgIngbPgEvgWfAcuAxeBC+BK+AquAaOwHVwA9wEt8BtcAfcA6+Cb4A3wVvg2+A74Lvge+D74Afgh+Ad8CPwLngffAA+BB+BH4Ofgp+Jh8PhMGRyrT1wBuyDs+A8uAAugqfBM+ASeBY8By6DF8FL4Aq4Cq6BI3Ad3AA3wS1wG9wB98TX+1e7IZOnvbJxdjVkTzwYbKyEnBG3BrfWQvZNTudcL+SsuLtAFHLes3UiqFOHOg1TZ717LeSm+HxZ12lBnbZYV1Dcd4jYIz1dIaIgJyMT6aD+2DkjwWoaVLyWXBPkZJqdf4y/nszHim8SERfkykuaZDpI+xdu2r4m01MyepL9zU3bR9ItSteWjDY94IXTp2LFP91RtyBnKp6U0exNZlcy+5HZifQepPizvqgoneRHM52kgOIvdhk7zvG7ONZiSrLf62xfsuV/HKXYx6L4g03Zh5TfcRwnt/7RphxAyrKMfRkvSuJrnZilyY2+JlWSoDkBPLmLV+NBcwz4EnwzHjRnQV6Cb8eD5kAoSvCdXfmhYx/iJ/uijyY/RHytJ2R04aXjZ2Wjir/ruqX/LjM5qvhHUuavhSl+6aafezQ+UZWJdRpNXPgDMSZUlw=="
+        ],
+        [
+          "scripts/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAHEHAAClBwAAAAAAAAAAAAAAEAAAABAAAKUHAAAAAAAA4g4AAHicjdW/a1NRFAfw856PmuENkWTIkKF4+h6RW6W1GQoWjBAwwwMzBJohQ5SURGgaaSuW4uDg4ODg4NDBoYUGOnTooODg6m/8Bermjz/Bf0Ce3HPz3v02RnC5fLjnvHPu+3VvwMtX5i8H/PzM9l7I5BAl9sAZsA/OgvPgArgIngbPgEvgWfAcuAxeBC+BK+AquAaOwHVwA9wEt8BtcAfcA6+Cb4A3wVvg2+A74Lvge+D74Afgh+Ad8CPwLngffAA+BB+BH4Ofgp+Jh8PhMGRyrT1wBuyDs+A8uAAugqfBM+ASeBY8By6DF8FL4Aq4Cq6BI3Ad3AA3wS1wG9wB98TX+1e7IZOnvbJxdjVkTzwYbKyEnBG3BrfWQvZNTudcL+SsuLtAFHLes3UiqFOHOg1TZ717LeSm+HxZ12lBnbZYV1Dcd4jYIz1dIaIgJyMT6aD+2DkjwWoaVLyWXBPkZJqdf4y/nszHim8SERfkykuaZDpI+xdu2r4m01MyepL9zU3bR9ItSteWjDY94IXTp2LFP91RtyBnKp6U0exNZlcy+5HZifQepPizvqgoneRHM52kgOIvdhk7zvG7ONZiSrLf62xfsuV/HKXYx6L4g03Zh5TfcRwnt/7RphxAyrKMfRkvSuJrnZilyY2+JlWSoDkBPLmLV+NBcwz4EnwzHjRnQV6Cb8eD5kAoSvCdXfmhYx/iJ/uijyY/RHytJ2R04aXjZ2Wjir/ruqX/LjM5qvhHUuavhSl+6aafezQ+UZWJdRpNXPgDMSZUlw=="
+        ],
+        [
+          "main.kcs",
+          "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "scripts.int",
+          "S0lGAAIAAABnMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAHoCAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEgMAAE4AAABLQ1MAAgAAAAAAAAA0AAAAcQcAAKUHAAAAAAAAAAAAAAAQAAAAEAAApQcAAAAAAADiDgAAeJyN1b9rU1EUB/Dzno+a4Q2RZMiQoXj6HpFbpbUZChaMEDDDAzMEmiFDlJREaBppK5bi4ODg4ODg0MGhhQY6dOig4ODqb/wF6uaPP8F/QJ7cc/Pe/TZGcLl8uOe8c+77dW/Ay1fmLwf8/Mz2XsjkECX2wBmwD86C8+ACuAieBs+AS+BZ8By4DF4EL4Er4Cq4Bo7AdXAD3AS3wG1wB9wDr4JvgDfBW+Db4Dvgu+B74PvgB+CH4B3wI/AueB98AD4EH4Efg5+Cn4mHw+EwZHKtPXAG7IOz4Dy4AC6Cp8Ez4BJ4FjwHLoMXwUvgCrgKroEjcB3cADfBLXAb3AH3xNf7V7shk6e9snF2NWRPPBhsrIScEbcGt9ZC9k1O51wv5Ky4u0AUct6zdSKoU4c6DVNnvXst5Kb4fFnXaUGdtlhXUNx3iNgjPV0hoiAnIxPpoP7YOSPBahpUvJZcE+Rkmp1/jL+ezMeKbxIRF+TKS5pkOkj7F27avibTUzJ6kv3NTdtH0i1K15aMNj3ghdOnYsU/3VG3IGcqnpTR7E1mVzL7kdmJ9B6k+LO+qCid5EcznaSA4i92GTvO8bs41mJKst/rbF+y5X8cpdjHoviDTdmHlN9xHCe3/tGmHEDKsox9GS9K4mudmKXJjb4mVZKgOQE8uYtX40FzDPgSfDMeNGdBXoJvx4PmQChK8J1d+aFjH+In+6KPJj9EfK0nZHThpeNnZaOKv+u6pf8uMzmq+EdS5q+FKX7ppp97ND5RlYl1Gk1c+AMxJlSXS0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "images.int",
+          "S0lGAAIAAABvd25lZC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAANYAAAByZ2IyNC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbgEAAIcAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAAAAAAAAAAAAAQAAAADAAAAAQAAAAAAAAAAAAAAaW1nMDAwMABmAAAAVgAAAAAAAAADAAAAJwAAACkAAAAXAAAADwAAAHicYztwQOWJChiIP3miwn6cHQwUjh9n13qlBQGvVq060AAAD/gNz3icY+RoUGbQlzjAzfbBiesDJwAZkAP6YXRzMDAwNwAAAAAAFAAAAAoAAADs////HgAAANj///8jAYD/SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "images-loose/owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "images-loose/rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ]
+      ],
+      "rows": [
+        {
+          "index": 0,
+          "label": "own RGB24 resource/real bitmap and independent mutation",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          }
+        },
+        {
+          "index": 1,
+          "label": "own loaded model/independent target/nonempty attributes",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 0, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 4,
+              "canvasHeight": 3,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 2,
+          "label": "own bitmap and collection method context, positive tone/blur and physical versus cached bounds",
+          "words": [
+            7, 6, 7, 6, 0, 0, 4294967293, 4, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 1, 1, 2709137861, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+            2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [6, 5, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 7,
+              "height": 6,
+              "bpp": 4,
+              "canvasWidth": 7,
+              "canvasHeight": 6,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": -3,
+              "baseY": 4,
+              "clip": [0, 0, 7, 6],
+              "mask": 0,
+              "rgba": null
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": null
+            }
+          }
+        },
+        {
+          "index": 3,
+          "label": "actual owner pixels blend/copy into independent filled target",
+          "words": [
+            7, 6, 7, 6, 0, 0, 4294967293, 4, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 1, 1, 2709137861, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+            2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf8xtfD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [6, 5, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 7,
+              "height": 6,
+              "bpp": 4,
+              "canvasWidth": 7,
+              "canvasHeight": 6,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": -3,
+              "baseY": 4,
+              "clip": [0, 0, 7, 6],
+              "mask": 0,
+              "rgba": null
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": null
+            }
+          }
+        },
+        {
+          "index": 4,
+          "label": "explicit owners and independently decoded bitmap release normally",
+          "words": [
+            7, 6, 7, 6, 0, 0, 4294967293, 4, 10, 4294967276, 30, 4294967256, 4286578979, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 1, 1, 2709137861, 1, 1, 1, 1, 1, 2709137861, 2709137861,
+            2709137861
+          ],
+          "metadata": [
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ]
+        }
+      ],
+      "coldAt": null,
+      "scope": "Normal exact-build loaded Script image-data/owner/metadata mutation, defined result writes and bounded pixel observations. Software output; original full-span positive blur is asserted by the separate corrected followup.",
+      "observationLimit": "74 layer-vector projection used old-layout offset and is omitted. Original cached-header byte length after expansion is not a physical pixel span: affected blur/after-blur RGBA observations are omitted, not treated as native zeros.",
+      "raw": {
+        "path": "ORIGINAL-G1B1-76.json",
+        "sha256": "2a8cbb2f05d40228f0935fd3da5ed37eb392f671b0f12387c504d5784552e8c1"
+      }
+    },
+    {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "originalPE": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "marker": 1194413911,
+      "projections": {
+        "outputs": [
+          256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+          328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396,
+          400, 404, 408, 412, 416, 420, 424, 428, 432, 436, 440, 444
+        ],
+        "metadata": [
+          512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572, 576, 580,
+          584, 588, 592, 596, 600, 604, 608, 612, 616
+        ]
+      },
+      "files": [
+        [
+          "startup.xml",
+          "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg=="
+        ],
+        [
+          "g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAGoGAACeBgAAAAAAAAAAAAAAEAAAABAAAJ4GAAAAAAAA1AwAAHichdM/a1NRGMfxJ9eLZMgQaYYMHYpP76FyqtQ2Q8EOEQJmuGCGgEEyRElJhLaRVqiIg4NDBwcHBweHCgYcBB0cHBxc1MVFHfwDQn0HvgPlPjc3+TZUXQ4fnvOc3zn3nnsjvXTx7IVI35669dip5EQyh3AeLsBFuASX4Vl4Dp6HF+BFeAmuwKvwGlyFa3AdjuEG3IRbcBvuwF24D2/A1+Eb8E34NnwHvgvvwffg+/AD+CH8CN6Hn8BP4WfwC/gl/Ap+bR4Oh0OnEkwcwnm4ABfhElyGZ+E5eB5egBfhJbgCr8JrcBWuwXU4hhtwE27BbbgDd+G++drmlZ5TCROv75zecBqaB4Oddad5c3uwu+W0kPZ0z/SdFs29FRGnpXCSEyOngZxmmrPdu+q0ZV6uJDlt5HTMaUJyp153cyKal2Qy/UiTSa+bSTm0clVEohkb7W68Pp+ssY95NCk21q0l+UG0YC17Uy3e/qTR+to43OtWtmdk78rru2B8iLqVj9sYWvePYBwSW0iMQ8hUe6QrJ0/89nqQLCrb+vMikvbNpOG/DvbfeP2QxR7RkbPyp6wjLXv9ODlm8t8esfCy9X3+b/SXf3QEVv56ePNIl638bbp8DGu+B6O74KTXn3/dzOv77JHS13qoULPCtowK5/4AM888rQ=="
+        ],
+        [
+          "scripts-loose/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAGoGAACeBgAAAAAAAAAAAAAAEAAAABAAAJ4GAAAAAAAA1AwAAHichdM/a1NRGMfxJ9eLZMgQaYYMHYpP76FyqtQ2Q8EOEQJmuGCGgEEyRElJhLaRVqiIg4NDBwcHBweHCgYcBB0cHBxc1MVFHfwDQn0HvgPlPjc3+TZUXQ4fnvOc3zn3nnsjvXTx7IVI35669dip5EQyh3AeLsBFuASX4Vl4Dp6HF+BFeAmuwKvwGlyFa3AdjuEG3IRbcBvuwF24D2/A1+Eb8E34NnwHvgvvwffg+/AD+CH8CN6Hn8BP4WfwC/gl/Ap+bR4Oh0OnEkwcwnm4ABfhElyGZ+E5eB5egBfhJbgCr8JrcBWuwXU4hhtwE27BbbgDd+G++drmlZ5TCROv75zecBqaB4Oddad5c3uwu+W0kPZ0z/SdFs29FRGnpXCSEyOngZxmmrPdu+q0ZV6uJDlt5HTMaUJyp153cyKal2Qy/UiTSa+bSTm0clVEohkb7W68Pp+ssY95NCk21q0l+UG0YC17Uy3e/qTR+to43OtWtmdk78rru2B8iLqVj9sYWvePYBwSW0iMQ8hUe6QrJ0/89nqQLCrb+vMikvbNpOG/DvbfeP2QxR7RkbPyp6wjLXv9ODlm8t8esfCy9X3+b/SXf3QEVv56ePNIl638bbp8DGu+B6O74KTXn3/dzOv77JHS13qoULPCtowK5/4AM888rQ=="
+        ],
+        [
+          "scripts/g1.kcs",
+          "S0NTAAIAAAAAAAAANAAAAGoGAACeBgAAAAAAAAAAAAAAEAAAABAAAJ4GAAAAAAAA1AwAAHichdM/a1NRGMfxJ9eLZMgQaYYMHYpP76FyqtQ2Q8EOEQJmuGCGgEEyRElJhLaRVqiIg4NDBwcHBweHCgYcBB0cHBxc1MVFHfwDQn0HvgPlPjc3+TZUXQ4fnvOc3zn3nnsjvXTx7IVI35669dip5EQyh3AeLsBFuASX4Vl4Dp6HF+BFeAmuwKvwGlyFa3AdjuEG3IRbcBvuwF24D2/A1+Eb8E34NnwHvgvvwffg+/AD+CH8CN6Hn8BP4WfwC/gl/Ap+bR4Oh0OnEkwcwnm4ABfhElyGZ+E5eB5egBfhJbgCr8JrcBWuwXU4hhtwE27BbbgDd+G++drmlZ5TCROv75zecBqaB4Oddad5c3uwu+W0kPZ0z/SdFs29FRGnpXCSEyOngZxmmrPdu+q0ZV6uJDlt5HTMaUJyp153cyKal2Qy/UiTSa+bSTm0clVEohkb7W68Pp+ssY95NCk21q0l+UG0YC17Uy3e/qTR+to43OtWtmdk78rru2B8iLqVj9sYWvePYBwSW0iMQ8hUe6QrJ0/89nqQLCrb+vMikvbNpOG/DvbfeP2QxR7RkbPyp6wjLXv9ODlm8t8esfCy9X3+b/SXf3QEVv56ePNIl638bbp8DGu+B6O74KTXn3/dzOv77JHS13qoULPCtowK5/4AM888rQ=="
+        ],
+        [
+          "main.kcs",
+          "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "scripts.int",
+          "S0lGAAIAAABnMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAACYCAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvgIAAE4AAABLQ1MAAgAAAAAAAAA0AAAAagYAAJ4GAAAAAAAAAAAAAAAQAAAAEAAAngYAAAAAAADUDAAAeJyF0z9rU1EYx/En14tkyBBphgwdik/voXKq1DZDwQ4RAma4YIaAQTJESUmEtpFWqIiDg0MHBwcHB4cKBhwEHRwcHFzUxUUd/ANCfQe+A+U+Nzf5NlRdDh+e85zfOfeeeyO9dPHshUjfnrr12KnkRDKHcB4uwEW4BJfhWXgOnocX4EV4Ca7Aq/AaXIVrcB2O4QbchFtwG+7AXbgPb8DX4RvwTfg2fAe+C+/B9+D78AP4IfwI3oefwE/hZ/AL+CX8Cn5tHg6HQ6cSTBzCebgAF+ESXIZn4Tl4Hl6AF+EluAKvwmtwFa7BdTiGG3ATbsFtuAN34b752uaVnlMJE6/vnN5wGpoHg511p3lze7C75bSQ9nTP9J0Wzb0VEaelcJITI6eBnGaas9276rRlXq4kOW3kdMxpQnKnXndzIpqXZDL9SJNJr5tJObRyVUSiGRvtbrw+n6yxj3k0KTbWrSX5QbRgLXtTLd7+pNH62jjc61a2Z2Tvyuu7YHyIupWP2xha949gHBJbSIxDyFR7pCsnT/z2epAsKtv68yKS9s2k4b8O9t94/ZDFHtGRs/KnrCMte/04OWby3x6x8LL1ff5v9Jd/dARW/np480iXrfxtunwMa74Ho7vgpNeff93M6/vskdLXeqhQs8K2jArn/gAzzzytS0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw"
+        ],
+        [
+          "images.int",
+          "S0lGAAIAAABvd25lZC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAANYAAAByZ2IyNC5oZzMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbgEAAIcAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAAAAAAAAAAAAAQAAAADAAAAAQAAAAAAAAAAAAAAaW1nMDAwMABmAAAAVgAAAAAAAAADAAAAJwAAACkAAAAXAAAADwAAAHicYztwQOWJChiIP3miwn6cHQwUjh9n13qlBQGvVq060AAAD/gNz3icY+RoUGbQlzjAzfbBiesDJwAZkAP6YXRzMDAwNwAAAAAAFAAAAAoAAADs////HgAAANj///8jAYD/SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "images-loose/owned.hg3",
+          "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+        ],
+        [
+          "rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ],
+        [
+          "images-loose/rgb24.hg3",
+          "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL"
+        ]
+      ],
+      "rows": [
+        {
+          "index": 0,
+          "label": "own HG2 descriptor info/frame/container and real loaded/created owner contexts",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 0, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 4,
+              "canvasHeight": 3,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 1,
+          "label": "real loaded layers consume multiplicative colour",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 4,
+              "canvasHeight": 3,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "CCRTABItWmAdN2DAKEFnADJKbgA9VHQASF17AFJngQBdcYgAaHqPAHKElQB9jpwA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 2,
+          "label": "bitmap alpha hint reaches its normal query",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [4, 3, 4, 3, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 4,
+              "height": 3,
+              "bpp": 4,
+              "canvasWidth": 4,
+              "canvasHeight": 3,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 4, 3],
+              "mask": 0,
+              "rgba": "CCRTABItWmAdN2DAKEFnADJKbgA9VHQASF17AFJngQBdcYgAaHqPAHKElQB9jpwA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 3,
+          "label": "loaded layers rotate into later pixel/geometry state",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [3, 4, 3, 4, 0, 0, 3, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 3,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 3,
+              "canvasHeight": 4,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 3,
+              "baseY": 0,
+              "clip": [0, 0, 3, 4],
+              "mask": 0,
+              "rgba": "KEFnAFJngQB9jpwAHTdgwEhdewByhJUAEi1aYD1UdABoeo8ACCRTADJKbgBdcYgA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 4,
+          "label": "loaded layers flip into later pixel/geometry state",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [3, 4, 3, 4, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 3,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 3,
+              "canvasHeight": 4,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 3, 4],
+              "mask": 0,
+              "rgba": "fY6cAFJngQAoQWcAcoSVAEhdewAdN2DAaHqPAD1UdAASLVpgXXGIADJKbgAIJFMA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 5,
+          "label": "mask, alpha scaling, resize and colour-mode reach actual layer pixels and bounds",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ],
+          "decoded": {
+            "width": 4,
+            "height": 3,
+            "bpp": 4,
+            "canvasWidth": 4,
+            "canvasHeight": 3,
+            "offsetX": 0,
+            "offsetY": 0,
+            "alphaHint": 1,
+            "baseX": 0,
+            "baseY": 0,
+            "clip": [0, 0, 4, 3],
+            "mask": 0,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          "source": {
+            "layerState": [
+              {
+                "bitmap": true,
+                "animation": false
+              }
+            ],
+            "info": [3, 2, 3, 2, 0, 0, 0, 0, 4, 1, 0],
+            "layers": 1,
+            "bitmap": {
+              "width": 3,
+              "height": 2,
+              "bpp": 4,
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 3, 2],
+              "mask": 2,
+              "rgba": "////ALeihADiyJ9g////AM21kQD326wA"
+            }
+          },
+          "target": {
+            "layerState": null,
+            "info": [6, 4, 6, 4, 0, 0, 0, 0, 4, 1, 1],
+            "layers": null,
+            "bitmap": {
+              "width": 6,
+              "height": 4,
+              "bpp": 4,
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "clip": [0, 0, 6, 4],
+              "mask": 0,
+              "rgba": "ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/ESIz/xEiM/8RIjP/"
+            }
+          }
+        },
+        {
+          "index": 6,
+          "label": "explicit owners and independently decoded bitmap release normally",
+          "words": [
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 1, 1, 1, 2709137861, 1, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861
+          ],
+          "metadata": [
+            0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0, 0, 0, 4, 3, 4, 3, 0, 0, 0
+          ]
+        }
+      ],
+      "coldAt": null,
+      "scope": "Exact plain76 normal loaded Script: HG2 metadata writers plus real loaded-layer multiplicative colour, alpha query, rotate90, flip1, mask2, alpha50, resize3x2 and colour mode3; every initialized physical pixel/bounds after consumers and final caller release. No full-format/arbitrary pointer/GPU claim.",
+      "raw": {
+        "path": "ORIGINAL-G3OG1-76.json",
+        "sha256": "97bcd129662e30a6286991302c648f8d320c028418976a9f5ff12716797ecd8f",
+        "allGCALL": 28,
+        "complete": true,
+        "allClosed": true
+      }
+    }
+  ]
+}
